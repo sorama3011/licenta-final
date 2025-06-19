@@ -168,6 +168,7 @@ switch ($type) {
         break;
 
     case 'featured':
+        // First try to get products marked as recommended
         $sql = "SELECT * FROM produse WHERE activ = 1 AND recomandat = 1 ORDER BY RAND() LIMIT 8";
         $result = mysqli_query($conn, $sql);
 
@@ -183,6 +184,25 @@ switch ($type) {
             $row['tags'] = $tags;
 
             $featured[] = $row;
+        }
+
+        // If no featured products found, get random active products
+        if (empty($featured)) {
+            $sql = "SELECT * FROM produse WHERE activ = 1 ORDER BY RAND() LIMIT 4";
+            $result = mysqli_query($conn, $sql);
+            
+            while ($row = mysqli_fetch_assoc($result)) {
+                // Get product tags
+                $tags_sql = "SELECT tag FROM produse_taguri WHERE produs_id = {$row['id']}";
+                $tags_result = mysqli_query($conn, $tags_sql);
+                $tags = [];
+                while ($tag = mysqli_fetch_assoc($tags_result)) {
+                    $tags[] = $tag['tag'];
+                }
+                $row['tags'] = $tags;
+
+                $featured[] = $row;
+            }
         }
 
         echo json_encode(['success' => true, 'products' => $featured]);
