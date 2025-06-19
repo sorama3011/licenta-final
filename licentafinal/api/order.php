@@ -15,12 +15,12 @@ $user_id = $_SESSION['user_id'];
 
 switch ($action) {
     case 'place_order':
-        $adresa_id = (int)$_POST['adresa_id'];
-        $mod_plata = sanitize_input($_POST['mod_plata']);
-        $observatii = sanitize_input($_POST['observatii'] ?? '');
+        $adresa_id = (int)($_POST['address_id'] ?? $_POST['adresa_id'] ?? 0);
+        $mod_plata = sanitize_input($_POST['payment_method'] ?? $_POST['mod_plata'] ?? '');
+        $observatii = sanitize_input($_POST['notes'] ?? $_POST['observatii'] ?? '');
         
         // Get cart items
-        $cart_sql = "SELECT cc.*, p.nume, p.pret as pret_curent, p.stoc 
+        $cart_sql = "SELECT cc.produs_id, cc.cantitate, cc.pret, p.nume, p.pret as pret_curent, p.stoc 
                      FROM cos_cumparaturi cc 
                      JOIN produse p ON cc.produs_id = p.id 
                      WHERE cc.user_id=$user_id AND p.activ=1";
@@ -40,34 +40,40 @@ switch ($action) {
                 exit;
             }
             $cart_items[] = $item;
-            $subtotal += $item['pret'] * $item['cantitate'];
+            $subtotal += $item['pret_curent'] * $item['cantitate'];
         }
         
         // Apply voucher discount
         $voucher = $_SESSION['applied_voucher'] ?? null;
         $discount = 0;
+        $voucher_id = null;
+        
         if ($voucher) {
             if ($voucher['tip'] == 'procent') {
                 $discount = $subtotal * ($voucher['valoare'] / 100);
             } else {
                 $discount = $voucher['valoare'];
             }
+            $voucher_id = $voucher['id'];
         }
         
-        $total = $subtotal - $discount;
+        // Calculate shipping
+        $shipping = ($subtotal - $discount >= 150) ? 0 : 15;
+        $total = $subtotal - $discount + $shipping;
         
         // Create order
-        $numar_comanda = 'CMD' . date('YmdHis') . $user_id;
-        $order_sql = "INSERT INTO comenzi (user_id, numar_comanda, subtotal, discount, total, mod_plata, adresa_id, observatii, status) 
-                      VALUES ($user_id, '$numar_comanda', $subtotal, $discount, $total, '$mod_plata', $adresa_id, '$observatii', 'noua')";
+        $numar_comanda = 'GR-' . date('Ymd') . '-' . sprintf('%04d', rand(1, 9999));
+        $order_sql = "INSERT INTO comenzi (user_id, numar_comanda, subtotal, transport, discount, total, metoda_plata, status_plata, adresa_livrare_id, adresa_facturare_id, voucher_id, observatii, status) 
+                      VALUES ($user_id, '$numar_comanda', $subtotal, $shipping, $discount, $total, '$mod_plata', 'in_asteptare', $adresa_id, $adresa_id, " . ($voucher_id ? $voucher_id : "NULL") . ", '$observatii', 'plasata')";
         
         if (mysqli_query($conn, $order_sql)) {
             $order_id = mysqli_insert_id($conn);
             
             // Add order items
             foreach ($cart_items as $item) {
-                $item_sql = "INSERT INTO comenzi_produse (comanda_id, produs_id, cantitate, pret) 
-                             VALUES ($order_id, {$item['produs_id']}, {$item['cantitate']}, {$item['pret']})";
+                $item_subtotal = $item['pret_curent'] * $item['cantitate'];
+                $item_sql = "INSERT INTO comenzi_produse (comanda_id, produs_id, nume_produs, pret, cantitate, subtotal) 
+                             VALUES ($order_id, {$item['produs_id']}, '{$item['nume']}', {$item['pret_curent']}, {$item['cantitate']}, $item_subtotal)";
                 mysqli_query($conn, $item_sql);
                 
                 // Update stock

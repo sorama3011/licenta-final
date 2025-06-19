@@ -342,7 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <h5 class="mb-0">Adresa de Livrare</h5>
                         </div>
                         <div class="card-body">
-                            <form id="checkoutForm" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                            <form id="checkoutForm" method="post" action="api/order.php">
                                 <?php if (mysqli_num_rows($addresses_result) > 0): ?>
                                 <div class="mb-4">
                                     <h6>Adresele Mele Salvate</h6>
@@ -505,6 +505,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Instrucțiuni speciale pentru livrare, etc."></textarea>
                                 </div>
                                 
+                                <input type="hidden" name="action" value="place_order">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-check-circle me-2"></i>Plasează Comanda
                                 </button>
@@ -653,6 +654,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Check initial state
                 transferDetails.style.display = paymentTransfer.checked ? 'block' : 'none';
+            }
+            
+            // Handle form submission
+            const checkoutForm = document.getElementById('checkoutForm');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    
+                    fetch('api/order.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Redirect to success page
+                            window.location.href = 'order-success.php?order=' + data.order_number;
+                        } else {
+                            // Show error message
+                            alert('Eroare: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('A apărut o eroare la plasarea comenzii.');
+                    });
+                });
             }
         });
     </script>
