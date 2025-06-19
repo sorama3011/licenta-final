@@ -639,6 +639,10 @@ function proceedToCheckout() {
         }, 2000);
         return;
     }
+    
+    // Redirect to checkout page
+    window.location.href = 'checkout.php';rn;
+    }
 
     // Redirect to checkout page
     window.location.href = 'checkout.php';

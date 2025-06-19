@@ -61,9 +61,9 @@ switch ($action) {
             exit;
         }
 
-        // Validate payment method
-        if (!in_array($metoda_plata, ['card', 'transfer', 'ramburs'])) {
-            echo json_encode(['success' => false, 'message' => 'Metoda de plată selectată nu este validă']);
+        // Validate payment method (card payments temporarily unavailable)
+        if (!in_array($metoda_plata, ['transfer', 'ramburs'])) {
+            echo json_encode(['success' => false, 'message' => 'Metoda de plată selectată nu este validă. Acceptăm doar plata ramburs și transferul bancar.']);
             exit;
         }
 

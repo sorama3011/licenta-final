@@ -121,16 +121,15 @@ $show_address_form = empty($addresses);
                             <h5><i class="bi bi-credit-card me-2"></i>Metoda de Plată</h5>
                         </div>
                         <div class="card-body">
+                            <div class="alert alert-info mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Informație:</strong> Plățile cu cardul sunt temporar indisponibile. Acceptăm doar plata ramburs și transferul bancar.
+                            </div>
+                            
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="radio" name="metoda_plata" id="ramburs" value="ramburs" checked>
                                 <label class="form-check-label" for="ramburs">
-                                    <i class="bi bi-cash me-2"></i>Ramburs (plata la livrare)
-                                </label>
-                            </div>
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="radio" name="metoda_plata" id="card" value="card">
-                                <label class="form-check-label" for="card">
-                                    <i class="bi bi-credit-card me-2"></i>Card bancar
+                                    <i class="bi bi-cash me-2"></i>Plată ramburs (la livrare)
                                 </label>
                             </div>
                             <div class="form-check mb-3">
@@ -138,6 +137,17 @@ $show_address_form = empty($addresses);
                                 <label class="form-check-label" for="transfer">
                                     <i class="bi bi-bank me-2"></i>Transfer bancar
                                 </label>
+                            </div>
+                            
+                            <!-- Bank Transfer Details (hidden by default) -->
+                            <div id="bank-details" class="mt-3" style="display: none;">
+                                <div class="alert alert-warning">
+                                    <h6><i class="bi bi-bank me-2"></i>Detalii pentru transfer bancar:</h6>
+                                    <p class="mb-1"><strong>Beneficiar:</strong> SC Gusturi Românești SRL</p>
+                                    <p class="mb-1"><strong>IBAN:</strong> RO49AAAA1B31007593840000</p>
+                                    <p class="mb-1"><strong>Banca:</strong> Banca Tradițională Română</p>
+                                    <p class="mb-0"><strong>Mențiune obligatorie:</strong> Comandă + numele dumneavoastră</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -192,7 +202,7 @@ $show_address_form = empty($addresses);
                             </div>
 
                             <button type="submit" form="checkout-form" class="btn btn-danger w-100 mt-3" id="place-order-btn">
-                                <i class="bi bi-check-circle me-2"></i>Plasează Comanda
+                                <i class="bi bi-check-circle me-2"></i>Trimite Comanda
                             </button>
                         </div>
                     </div>
@@ -255,6 +265,18 @@ $show_address_form = empty($addresses);
             document.getElementById('order-totals').style.display = 'block';
         }
 
+        // Handle payment method selection
+        document.querySelectorAll('input[name="metoda_plata"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const bankDetails = document.getElementById('bank-details');
+                if (this.value === 'transfer') {
+                    bankDetails.style.display = 'block';
+                } else {
+                    bankDetails.style.display = 'none';
+                }
+            });
+        });
+
         // Handle form submission
         document.getElementById('checkout-form').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -274,6 +296,8 @@ $show_address_form = empty($addresses);
                 const result = await response.json();
 
                 if (result.success) {
+                    // Show success notification before redirect
+                    alert('Comanda a fost plasată cu succes! Numărul comenzii: ' + result.order_number);
                     window.location.href = 'order-success.php?order=' + result.order_number;
                 } else {
                     alert('Eroare: ' + result.message);
