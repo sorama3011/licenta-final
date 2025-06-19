@@ -57,6 +57,27 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // Load products from database API
 async function loadProducts() {
+    // Try fallback first since API might not be working
+    try {
+        console.log('Loading products from products.json...');
+        const response = await fetch('products.json');
+        if (response.ok) {
+            const jsonData = await response.json();
+            if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
+                allProducts = jsonData;
+                filteredProducts = [...allProducts];
+                console.log('Products loaded successfully from JSON:', allProducts.length);
+                
+                // Try to also load from API in background
+                loadFromAPIInBackground();
+                return;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading from products.json:', error);
+    }
+
+    // If JSON failed, try API
     try {
         console.log('Attempting to load products from API...');
         const response = await fetch('api/catalog.php?type=products&limit=100');
@@ -80,30 +101,28 @@ async function loadProducts() {
     } catch (error) {
         console.error('Error fetching products from API:', error);
         
-        // Fallback to JSON file if API fails
-        console.log('Attempting to load from products.json as fallback...');
-        try {
-            const response = await fetch('products.json');
-            if (!response.ok) {
-                throw new Error(`Failed to load products.json: ${response.status}`);
-            }
-            
-            const jsonData = await response.json();
-            if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
-                allProducts = jsonData;
+        // Create empty products array and show error
+        allProducts = [];
+        filteredProducts = [];
+        throw new Error('Nu s-au putut încărca produsele din nicio sursă disponibilă');
+    }
+}
+
+// Try to load from API in background
+async function loadFromAPIInBackground() {
+    try {
+        const response = await fetch('api/catalog.php?type=products&limit=100');
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.products && result.products.length > 0) {
+                console.log('Background API load successful, updating products');
+                allProducts = result.products;
                 filteredProducts = [...allProducts];
-                console.log('Fallback products loaded successfully:', allProducts.length);
-                showNotification('Încărcat din datele locale - unele funcții pot fi limitate', 'warning');
-            } else {
-                throw new Error('Products.json is empty or invalid');
+                applyFiltersAndSort(); // Refresh the display
             }
-        } catch (fallbackError) {
-            console.error('Fallback also failed:', fallbackError);
-            // Create empty products array to prevent further errors
-            allProducts = [];
-            filteredProducts = [];
-            throw new Error('Nu s-au putut încărca produsele din nicio sursă disponibilă');
         }
+    } catch (error) {
+        console.log('Background API load failed, continuing with JSON data');
     }
 }
 
