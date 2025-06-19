@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coșul de Cumpărături - Gusturi Românești</title>
+    <meta name="description" content="Revizuiește și finalizează comanda ta de produse tradiționale românești.">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assistant-bot.css">
+    
+    <!-- Confetti JS for celebration effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🇷🇴 Gusturi Românești
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Acasă</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Produse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="offers.html">Oferte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Despre Noi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <i class="bi bi-person"></i> Cont
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative active" href="cart.html">
+                            <i class="bi bi-basket"></i> Coș
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="bg-primary text-white py-4" style="margin-top: 76px;">
+        <div class="container">
+            <h1 class="h3 mb-0">Coșul de Cumpărături</h1>
+        </div>
+    </section>
+
+    <!-- Free Shipping Progress Bar -->
+    <section class="py-3 bg-light border-bottom">
+        <div class="container">
+            <div id="shipping-progress-container">
+                <!-- Progress bar will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Produsele Tale</h5>
+                        </div>
+                        <div class="card-body" id="cart-items">
+                            <!-- Cart items will be loaded here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card shadow-sm" id="cart-summary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Sumar Comandă</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Voucher Section -->
+                            <div class="mb-3">
+                                <label for="voucherCode" class="form-label">
+                                    <i class="bi bi-ticket-perforated me-1"></i>Cod voucher
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="voucherCode" placeholder="ex: FID-ABC123">
+                                    <button class="btn btn-outline-primary" type="button" onclick="applyVoucher()">
+                                        Aplică
+                                    </button>
+                                </div>
+                                <div id="voucherMessage" class="mt-2" style="display: none;"></div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">0.00 RON</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2" id="discount-row" style="display: none;">
+                                <span>Reducere voucher:</span>
+                                <span id="discount" class="text-success">-0.00 RON</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Transport:</span>
+                                <span id="shipping">15.00 RON</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total:</span>
+                                <span id="total">0.00 RON</span>
+                            </div>
+                            <div class="alert alert-info mt-3" role="alert">
+                                <small><i class="bi bi-info-circle"></i> Transport gratuit pentru comenzi peste 150 RON</small>
+                            </div>
+                            <button class="btn btn-primary btn-lg w-100 mt-3" type="button" onclick="window.location.href='checkout.php'">
+                                <i class="bi bi-credit-card"></i> Finalizează Comanda
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Products -->
+                    <div class="card shadow-sm mt-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Produse Recomandate</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <img src="https://via.placeholder.com/100x80/8B0000/FFFFFF?text=Miere" class="img-fluid rounded mb-2" alt="Miere de Tei">
+                                        <h6 class="small">Miere de Tei</h6>
+                                        <p class="text-primary small fw-bold">25.50 RON</p>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="addToCart(16, 'Miere de Tei', 25.50, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Miere+Tei', '500g')">
+                                            Adaugă
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <img src="https://via.placeholder.com/100x80/8B0000/FFFFFF?text=Compot" class="img-fluid rounded mb-2" alt="Compot de Vișine">
+                                        <h6 class="small">Compot de Vișine</h6>
+                                        <p class="text-primary small fw-bold">16.99 RON</p>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="addToCart(17, 'Compot de Vișine', 16.99, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Compot+Visine', '720ml')">
+                                            Adaugă
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5>Gusturi Românești</h5>
+                    <p>Cea mai mare platformă online de produse tradiționale românești.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Navigare</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Acasă</a></li>
+                        <li><a href="products.html" class="text-light text-decoration-none">Produse</a></li>
+                        <li><a href="offers.html" class="text-light text-decoration-none">Oferte</a></li>
+                        <li><a href="about.html" class="text-light text-decoration-none">Despre Noi</a></li>
+                        <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Cont</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light text-decoration-none">Autentificare</a></li>
+                        <li><a href="cart.html" class="text-light text-decoration-none">Coșul Meu</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Informații</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="privacy.html" class="text-light text-decoration-none">Politica de Confidențialitate</a></li>
+                        <li><a href="terms.html" class="text-light text-decoration-none">Termeni și Condiții</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Contact</h6>
+                    <p class="small mb-1">📍 București, România</p>
+                    <p class="small mb-1">📞 +40 721 234 567</p>
+                    <p class="small">✉️ contact@gusturi-romanesti.ro</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Gusturi Românești. Toate drepturile rezervate.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+    <script src="assistant-bot.js"></script>
+    
+    <script>
+        // Cart page specific variables
+        let appliedVoucher = null;
+        const FREE_SHIPPING_THRESHOLD = 150; // RON
+
+        // Load cart items when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartItems();
+            updateShippingProgress();
+            
+            // Reset celebration flag when visiting cart page
+            if (localStorage.getItem('cartSubtotal') >= FREE_SHIPPING_THRESHOLD) {
+                localStorage.setItem('freeShippingCelebrated', 'true');
+            } else {
+                localStorage.setItem('freeShippingCelebrated', 'false');
+            }
+        });
+
+        // Voucher functions
+        function getVouchers() {
+            const userData = getUserData();
+            const userEmail = userData.email || 'default';
+            const vouchersKey = `vouchers_${userEmail}`;
+            return JSON.parse(localStorage.getItem(vouchersKey) || '[]');
+        }
+
+        function markVoucherAsUsed(voucherCode) {
+            const userData = getUserData();
+            const userEmail = userData.email || 'default';
+            const vouchersKey = `vouchers_${userEmail}`;
+            const vouchers = JSON.parse(localStorage.getItem(vouchersKey) || '[]');
+            
+            const voucher = vouchers.find(v => v.code === voucherCode);
+            if (voucher) {
+                voucher.used = true;
+                localStorage.setItem(vouchersKey, JSON.stringify(vouchers));
+            }
+        }
+
+        async function applyVoucher() {
+            const voucherCode = document.getElementById('voucherCode').value.trim().toUpperCase();
+            const messageDiv = document.getElementById('voucherMessage');
+            
+            if (!voucherCode) {
+                showVoucherMessage('Te rugăm să introduci un cod voucher.', 'danger');
+                return;
+            }
+
+            // Check if user is logged in
+            if (!(await isUserLoggedIn())) {
+                showVoucherMessage('Trebuie să fii autentificat pentru a folosi vouchere.', 'warning');
+                return;
+            }
+
+            const vouchers = getVouchers();
+            const voucher = vouchers.find(v => v.code === voucherCode);
+
+            if (!voucher) {
+                showVoucherMessage('Codul voucher nu este valid.', 'danger');
+                return;
+            }
+
+            if (voucher.used) {
+                showVoucherMessage('Acest voucher a fost deja folosit.', 'danger');
+                return;
+            }
+
+            const now = new Date();
+            const expirationDate = new Date(voucher.expirationDate);
+            
+            if (now > expirationDate) {
+                showVoucherMessage('Acest voucher a expirat.', 'danger');
+                return;
+            }
+
+            // Apply voucher
+            appliedVoucher = voucher;
+            showVoucherMessage(`Voucher aplicat cu succes! Reducere de ${voucher.discount}%`, 'success');
+            
+            // Store voucher in session for PHP processing
+            sessionStorage.setItem('appliedVoucher', JSON.stringify(voucher));
+            
+            // Disable input and button
+            document.getElementById('voucherCode').disabled = true;
+            document.querySelector('button[onclick="applyVoucher()"]').disabled = true;
+            document.querySelector('button[onclick="applyVoucher()"]').innerHTML = 'Aplicat';
+            
+            // Update cart total
+            updateCartTotal();
+        }
+
+        function removeVoucher() {
+            appliedVoucher = null;
+            sessionStorage.removeItem('appliedVoucher');
+            document.getElementById('voucherCode').disabled = false;
+            document.getElementById('voucherCode').value = '';
+            document.querySelector('button[onclick="applyVoucher()"]').disabled = false;
+            document.querySelector('button[onclick="applyVoucher()"]').innerHTML = 'Aplică';
+            
+            const messageDiv = document.getElementById('voucherMessage');
+            messageDiv.style.display = 'none';
+            
+            updateCartTotal();
+        }
+
+        function showVoucherMessage(message, type) {
+            const messageDiv = document.getElementById('voucherMessage');
+            messageDiv.className = `alert alert-${type} small mb-0`;
+            messageDiv.innerHTML = message;
+            messageDiv.style.display = 'block';
+        }
+
+        // Update cart total calculation to include voucher discount
+        function updateCartTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let discount = 0;
+            
+            // Apply voucher discount if available
+            if (appliedVoucher) {
+                discount = subtotal * (appliedVoucher.discount / 100);
+            }
+            
+            const discountedSubtotal = subtotal - discount;
+            const shipping = discountedSubtotal > FREE_SHIPPING_THRESHOLD ? 0 : 15; // Free shipping over threshold after discount
+            const total = discountedSubtotal + shipping;
+            
+            document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} RON`;
+            document.getElementById('shipping').textContent = shipping === 0 ? 'Gratuit' : `${shipping.toFixed(2)} RON`;
+            document.getElementById('total').textContent = `${total.toFixed(2)} RON`;
+            
+            // Show/hide discount row
+            const discountRow = document.getElementById('discount-row');
+            const discountElement = document.getElementById('discount');
+            
+            if (appliedVoucher && discount > 0) {
+                discountRow.style.display = 'flex';
+                discountElement.textContent = `-${discount.toFixed(2)} RON`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            // Update shipping progress bar
+            updateShippingProgress();
+        }
+
+        // Override the main.js updateCartTotal function for this page
+        window.updateCartTotal = updateCartTotal;
+
+        // Free Shipping Progress Bar Functions
+        function updateShippingProgress() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const container = document.getElementById('shipping-progress-container');
+            
+            // Store subtotal in localStorage for progress tracking
+            localStorage.setItem('cartSubtotal', subtotal.toString());
+            
+            if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+                // Free shipping achieved
+                container.innerHTML = `
+                    <div class="alert alert-success mb-0 d-flex align-items-center">
+                        <i class="bi bi-truck me-2 fs-5"></i>
+                        <div class="flex-grow-1">
+                            <strong>Felicitări! Ai livrare gratuită! 🚚</strong>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Check if we should celebrate (only if we just crossed the threshold)
+                if (localStorage.getItem('freeShippingCelebrated') !== 'true') {
+                    celebrateFreeShipping();
+                    localStorage.setItem('freeShippingCelebrated', 'true');
+                }
+            } else {
+                // Calculate remaining amount
+                const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+                const progressPercentage = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+                
+                container.innerHTML = `
+                    <div class="alert alert-info mb-0 d-flex align-items-center">
+                        <i class="bi bi-truck me-2 fs-5"></i>
+                        <div class="flex-grow-1">
+                            <strong>Adaugă produse de încă ${remaining.toFixed(2)} RON pentru livrare gratuită!</strong>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" 
+                                     style="width: ${progressPercentage}%"
+                                     aria-valuenow="${progressPercentage}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                ${subtotal.toFixed(2)} RON / ${FREE_SHIPPING_THRESHOLD} RON
+                            </small>
+                        </div>
+                    </div>
+                `;
+                
+                // Reset celebration flag if we're below threshold
+                localStorage.setItem('freeShippingCelebrated', 'false');
+            }
+        }
+
+        // Celebrate free shipping with confetti
+        function celebrateFreeShipping() {
+            // Check if confetti library is available
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                
+                // Show notification
+                showNotification('Felicitări! Ai obținut transport GRATUIT! 🚚', 'success');
+            }
+        }
+
+        // Proceed to checkout function
+        async function proceedToCheckout() {
+            const loggedIn = await requireLogin('checkout.php');
+            if (loggedIn) {
+                window.location.href = 'checkout.php';
+            }
+        }
+    </script>
+</body>
+</html>

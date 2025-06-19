@@ -1,0 +1,465 @@
+[
+  {
+    "id": 1,
+    "name": "Dulceață de Căpșuni de Argeș",
+    "price": 18.99,
+    "weight": "350g",
+    "region": "Muntenia",
+    "category": "dulceturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Dulceata+Capsuni+Arges",
+    "description": "Dulceață tradițională din căpșuni proaspete cultivate în dealurile pitorești ale Argeșului. Preparată după rețete străvechi, fără conservanți artificiali, păstrând gustul autentic al căpșunilor de vară.",
+    "longDescription": "Această dulceață este perfectă pentru micul dejun, servită pe pâine proaspătă sau ca ingredient în deserturi tradiționale românești. Căpșunile sunt culese la maturitate optimă și procesate în aceeași zi pentru a păstra toate vitaminele și aroma naturală.",
+    "details": {
+      "origin": "Argeș, Muntenia",
+      "packaging": "Borcan sticlă",
+      "expiration": "15.10.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "245 kcal / 1025 kJ"},
+      {"name": "Grăsimi", "value": "0.2g"},
+      {"name": "din care acizi grași saturați", "value": "0.1g", "indented": true},
+      {"name": "Glucide", "value": "60g"},
+      {"name": "din care zaharuri", "value": "58g", "indented": true},
+      {"name": "Fibre", "value": "1.2g"},
+      {"name": "Proteine", "value": "0.4g"},
+      {"name": "Sare", "value": "0.02g"},
+      {"name": "Vitamina C", "value": "25mg"}
+    ],
+    "ingredients": "Căpșuni (65%), zahăr, acid citric, pectină naturală",
+    "recommended": true,
+    "tags": ["artizanal", "fara-aditivi"],
+    "relatedProducts": [9, 14, 5, 21]
+  },
+  {
+    "id": 2,
+    "name": "Zacuscă de Buzău",
+    "price": 15.50,
+    "weight": "450g",
+    "region": "Muntenia",
+    "category": "conserve",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Zacusca+Buzau",
+    "description": "Zacuscă tradițională preparată din vinete și ardei copți pe foc de lemne, după rețeta autentică din zona Buzăului. Un produs 100% natural, fără conservanți artificiali, care păstrează gustul autentic al legumelor de vară.",
+    "longDescription": "Vinetele și ardeii sunt copți manual pe foc de lemne pentru a obține aroma specifică, apoi sunt procesați cu grijă pentru a păstra textura și gustul tradițional. Perfectă ca aperitiv sau ca garnitură pentru preparate tradiționale românești.",
+    "details": {
+      "origin": "Buzău, Muntenia",
+      "packaging": "Borcan sticlă",
+      "expiration": "22.08.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "85 kcal / 356 kJ"},
+      {"name": "Grăsimi", "value": "4.2g"},
+      {"name": "din care acizi grași saturați", "value": "0.6g", "indented": true},
+      {"name": "Glucide", "value": "8.5g"},
+      {"name": "din care zaharuri", "value": "6.2g", "indented": true},
+      {"name": "Fibre", "value": "3.8g"},
+      {"name": "Proteine", "value": "1.8g"},
+      {"name": "Sare", "value": "1.2g"},
+      {"name": "Vitamina C", "value": "15mg"}
+    ],
+    "ingredients": "Vinete (45%), ardei roșii (25%), ceapă, ulei de floarea-soarelui, pastă de tomate, sare, piper negru",
+    "recommended": true,
+    "tags": ["produs-de-post", "artizanal", "fara-aditivi"],
+    "relatedProducts": [12, 27, 17, 22]
+  },
+  {
+    "id": 3,
+    "name": "Brânză de Burduf",
+    "price": 32.00,
+    "weight": "500g",
+    "region": "Maramureș",
+    "category": "branza",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Branza+Burduf+Maramures",
+    "description": "Brânză tradițională de oaie maturată în burduf de brad, preparată după rețete străvechi din Maramureș. Un produs autentic cu gust intens și aromat, specific zonei montane.",
+    "longDescription": "Această brânză este preparată din lapte proaspăt de oaie, fermentată natural și maturată în burduf de brad pentru a obține gustul și aroma caracteristică. Procesul de maturare durează minimum 3 luni, timp în care brânza își dezvoltă textura cremoasă și gustul puternic, specific acestui produs tradițional maramureșean.",
+    "details": {
+      "origin": "Maramureș",
+      "packaging": "Burduf tradițional",
+      "expiration": "05.12.2024"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "298 kcal / 1247 kJ"},
+      {"name": "Grăsimi", "value": "24.5g"},
+      {"name": "din care acizi grași saturați", "value": "16.8g", "indented": true},
+      {"name": "Glucide", "value": "1.2g"},
+      {"name": "din care zaharuri", "value": "1.2g", "indented": true},
+      {"name": "Fibre", "value": "0g"},
+      {"name": "Proteine", "value": "18.5g"},
+      {"name": "Sare", "value": "2.8g"},
+      {"name": "Calciu", "value": "485mg"}
+    ],
+    "ingredients": "Lapte de oaie pasteurizat, sare, culturi de fermentare lactică, cheag",
+    "recommended": true,
+    "tags": ["artizanal", "ambalat-manual"],
+    "relatedProducts": [7, 13, 19, 24]
+  },
+  {
+    "id": 4,
+    "name": "Țuică de Prune Hunedoara",
+    "price": 45.00,
+    "weight": "500ml",
+    "region": "Transilvania",
+    "category": "bauturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Tuica+Prune+Hunedoara",
+    "description": "Țuică tradițională de prune din Hunedoara, distilată după rețete străvechi transmise din generație în generație. Cu o concentrație de 52% alcool, această țuică oferă un gust autentic și o aromă intensă specifică prunelor de Transilvania.",
+    "longDescription": "Produsă în cantități limitate folosind doar prune selectate din livezile din zona Hunedoara, această țuică este distilată de două ori pentru a obține puritatea și gustul perfect. Procesul de fermentare naturală durează minimum 6 luni, iar distilarea se face în alambicuri tradiționale de cupru.",
+    "details": {
+      "origin": "Hunedoara, Transilvania",
+      "packaging": "Sticlă tradițională",
+      "alcoholContent": "52%"
+    },
+    "productInfo": [
+      {"name": "Tip băutură", "value": "Țuică de prune"},
+      {"name": "Concentrație alcool", "value": "52% vol"},
+      {"name": "Materie primă", "value": "Prune de Transilvania"},
+      {"name": "Metoda de distilare", "value": "Dublă distilare în alambic de cupru"},
+      {"name": "Perioada de fermentare", "value": "Minimum 6 luni"},
+      {"name": "Temperatura de servire", "value": "18-20°C"},
+      {"name": "Perioada de valabilitate", "value": "Nelimitată (se îmbunătățește cu timpul)"}
+    ],
+    "ingredients": "Prune fermentate natural, apă de izvor",
+    "ageRestriction": true,
+    "recommended": false,
+    "tags": ["artizanal", "fara-aditivi"],
+    "relatedProducts": [8, 15, 20, 30]
+  },
+  {
+    "id": 5,
+    "name": "Miere de Salcâm Transilvania",
+    "price": 28.50,
+    "weight": "500g",
+    "region": "Transilvania",
+    "category": "dulceturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Miere+Salcam+Transilvania",
+    "description": "Miere pură de salcâm din Munții Apuseni, Transilvania. Această miere cristalizată natural are un gust delicat și o aromă florală specifică, fiind considerată una dintre cele mai fine soiuri de miere din România.",
+    "longDescription": "Recoltată din stupinele amplasate în pădurile de salcâm din Transilvania, această miere păstrează toate proprietățile nutritive și terapeutice naturale. Procesul de cristalizare naturală conferă mierii o textură cremoasă și un gust rafinat, perfect pentru consumul zilnic sau pentru prepararea de deserturi tradiționale.",
+    "details": {
+      "origin": "Transilvania",
+      "packaging": "Borcan sticlă",
+      "expiration": "24 luni"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "304 kcal / 1272 kJ"},
+      {"name": "Grăsimi", "value": "0g"},
+      {"name": "Glucide", "value": "82.4g"},
+      {"name": "din care zaharuri", "value": "82.1g", "indented": true},
+      {"name": "Proteine", "value": "0.3g"},
+      {"name": "Sare", "value": "0.004g"},
+      {"name": "Vitamina C", "value": "0.5mg"},
+      {"name": "Potasiu", "value": "52mg"},
+      {"name": "Magneziu", "value": "2mg"}
+    ],
+    "ingredients": "Miere pură de salcâm 100%",
+    "recommended": true,
+    "tags": ["fara-aditivi", "artizanal"],
+    "relatedProducts": [11, 16, 26, 1]
+  },
+  {
+    "id": 6,
+    "name": "Cârnați de Pleșcoi",
+    "price": 24.99,
+    "weight": "400g",
+    "region": "Muntenia",
+    "category": "mezeluri",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Carnati+Plescoi",
+    "description": "Cârnați afumați tradițional din Pleșcoi, Muntenia, preparați după rețete străvechi transmise din generație în generație. Acești cârnați sunt afumați cu lemn de fag și au un gust intens și aromat specific zonei.",
+    "longDescription": "Preparați din carne de porc selectată și condimentați cu un amestec secret de mirodenii, acești cârnați sunt afumați natural timp de 48 de ore. Procesul tradițional de preparare conferă produsului o textură perfectă și un gust autentic care îți va aminti de gusturile copilăriei.",
+    "details": {
+      "origin": "Pleșcoi, Muntenia",
+      "packaging": "Vacuum",
+      "expiration": "28.02.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "412 kcal / 1724 kJ"},
+      {"name": "Grăsimi", "value": "35.2g"},
+      {"name": "din care acizi grași saturați", "value": "13.8g", "indented": true},
+      {"name": "Glucide", "value": "1.2g"},
+      {"name": "din care zaharuri", "value": "0.8g", "indented": true},
+      {"name": "Fibre", "value": "0g"},
+      {"name": "Proteine", "value": "22.5g"},
+      {"name": "Sare", "value": "2.8g"}
+    ],
+    "ingredients": "Carne de porc (85%), grăsime de porc, sare, condimente (piper negru, cimbru, usturoi), conservant: nitrit de sodiu",
+    "recommended": false,
+    "tags": ["artizanal", "ambalat-manual"],
+    "relatedProducts": [10, 18, 23, 28]
+  },
+  {
+    "id": 7,
+    "name": "Telemea de Ibănești",
+    "price": 19.50,
+    "weight": "300g",
+    "region": "Muntenia",
+    "category": "branza",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Telemea+Ibanesti",
+    "description": "Telemea tradițională din lapte de oaie de la Ibănești, Muntenia. Această brânză sărată are un gust intens și o textură cremoasă, fiind preparată după rețete străvechi transmise din generație în generație.",
+    "longDescription": "Produsă din lapte proaspăt de oaie, această telemea este maturată în saramură naturală timp de minimum 30 de zile. Procesul tradițional de preparare conferă brânzei gustul caracteristic și textura perfectă pentru consumul direct sau pentru prepararea de specialități culinare românești.",
+    "details": {
+      "origin": "Ibănești, Muntenia",
+      "packaging": "Vacuum cu saramură",
+      "expiration": "15.03.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "264 kcal / 1105 kJ"},
+      {"name": "Grăsimi", "value": "21.3g"},
+      {"name": "din care acizi grași saturați", "value": "14.2g", "indented": true},
+      {"name": "Glucide", "value": "1.5g"},
+      {"name": "din care zaharuri", "value": "1.5g", "indented": true},
+      {"name": "Proteine", "value": "17.1g"},
+      {"name": "Sare", "value": "3.2g"},
+      {"name": "Calciu", "value": "493mg"}
+    ],
+    "ingredients": "Lapte de oaie pasteurizat, sare, culturi de fermentare lactică, cheag",
+    "recommended": false,
+    "tags": ["artizanal", "fara-aditivi"],
+    "relatedProducts": [3, 13, 19, 24]
+  },
+  {
+    "id": 8,
+    "name": "Pălincă de Pere Maramureș",
+    "price": 55.00,
+    "weight": "500ml",
+    "region": "Maramureș",
+    "category": "bauturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Palinca+Pere",
+    "description": "Pălincă dublă distilare din pere Williams din Maramureș. Această băutură tradițională cu 65% alcool este produsă în cantități limitate folosind doar pere selectate din livezile maramureșene, distilată după rețete străvechi.",
+    "longDescription": "Procesul de dublă distilare în alambicuri tradiționale de cupru conferă acestei pălinci puritatea și gustul excepțional. Perele Williams sunt fermentate natural timp de 8 luni, iar distilarea se face în două etape pentru a obține concentrația perfectă și aroma intensă specifică acestui produs premium.",
+    "details": {
+      "origin": "Maramureș",
+      "packaging": "Sticlă artizanală",
+      "alcoholContent": "65%"
+    },
+    "productInfo": [
+      {"name": "Tip băutură", "value": "Pălincă de pere Williams"},
+      {"name": "Concentrație alcool", "value": "65% vol"},
+      {"name": "Materie primă", "value": "Pere Williams din Maramureș"},
+      {"name": "Metoda de distilare", "value": "Dublă distilare în alambic de cupru"},
+      {"name": "Perioada de fermentare", "value": "8 luni"},
+      {"name": "Temperatura de servire", "value": "16-18°C"},
+      {"name": "Perioada de valabilitate", "value": "Nelimitată (se îmbunătățește cu timpul)"}
+    ],
+    "ingredients": "Pere Williams fermentate natural, apă de izvor",
+    "ageRestriction": true,
+    "recommended": true,
+    "tags": ["artizanal", "fara-aditivi"],
+    "relatedProducts": [4, 15, 20, 30]
+  },
+  {
+    "id": 9,
+    "name": "Gem de Caise Banat",
+    "price": 21.50,
+    "weight": "350g",
+    "region": "Banat",
+    "category": "dulceturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Gem+Caise",
+    "description": "Gem tradițional din caise de Banat, preparat după rețete străvechi transmise din generație în generație. Acest gem păstrează bucățile de caise și are un gust intens și aromat specific fructelor coapte la soare din Banat.",
+    "longDescription": "Caisele sunt culese la maturitate optimă din livezile bănățene și procesate în aceeași zi pentru a păstra toate vitaminele și aroma naturală. Gemul este fiert în cantități mici, cu adaos minim de zahăr, pentru a evidenția gustul autentic al caiselor.",
+    "details": {
+      "origin": "Banat",
+      "packaging": "Borcan sticlă",
+      "expiration": "20.09.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "278 kcal / 1163 kJ"},
+      {"name": "Grăsimi", "value": "0.1g"},
+      {"name": "din care acizi grași saturați", "value": "0.02g", "indented": true},
+      {"name": "Glucide", "value": "68.5g"},
+      {"name": "din care zaharuri", "value": "66.2g", "indented": true},
+      {"name": "Fibre", "value": "1.8g"},
+      {"name": "Proteine", "value": "0.6g"},
+      {"name": "Sare", "value": "0.01g"},
+      {"name": "Vitamina A", "value": "96μg"},
+      {"name": "Vitamina C", "value": "4mg"}
+    ],
+    "ingredients": "Caise (60%), zahăr, acid citric, pectină naturală",
+    "recommended": false,
+    "tags": ["artizanal", "fara-aditivi"],
+    "relatedProducts": [1, 14, 21, 5]
+  },
+  {
+    "id": 10,
+    "name": "Slănină Afumată Oltenia",
+    "price": 35.00,
+    "weight": "600g",
+    "region": "Oltenia",
+    "category": "mezeluri",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Slanina+Afumata",
+    "description": "Slănină afumată tradițional cu lemn de fag din Oltenia. Această slănină este preparată după rețete străvechi, fiind afumată natural timp de 72 de ore pentru a obține gustul și aroma specifică produselor tradiționale oltenești.",
+    "longDescription": "Procesul de afumare se face exclusiv cu lemn de fag, fără aditivi chimici, conferind slăninii o aromă intensă și un gust autentic. Carnea este selectată cu grijă și sărată cu sare grunjoasă naturală, apoi afumată la temperaturi controlate pentru a păstra toate proprietățile nutritive.",
+    "details": {
+      "origin": "Oltenia",
+      "packaging": "Vacuum",
+      "expiration": "10.04.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "518 kcal / 2168 kJ"},
+      {"name": "Grăsimi", "value": "53.2g"},
+      {"name": "din care acizi grași saturați", "value": "19.8g", "indented": true},
+      {"name": "Glucide", "value": "0g"},
+      {"name": "din care zaharuri", "value": "0g", "indented": true},
+      {"name": "Proteine", "value": "11.2g"},
+      {"name": "Sare", "value": "1.8g"}
+    ],
+    "ingredients": "Slănină de porc, sare grunjoasă, condimente naturale",
+    "recommended": false,
+    "tags": ["artizanal", "ambalat-manual"],
+    "relatedProducts": [6, 18, 23, 28]
+  },
+  {
+    "id": 11,
+    "name": "Miere de Tei Bucovina",
+    "price": 32.00,
+    "weight": "500g",
+    "region": "Bucovina",
+    "category": "dulceturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Miere+Tei",
+    "description": "Miere cristalizată de tei din pădurile Bucovinei. Această miere are proprietăți terapeutice excepționale și un gust delicat, fiind recoltată din stupinele amplasate în pădurile seculare de tei din nordul României.",
+    "longDescription": "Mierea de tei este cunoscută pentru efectele sale calmante și proprietățile antibacteriene. Cristalizarea naturală conferă mierii o textură cremoasă și un gust rafinat, cu note florale specifice florilor de tei. Este ideală pentru tratarea răcelilor și pentru relaxare.",
+    "details": {
+      "origin": "Bucovina",
+      "packaging": "Borcan sticlă",
+      "expiration": "24 luni"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "304 kcal / 1272 kJ"},
+      {"name": "Grăsimi", "value": "0g"},
+      {"name": "Glucide", "value": "82.4g"},
+      {"name": "din care zaharuri", "value": "82.1g", "indented": true},
+      {"name": "Proteine", "value": "0.3g"},
+      {"name": "Sare", "value": "0.004g"},
+      {"name": "Vitamina C", "value": "0.5mg"},
+      {"name": "Potasiu", "value": "52mg"},
+      {"name": "Magneziu", "value": "2mg"}
+    ],
+    "ingredients": "Miere pură de tei 100%",
+    "recommended": true,
+    "tags": ["fara-aditivi", "artizanal"],
+    "relatedProducts": [5, 16, 26, 1]
+  },
+  {
+    "id": 12,
+    "name": "Murături Asortate Crișana",
+    "price": 16.99,
+    "weight": "720ml",
+    "region": "Crișana",
+    "category": "conserve",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Muraturi+Asortate",
+    "description": "Murături tradiționale în oțet de vin din Crișana. Acest amestec de legume murate conține castraveți, gogonele, conopidă și morcovi, toate preparate după rețete străvechi transmise din generație în generație.",
+    "longDescription": "Legumele sunt selectate cu grijă și murate în oțet de vin natural, cu adaos de condimente tradiționale. Procesul de murare durează minimum 30 de zile, timp în care legumele își dezvoltă gustul caracteristic și textura crocantă. Ideal ca aperitiv sau garnitură.",
+    "details": {
+      "origin": "Crișana",
+      "packaging": "Borcan sticlă",
+      "expiration": "18.06.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "19 kcal / 79 kJ"},
+      {"name": "Grăsimi", "value": "0.1g"},
+      {"name": "din care acizi grași saturați", "value": "0.02g", "indented": true},
+      {"name": "Glucide", "value": "3.9g"},
+      {"name": "din care zaharuri", "value": "2.6g", "indented": true},
+      {"name": "Fibre", "value": "1.2g"},
+      {"name": "Proteine", "value": "0.8g"},
+      {"name": "Sare", "value": "1.5g"},
+      {"name": "Vitamina C", "value": "8mg"}
+    ],
+    "ingredients": "Castraveți, gogonele, conopidă, morcovi, oțet de vin, sare, condimente naturale (dafin, coriandru, mărar)",
+    "specialBadge": {
+      "text": "Produs de post",
+      "description": "Ideal pentru perioadele de post"
+    },
+    "recommended": false,
+    "tags": ["produs-de-post", "fara-aditivi", "artizanal"],
+    "relatedProducts": [2, 17, 22, 27]
+  },
+  {
+    "id": 13,
+    "name": "Caș de Capră Maramureș",
+    "price": 26.50,
+    "weight": "400g",
+    "region": "Maramureș",
+    "category": "branza",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Cas+Capra",
+    "description": "Caș proaspăt din lapte de capră din Maramureș. Această brânză proaspătă are un gust delicat și o textură cremoasă, fiind preparată după metode tradiționale maramureșene din lapte proaspăt de capră.",
+    "longDescription": "Cașul este preparat zilnic din lapte de capră proaspăt, fără aditivi sau conservanți. Procesul tradițional de coagulare și scurgere conferă produsului gustul caracteristic și textura perfectă. Este ideal pentru consumul direct, în salate sau pentru prepararea de deserturi tradiționale.",
+    "details": {
+      "origin": "Maramureș",
+      "packaging": "Recipient plastic",
+      "expiration": "25.02.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "103 kcal / 431 kJ"},
+      {"name": "Grăsimi", "value": "4.1g"},
+      {"name": "din care acizi grași saturați", "value": "2.9g", "indented": true},
+      {"name": "Glucide", "value": "4.1g"},
+      {"name": "din care zaharuri", "value": "4.1g", "indented": true},
+      {"name": "Proteine", "value": "11.0g"},
+      {"name": "Sare", "value": "0.1g"},
+      {"name": "Calciu", "value": "134mg"},
+      {"name": "Fosfor", "value": "111mg"}
+    ],
+    "ingredients": "Lapte de capră pasteurizat, culturi de fermentare lactică, cheag",
+    "recommended": false,
+    "tags": ["artizanal", "fara-aditivi"],
+    "relatedProducts": [3, 7, 19, 24]
+  },
+  {
+    "id": 14,
+    "name": "Dulceață de Trandafiri Dobrogea",
+    "price": 42.50,
+    "weight": "250g",
+    "region": "Dobrogea",
+    "category": "dulceturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Dulceata+Trandafiri",
+    "description": "Dulceață delicată din petale de trandafiri din Dobrogea. Această dulceață premium este preparată din petale de trandafiri Damasc, culese manual în zori de zi și procesate în aceeași zi pentru a păstra aroma și proprietățile naturale.",
+    "longDescription": "Petalele de trandafiri sunt selectate cu grijă din grădinile tradiționale din Dobrogea și procesate după rețete străvechi. Dulceața are un gust rafinat și o aromă intensă, fiind considerată o delicatesă în bucătăria românească. Perfectă pentru deserturi fine sau ca ingredient în prăjituri tradiționale.",
+    "details": {
+      "origin": "Dobrogea",
+      "packaging": "Borcan sticlă premium",
+      "expiration": "30.08.2025"
+    },
+    "nutritionalInfo": [
+      {"name": "Valoare energetică", "value": "260 kcal / 1088 kJ"},
+      {"name": "Grăsimi", "value": "0.1g"},
+      {"name": "din care acizi grași saturați", "value": "0.02g", "indented": true},
+      {"name": "Glucide", "value": "64.2g"},
+      {"name": "din care zaharuri", "value": "62.8g", "indented": true},
+      {"name": "Fibre", "value": "0.8g"},
+      {"name": "Proteine", "value": "0.3g"},
+      {"name": "Sare", "value": "0.01g"},
+      {"name": "Vitamina C", "value": "12mg"}
+    ],
+    "ingredients": "Petale de trandafiri Damasc (30%), zahăr, acid citric, pectină naturală",
+    "recommended": true,
+    "tags": ["artizanal", "fara-aditivi", "ambalat-manual"],
+    "relatedProducts": [1, 9, 21, 5]
+  },
+  {
+    "id": 15,
+    "name": "Horincă Maramureș",
+    "price": 65.00,
+    "weight": "500ml",
+    "region": "Maramureș",
+    "category": "bauturi",
+    "image": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Horinca+Maramures",
+    "description": "Horincă tradițională din prune din Maramureș, cu 65% alcool. Această băutură spirituoasă premium este distilată după rețete străvechi maramureșene, fiind considerată una dintre cele mai fine băuturi tradiționale românești.",
+    "longDescription": "Horinca este produsă din prune selectate, fermentate natural timp de 10 luni, apoi distilată de trei ori în alambicuri tradiționale de cupru. Procesul complex de distilare conferă băuturii puritatea excepțională și gustul rafinat, specific acestui produs de lux din Maramureș.",
+    "details": {
+      "origin": "Maramureș",
+      "packaging": "Sticlă premium",
+      "alcoholContent": "65%"
+    },
+    "productInfo": [
+      {"name": "Tip băutură", "value": "Horincă de prune"},
+      {"name": "Concentrație alcool", "value": "65% vol"},
+      {"name": "Materie primă", "value": "Prune din Maramureș"},
+      {"name": "Metoda de distilare", "value": "Triplă distilare în alambic de cupru"},
+      {"name": "Perioada de fermentare", "value": "10 luni"},
+      {"name": "Temperatura de servire", "value": "16-18°C"},
+      {"name": "Perioada de valabilitate", "value": "Nelimitată (se îmbunătățește cu timpul)"}
+    ],
+    "ingredients": "Prune fermentate natural, apă de izvor din Maramureș",
+    "ageRestriction": true,
+    "recommended": false,
+    "tags": ["artizanal", "fara-aditivi"],
+    "relatedProducts": [4, 8, 20, 30]
+  }
+]

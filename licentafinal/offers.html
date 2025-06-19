@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oferte Speciale - Gusturi Românești</title>
+    <meta name="description" content="Descoperă ofertele speciale și reducerile la produsele tradiționale românești. Economisește la dulcețuri, mezeluri, brânzeturi și băuturi.">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assistant-bot.css">
+    <style>
+        /* Countdown Timer Styles */
+        .countdown-timer {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-timer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .countdown-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .countdown-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .time-unit {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 15px 10px;
+            min-width: 70px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .time-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+            line-height: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .countdown-expired {
+            background: linear-gradient(135deg, #636e72, #2d3436);
+            animation: none;
+        }
+
+        .countdown-expired::before {
+            display: none;
+        }
+
+        .expired-message {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        .countdown-urgent {
+            animation: pulse-urgent 1s infinite;
+        }
+
+        @keyframes pulse-urgent {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .countdown-display {
+                gap: 10px;
+            }
+            
+            .time-unit {
+                min-width: 60px;
+                padding: 10px 8px;
+            }
+            
+            .time-number {
+                font-size: 1.5rem;
+            }
+            
+            .countdown-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🇷🇴 Gusturi Românești
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Acasă</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Produse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="offers.html">Oferte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Despre Noi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <i class="bi bi-person"></i> Cont
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="cart.html">
+                            <i class="bi bi-basket"></i> Coș
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="bg-primary text-white py-5" style="margin-top: 76px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-bold">
+                        <i class="bi bi-percent me-3"></i>
+                        Oferte Speciale
+                    </h1>
+                    <p class="lead">Profită de reducerile noastre la produsele tradiționale românești de cea mai înaltă calitate!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Countdown Timer Section -->
+    <section class="py-4">
+        <div class="container">
+            <div class="countdown-timer" id="countdownTimer">
+                <div class="countdown-title">
+                    <i class="bi bi-clock-fill me-2"></i>
+                    Reducerea expiră în:
+                </div>
+                <div class="countdown-display" id="countdownDisplay">
+                    <div class="time-unit">
+                        <span class="time-number" id="hours">00</span>
+                        <div class="time-label">Ore</div>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-number" id="minutes">00</span>
+                        <div class="time-label">Minute</div>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-number" id="seconds">00</span>
+                        <div class="time-label">Secunde</div>
+                    </div>
+                </div>
+                <div class="countdown-subtitle">
+                    <small><i class="bi bi-lightning-fill me-1"></i>Grăbește-te! Ofertele se termină curând!</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Special Banner -->
+    <section class="py-4 bg-warning">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4 class="mb-0 text-dark">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>
+                        Ofertă Limitată: Transport GRATUIT pentru comenzi peste 75 RON!
+                    </h4>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-danger fs-6">Se termină în 3 zile!</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flash Deals -->
+    <section class="py-5" id="flash-deals-section">
+        <div class="container">
+            <h2 class="text-center mb-5">
+                <i class="bi bi-lightning-fill text-warning me-2"></i>
+                Oferte Flash
+            </h2>
+            <div class="row g-4">
+                <!-- Flash Deal 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card product-card h-100 shadow-sm border-warning">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Pachet+Dulceturi" class="card-img-top" alt="Pachet Dulcețuri" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 badge bg-danger m-2 fs-6">-40%</span>
+                            <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">FLASH</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge region-badge mb-2 align-self-start">Pachet Special</span>
+                            <h5 class="card-title">Pachet 3 Dulcețuri Tradiționale</h5>
+                            <p class="card-text text-muted small">Căpșuni, Caise și Vișine - 3x350g</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="price">35.99 RON</span>
+                                        <small class="text-muted text-decoration-line-through ms-2">59.99 RON</small>
+                                    </div>
+                                    <span class="text-muted small">3x350g</span>
+                                </div>
+                                <button class="btn btn-add-to-cart w-100" onclick="addToCart(101, 'Pachet 3 Dulcețuri Tradiționale', 35.99, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Pachet+Dulceturi', '3x350g')">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flash Deal 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card product-card h-100 shadow-sm border-warning">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Combo+Mezeluri" class="card-img-top" alt="Combo Mezeluri" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 badge bg-danger m-2 fs-6">-35%</span>
+                            <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">FLASH</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge region-badge mb-2 align-self-start">Combo Special</span>
+                            <h5 class="card-title">Combo Mezeluri Tradiționale</h5>
+                            <p class="card-text text-muted small">Cârnați + Slănină + Șuncă de țară</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="price">89.99 RON</span>
+                                        <small class="text-muted text-decoration-line-through ms-2">139.99 RON</small>
+                                    </div>
+                                    <span class="text-muted small">1.2kg</span>
+                                </div>
+                                <button class="btn btn-add-to-cart w-100" onclick="addToCart(102, 'Combo Mezeluri Tradiționale', 89.99, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Combo+Mezeluri', '1.2kg')">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flash Deal 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card product-card h-100 shadow-sm border-warning">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Set+Bauturi" class="card-img-top" alt="Set Băuturi" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 badge bg-danger m-2 fs-6">-30%</span>
+                            <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">FLASH</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge region-badge mb-2 align-self-start">Set Degustare</span>
+                            <h5 class="card-title">Set Băuturi Tradiționale</h5>
+                            <p class="card-text text-muted small">Țuică + Pălincă + Vin de țară</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="price">159.99 RON</span>
+                                        <small class="text-muted text-decoration-line-through ms-2">229.99 RON</small>
+                                    </div>
+                                    <span class="text-muted small">3x500ml</span>
+                                </div>
+                                <button class="btn btn-add-to-cart w-100" onclick="addToCart(103, 'Set Băuturi Tradiționale', 159.99, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Set+Bauturi', '3x500ml')">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Weekly Deals -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">
+                <i class="bi bi-calendar-week text-primary me-2"></i>
+                Ofertele Săptămânii
+            </h2>
+            <div class="row g-4">
+                <!-- Weekly Deal 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card product-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Miere+Poliflora" class="card-img-top" alt="Miere Polifloră" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 badge bg-success m-2">-25%</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge region-badge mb-2 align-self-start">Produs local din Hunedoara</span>
+                            <h5 class="card-title">Miere Polifloră</h5>
+                            <p class="card-text text-muted small">Miere naturală din flori de munte</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="price">22.50 RON</span>
+                                        <small class="text-muted text-decoration-line-through ms-2">30.00 RON</small>
+                                    </div>
+                                    <span class="text-muted small">500g</span>
+                                </div>
+                                <button class="btn btn-add-to-cart w-100" onclick="addToCart(104, 'Miere Polifloră', 22.50, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Miere+Poliflora', '500g')">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Deal 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card product-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Branza+Telemea" class="card-img-top" alt="Telemea de Capră" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 badge bg-success m-2">-20%</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge region-badge mb-2 align-self-start">Produs local din Sibiu</span>
+                            <h5 class="card-title">Telemea de Capră</h5>
+                            <p class="card-text text-muted small">Telemea tradițională din lapte de capră</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="price">28.80 RON</span>
+                                        <small class="text-muted text-decoration-line-through ms-2">36.00 RON</small>
+                                    </div>
+                                    <span class="text-muted small">300g</span>
+                                </div>
+                                <button class="btn btn-add-to-cart w-100" onclick="addToCart(105, 'Telemea de Capră', 28.80, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Branza+Telemea', '300g')">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Deal 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card product-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Compot+Prune" class="card-img-top" alt="Compot de Prune" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 badge bg-success m-2">-15%</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge region-badge mb-2 align-self-start">Produs local din Vâlcea</span>
+                            <h5 class="card-title">Compot de Prune</h5>
+                            <p class="card-text text-muted small">Compot natural fără conservanți</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="price">14.45 RON</span>
+                                        <small class="text-muted text-decoration-line-through ms-2">17.00 RON</small>
+                                    </div>
+                                    <span class="text-muted small">720ml</span>
+                                </div>
+                                <button class="btn btn-add-to-cart w-100" onclick="addToCart(106, 'Compot de Prune', 14.45, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Compot+Prune', '720ml')">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Deal 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card product-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Sirop+Menta" class="card-img-top" alt="Sirop de Mentă" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 start-0 badge bg-success m-2">-30%</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge region-badge mb-2 align-self-start">Produs local din Covasna</span>
+                            <h5 class="card-title">Sirop de Mentă</h5>
+                            <p class="card-text text-muted small">Sirop natural din mentă de munte</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="price">17.50 RON</span>
+                                        <small class="text-muted text-decoration-line-through ms-2">25.00 RON</small>
+                                    </div>
+                                    <span class="text-muted small">500ml</span>
+                                </div>
+                                <button class="btn btn-add-to-cart w-100" onclick="addToCart(107, 'Sirop de Mentă', 17.50, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Sirop+Menta', '500ml')">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bundle Offers -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">
+                <i class="bi bi-box-seam text-primary me-2"></i>
+                Pachete Avantajoase
+            </h2>
+            <div class="row g-4">
+                <!-- Bundle 1 -->
+                <div class="col-lg-6">
+                    <div class="card h-100 shadow-sm border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-house-heart me-2"></i>
+                                Pachetul Familiei
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="https://via.placeholder.com/200x150/8B0000/FFFFFF?text=Pachet+Familie" class="img-fluid rounded" alt="Pachetul Familiei">
+                                </div>
+                                <div class="col-md-8">
+                                    <h6>Include:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>2x Dulcețuri (căpșuni, caise)</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Zacuscă tradițională</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Miere de salcâm</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Telemea de oaie</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Cârnați de țară</li>
+                                    </ul>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="h4 text-primary">129.99 RON</span>
+                                            <small class="text-muted text-decoration-line-through ms-2">179.99 RON</small>
+                                        </div>
+                                        <span class="badge bg-success fs-6">Economisești 50 RON</span>
+                                    </div>
+                                    <button class="btn btn-primary w-100 mt-3" onclick="addToCart(108, 'Pachetul Familiei', 129.99, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Pachet+Familie', 'Pachet complet')">
+                                        <i class="bi bi-basket"></i> Adaugă în Coș
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bundle 2 -->
+                <div class="col-lg-6">
+                    <div class="card h-100 shadow-sm border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gift me-2"></i>
+                                Pachetul Cadou
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="https://via.placeholder.com/200x150/8B0000/FFFFFF?text=Pachet+Cadou" class="img-fluid rounded" alt="Pachetul Cadou">
+                                </div>
+                                <div class="col-md-8">
+                                    <h6>Include:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Țuică de prune premium</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Miere de tei</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Dulceață de trandafiri</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>1x Brânză de burduf</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i>Ambalaj cadou elegant</li>
+                                    </ul>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="h4 text-primary">199.99 RON</span>
+                                            <small class="text-muted text-decoration-line-through ms-2">259.99 RON</small>
+                                        </div>
+                                        <span class="badge bg-success fs-6">Economisești 60 RON</span>
+                                    </div>
+                                    <button class="btn btn-warning w-100 mt-3" onclick="addToCart(109, 'Pachetul Cadou', 199.99, 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Pachet+Cadou', 'Pachet cadou')">
+                                        <i class="bi bi-basket"></i> Adaugă în Coș
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container text-center">
+            <h2>Nu Rata Nicio Ofertă!</h2>
+            <p class="lead">Abonează-te la newsletter-ul nostru și fii primul care află despre reducerile speciale</p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="input-group input-group-lg">
+                        <input type="email" class="form-control" placeholder="Adresa ta de email" id="newsletterEmail">
+                        <button class="btn btn-warning" type="button" onclick="subscribeToNewsletter()">
+                            <i class="bi bi-envelope"></i> Abonează-te
+                        </button>
+                    </div>
+                    <small class="text-light mt-2 d-block">Primești 10% reducere la prima comandă!</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5>Gusturi Românești</h5>
+                    <p>Cea mai mare platformă online de produse tradiționale românești.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Navigare</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Acasă</a></li>
+                        <li><a href="products.html" class="text-light text-decoration-none">Produse</a></li>
+                        <li><a href="offers.html" class="text-light text-decoration-none">Oferte</a></li>
+                        <li><a href="about.html" class="text-light text-decoration-none">Despre Noi</a></li>
+                        <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Cont</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light text-decoration-none">Autentificare</a></li>
+                        <li><a href="cart.html" class="text-light text-decoration-none">Coșul Meu</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Informații</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="privacy.html" class="text-light text-decoration-none">Politica de Confidențialitate</a></li>
+                        <li><a href="terms.html" class="text-light text-decoration-none">Termeni și Condiții</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Contact</h6>
+                    <p class="small mb-1">📍 București, România</p>
+                    <p class="small mb-1">📞 +40 721 234 567</p>
+                    <p class="small">✉️ contact@gusturi-romanesti.ro</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Gusturi Românești. Toate drepturile rezervate.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
+    <script src="assistant-bot.js"></script>
+    <script>
+        // Countdown Timer Implementation
+        class CountdownTimer {
+            constructor(endTime, containerId) {
+                this.endTime = new Date(endTime).getTime();
+                this.containerId = containerId;
+                this.timerInterval = null;
+                this.isExpired = false;
+                
+                this.init();
+            }
+
+            init() {
+                this.updateTimer();
+                this.timerInterval = setInterval(() => {
+                    this.updateTimer();
+                }, 1000);
+            }
+
+            updateTimer() {
+                const now = new Date().getTime();
+                const timeLeft = this.endTime - now;
+
+                if (timeLeft <= 0) {
+                    this.handleExpiration();
+                    return;
+                }
+
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                // Update display
+                document.getElementById('hours').textContent = this.padZero(hours);
+                document.getElementById('minutes').textContent = this.padZero(minutes);
+                document.getElementById('seconds').textContent = this.padZero(seconds);
+
+                // Add urgent animation when less than 1 hour left
+                const container = document.getElementById(this.containerId);
+                if (timeLeft < 3600000 && !container.classList.contains('countdown-urgent')) { // 1 hour in milliseconds
+                    container.classList.add('countdown-urgent');
+                }
+            }
+
+            padZero(num) {
+                return num.toString().padStart(2, '0');
+            }
+
+            handleExpiration() {
+                if (this.isExpired) return;
+                
+                this.isExpired = true;
+                clearInterval(this.timerInterval);
+
+                const container = document.getElementById(this.containerId);
+                const flashDealsSection = document.getElementById('flash-deals-section');
+                
+                // Update timer display to show expiration
+                container.classList.add('countdown-expired');
+                container.classList.remove('countdown-urgent');
+                container.innerHTML = `
+                    <div class="expired-message">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Oferta a expirat 😢
+                    </div>
+                    <div class="mt-3">
+                        <small>Dar nu te îngrijora! Avem alte oferte speciale pentru tine.</small>
+                    </div>
+                `;
+
+                // Hide or modify flash deals section
+                if (flashDealsSection) {
+                    const flashCards = flashDealsSection.querySelectorAll('.card');
+                    flashCards.forEach(card => {
+                        // Add expired overlay
+                        const overlay = document.createElement('div');
+                        overlay.className = 'position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center';
+                        overlay.style.cssText = 'background: rgba(0,0,0,0.7); z-index: 10; border-radius: 0.375rem;';
+                        overlay.innerHTML = `
+                            <div class="text-white text-center">
+                                <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+                                <div class="mt-2"><strong>Oferta Expirată</strong></div>
+                            </div>
+                        `;
+                        
+                        card.style.position = 'relative';
+                        card.appendChild(overlay);
+                        
+                        // Disable buttons
+                        const buttons = card.querySelectorAll('button');
+                        buttons.forEach(btn => {
+                            btn.disabled = true;
+                            btn.textContent = 'Expirat';
+                        });
+                    });
+                }
+
+                // Show notification
+                this.showExpirationNotification();
+            }
+
+            showExpirationNotification() {
+                // Create and show a Bootstrap toast notification
+                const toastHTML = `
+                    <div class="toast-container position-fixed top-0 end-0 p-3">
+                        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+                            <div class="toast-header bg-warning">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong class="me-auto">Oferta Expirată</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                            </div>
+                            <div class="toast-body">
+                                Ofertele flash au expirat, dar încă mai avem oferte speciale pentru tine!
+                                <div class="mt-2">
+                                    <a href="products.html" class="btn btn-primary btn-sm">Vezi toate produsele</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', toastHTML);
+                
+                const toastElement = document.querySelector('.toast');
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+
+                // Remove toast from DOM after it's hidden
+                toastElement.addEventListener('hidden.bs.toast', () => {
+                    toastElement.parentElement.remove();
+                });
+            }
+
+            // Public method to extend timer (for demo purposes)
+            extendTimer(additionalMinutes) {
+                this.endTime += additionalMinutes * 60 * 1000;
+                if (this.isExpired) {
+                    this.isExpired = false;
+                    this.init();
+                    // Restore original timer display
+                    const container = document.getElementById(this.containerId);
+                    container.classList.remove('countdown-expired');
+                    container.innerHTML = `
+                        <div class="countdown-title">
+                            <i class="bi bi-clock-fill me-2"></i>
+                            Reducerea expiră în:
+                        </div>
+                        <div class="countdown-display" id="countdownDisplay">
+                            <div class="time-unit">
+                                <span class="time-number" id="hours">00</span>
+                                <div class="time-label">Ore</div>
+                            </div>
+                            <div class="time-unit">
+                                <span class="time-number" id="minutes">00</span>
+                                <div class="time-label">Minute</div>
+                            </div>
+                            <div class="time-unit">
+                                <span class="time-number" id="seconds">00</span>
+                                <div class="time-label">Secunde</div>
+                            </div>
+                        </div>
+                        <div class="countdown-subtitle">
+                            <small><i class="bi bi-lightning-fill me-1"></i>Grăbește-te! Ofertele se termină curând!</small>
+                        </div>
+                    `;
+                }
+            }
+
+            // Public method to get remaining time
+            getRemainingTime() {
+                const now = new Date().getTime();
+                return Math.max(0, this.endTime - now);
+            }
+
+            // Public method to destroy timer
+            destroy() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+            }
+        }
+
+        // Initialize countdown timer when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set timer to expire in 2 hours from now (for demo purposes)
+            const now = new Date();
+            const endTime = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // 2 hours from now
+            
+            // For demo purposes, you can set a shorter time like 2 minutes:
+            // const endTime = new Date(now.getTime() + (2 * 60 * 1000)); // 2 minutes from now
+            
+            window.countdownTimer = new CountdownTimer(endTime, 'countdownTimer');
+        });
+
+        function subscribeToNewsletter() {
+            const email = document.getElementById('newsletterEmail').value;
+            if (subscribeNewsletter(email)) {
+                document.getElementById('newsletterEmail').value = '';
+            }
+        }
+
+        // Demo function to extend timer (can be called from console for testing)
+        function extendOfferTimer(minutes = 30) {
+            if (window.countdownTimer) {
+                window.countdownTimer.extendTimer(minutes);
+                console.log(`Timer extended by ${minutes} minutes`);
+            }
+        }
+    </script>
+</body>
+</html>

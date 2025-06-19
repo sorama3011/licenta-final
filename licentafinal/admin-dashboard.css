@@ -1,0 +1,113 @@
+/* Admin Dashboard Styles */
+.card {
+    border: none;
+    margin-bottom: 20px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 300px;
+    width: 100%;
+}
+
+/* Report section styles */
+.report-options {
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.report-container {
+    background-color: #fff;
+    border-radius: 0.25rem;
+    padding: 20px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Table styles for reports */
+.report-table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+}
+
+.report-table th,
+.report-table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.report-table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+/* Export buttons */
+.export-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.export-buttons .btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Loading indicator */
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    width: 100%;
+}
+
+.loading-indicator .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Date range picker custom styles */
+.date-range-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Report filters */
+.report-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.filter-item {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-item {
+        min-width: 100%;
+    }
+    
+    .export-buttons {
+        flex-direction: column;
+    }
+}

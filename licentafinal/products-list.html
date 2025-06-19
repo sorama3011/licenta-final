@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Produse Tradiționale - Gusturi Românești</title>
+    <meta name="description" content="Descoperă gama completă de produse tradiționale românești: dulcețuri, mezeluri, brânzeturi, băuturi și multe altele din toate regiunile țării.">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assistant-bot.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🇷🇴 Gusturi Românești
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Acasă</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="products-list.html">Produse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="offers.html">Oferte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Despre Noi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <i class="bi bi-person"></i> Cont
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="cart.html">
+                            <i class="bi bi-basket"></i> Coș
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="bg-primary text-white py-5" style="margin-top: 76px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-bold">Produse Tradiționale Românești</h1>
+                    <p class="lead">Descoperă autenticitatea gusturilor din toate regiunile României</p>
+                    <!-- Category breadcrumb will be shown here when filtered -->
+                    <div id="category-breadcrumb" class="mt-3" style="display: none;">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="products-list.html" class="text-warning text-decoration-none">Toate produsele</a>
+                                </li>
+                                <li class="breadcrumb-item active text-light" aria-current="page" id="current-category">
+                                    <!-- Category name will be inserted here -->
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Products -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar Filters -->
+                <div class="col-lg-3 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-funnel me-2"></i>Filtrează Produsele
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Category Filter -->
+                            <div class="filter-section mb-4">
+                                <h6 class="fw-bold mb-3">Categorii</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="dulceturi" id="cat-dulceturi">
+                                    <label class="form-check-label" for="cat-dulceturi">
+                                        Dulcețuri & Miere
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="conserve" id="cat-conserve">
+                                    <label class="form-check-label" for="cat-conserve">
+                                        Conserve & Murături
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="mezeluri" id="cat-mezeluri">
+                                    <label class="form-check-label" for="cat-mezeluri">
+                                        Mezeluri
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="branza" id="cat-branza">
+                                    <label class="form-check-label" for="cat-branza">
+                                        Brânzeturi
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="bauturi" id="cat-bauturi">
+                                    <label class="form-check-label" for="cat-bauturi">
+                                        Băuturi
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Region Filter -->
+                            <div class="filter-section mb-4">
+                                <h6 class="fw-bold mb-3">Regiuni</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Transilvania" id="reg-transilvania">
+                                    <label class="form-check-label" for="reg-transilvania">
+                                        Transilvania
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Muntenia" id="reg-muntenia">
+                                    <label class="form-check-label" for="reg-muntenia">
+                                        Muntenia
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Maramureș" id="reg-maramures">
+                                    <label class="form-check-label" for="reg-maramures">
+                                        Maramureș
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Banat" id="reg-banat">
+                                    <label class="form-check-label" for="reg-banat">
+                                        Banat
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Oltenia" id="reg-oltenia">
+                                    <label class="form-check-label" for="reg-oltenia">
+                                        Oltenia
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Dobrogea" id="reg-dobrogea">
+                                    <label class="form-check-label" for="reg-dobrogea">
+                                        Dobrogea
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Crișana" id="reg-crisana">
+                                    <label class="form-check-label" for="reg-crisana">
+                                        Crișana
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Bucovina" id="reg-bucovina">
+                                    <label class="form-check-label" for="reg-bucovina">
+                                        Bucovina
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Traditional Tags Filter -->
+                            <div class="filter-section mb-4">
+                                <h6 class="fw-bold mb-3">Etichete Tradiționale</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="produs-de-post" id="tag-post">
+                                    <label class="form-check-label" for="tag-post">
+                                        Produs de post
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="fara-zahar" id="tag-zahar">
+                                    <label class="form-check-label" for="tag-zahar">
+                                        Fără zahăr
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="artizanal" id="tag-artizanal">
+                                    <label class="form-check-label" for="tag-artizanal">
+                                        Artizanal
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="fara-aditivi" id="tag-aditivi">
+                                    <label class="form-check-label" for="tag-aditivi">
+                                        Fără aditivi
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="ambalat-manual" id="tag-manual">
+                                    <label class="form-check-label" for="tag-manual">
+                                        Ambalat manual
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Clear Filters -->
+                            <button class="btn btn-outline-secondary w-100" onclick="clearAllFilters()">
+                                <i class="bi bi-x-circle me-2"></i>Șterge Filtrele
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="col-lg-9">
+                    <!-- Sorting and Results Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <span id="results-count" class="text-muted">Se încarcă produsele...</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="sortSelect" class="form-label me-2 mb-0">Ordonează după:</label>
+                            <select class="form-select" id="sortSelect" style="width: auto;">
+                                <option value="recommended">Cele mai recomandate</option>
+                                <option value="price-asc">Preț: de la mic la mare</option>
+                                <option value="price-desc">Preț: de la mare la mic</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Products Container -->
+                    <div class="row g-4" id="products-container">
+                        <!-- Products will be loaded here by JavaScript -->
+                        <div class="col-12 text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Se încarcă...</span>
+                            </div>
+                            <p class="mt-3">Se încarcă produsele...</p>
+                        </div>
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="no-results" class="text-center py-5" style="display: none;">
+                        <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+                        <h3 class="mt-3">Nu am găsit produse</h3>
+                        <p class="text-muted">Încearcă să modifici filtrele pentru a găsi produsele dorite.</p>
+                        <button class="btn btn-primary" onclick="clearAllFilters()">
+                            Șterge toate filtrele
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5>Gusturi Românești</h5>
+                    <p>Cea mai mare platformă online de produse tradiționale românești.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Navigare</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Acasă</a></li>
+                        <li><a href="products-list.html" class="text-light text-decoration-none">Produse</a></li>
+                        <li><a href="offers.html" class="text-light text-decoration-none">Oferte</a></li>
+                        <li><a href="about.html" class="text-light text-decoration-none">Despre Noi</a></li>
+                        <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Cont</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light text-decoration-none">Autentificare</a></li>
+                        <li><a href="cart.html" class="text-light text-decoration-none">Coșul Meu</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Informații</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="privacy.html" class="text-light text-decoration-none">Politica de Confidențialitate</a></li>
+                        <li><a href="terms.html" class="text-light text-decoration-none">Termeni și Condiții</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Contact</h6>
+                    <p class="small mb-1">📍 București, România</p>
+                    <p class="small mb-1">📞 +40 721 234 567</p>
+                    <p class="small">✉️ contact@gusturi-romanesti.ro</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Gusturi Românești. Toate drepturile rezervate.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
+    <script src="assistant-bot.js"></script>
+    <script src="products-list.js"></script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gusturi Românești - Produse Tradiționale Autentice</title>
+    <meta name="description" content="Descoperă cel mai mare magazin online de produse tradiționale românești. Dulcețuri, zacuscă, mezeluri, brânzeturi și băuturi tradiționale de calitate superioară.">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assistant-bot.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                Gusturi Românești
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Acasă</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Produse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="offers.html">Oferte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Despre Noi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <i class="bi bi-person"></i> Cont
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="cart.html">
+                            <i class="bi bi-basket"></i> Coș
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">
+                                0
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white">
+        <div class="container">
+            <div class="row align-items-center min-vh-100 pt-5">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Gusturi Autentice din Inima României</h1>
+                    <p class="lead mb-4">Descoperă tradițiile culinare românești prin produse artizanale de cea mai înaltă calitate, direct de la producătorii locali.</p>
+                    <div class="d-flex gap-3">
+                        <a href="products.html" class="btn btn-warning btn-lg">
+                            <i class="bi bi-basket"></i> Cumpără Acum
+                        </a>
+                        <a href="about.html" class="btn btn-outline-light btn-lg">
+                            Povestea Noastră
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="img/index.png" alt="Produse românești tradiționale" class="img-fluid rounded shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Categorii Populare</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm" data-category="dulceturi" onclick="goToCategory('dulceturi')">
+                        <div class="card-body text-center">
+                            <div class="category-icon mb-3">🍯</div>
+                            <h5 class="card-title">Dulcețuri & Miere</h5>
+                            <p class="card-text">Gemuri, dulcețuri și miere naturală din regiunile Carpaților</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm" data-category="branza" onclick="goToCategory('branza')">
+                        <div class="card-body text-center">
+                            <div class="category-icon mb-3">🧀</div>
+                            <h5 class="card-title">Brânzeturi</h5>
+                            <p class="card-text">Brânzeturi tradiționale de vacă, oaie și capră</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm" data-category="mezeluri" onclick="goToCategory('mezeluri')">
+                        <div class="card-body text-center">
+                            <div class="category-icon mb-3">🥓</div>
+                            <h5 class="card-title">Mezeluri</h5>
+                            <p class="card-text">Cârnați, slănină și specialități afumate</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm" data-category="bauturi" onclick="goToCategory('bauturi')">
+                        <div class="card-body text-center">
+                            <div class="category-icon mb-3">🍷</div>
+                            <h5 class="card-title">Băuturi</h5>
+                            <p class="card-text">Țuică, pălincă, vinuri și siropuri naturale</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Produse Recomandate</h2>
+            <div class="row g-4" id="featured-products">
+                <!-- Featured products will be loaded here -->
+            </div>
+            <div class="text-center mt-5">
+                <a href="products.html" class="btn btn-primary btn-lg">
+                    Vezi Toate Produsele <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">De Ce Să Ne Alegi?</h2>
+            <div class="row g-4">
+                <div class="col-md-4 text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-shield-check text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4>Calitate Garantată</h4>
+                    <p>Toate produsele sunt certificate și testate pentru cea mai înaltă calitate</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-truck text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4>Livrare Rapidă</h4>
+                    <p>Livrăm în toată țara în 24-48 de ore cu ambalaj special refrigerat</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-heart text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4>Susținem Producătorii Locali</h4>
+                    <p>Colaborăm direct cu fermierii și producătorii tradițonali români</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5>Gusturi Românești</h5>
+                    <p>Cea mai mare platformă online de produse tradiționale românești. Aducem gusturile autentice direct la tine acasă.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Navigare</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Acasă</a></li>
+                        <li><a href="products.html" class="text-light text-decoration-none">Produse</a></li>
+                        <li><a href="offers.html" class="text-light text-decoration-none">Oferte</a></li>
+                        <li><a href="about.html" class="text-light text-decoration-none">Despre Noi</a></li>
+                        <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Cont</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light text-decoration-none">Autentificare</a></li>
+                        <li><a href="cart.html" class="text-light text-decoration-none">Coșul Meu</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Informații</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="privacy.html" class="text-light text-decoration-none">Politica de Confidențialitate</a></li>
+                        <li><a href="terms.html" class="text-light text-decoration-none">Termeni și Condiții</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Contact</h6>
+                    <p class="small mb-1">📍 București, România</p>
+                    <p class="small mb-1">📞 +40 721 234 567</p>
+                    <p class="small">✉️ contact@gusturi-romanesti.ro</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Gusturi Românești. Toate drepturile rezervate.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
+    <script src="assistant-bot.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Category navigation function
+        function goToCategory(category) {
+            // Add visual feedback
+            const categoryCard = document.querySelector(`[data-category="${category}"]`);
+            if (categoryCard) {
+                categoryCard.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    categoryCard.style.transform = '';
+                }, 150);
+            }
+            
+            // Navigate to products page with category filter
+            window.location.href = `products.html?category=${category}`;
+        }
+
+        // Add hover effects and accessibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryCards = document.querySelectorAll('.category-card[data-category]');
+            
+            categoryCards.forEach(card => {
+                // Add cursor pointer
+                card.style.cursor = 'pointer';
+                
+                // Add keyboard navigation
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
+                
+                // Add keyboard event listener
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const category = this.getAttribute('data-category');
+                        goToCategory(category);
+                    }
+                });
+                
+                // Add aria-label for accessibility
+                const categoryName = card.querySelector('.card-title').textContent;
+                card.setAttribute('aria-label', `Navighează la categoria ${categoryName}`);
+                
+                // Enhanced hover effects
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                    this.style.transition = 'all 0.3s ease';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

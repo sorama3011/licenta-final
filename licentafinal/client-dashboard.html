@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contul Meu - Gusturi Românești</title>
+    <meta name="description" content="Gestionează contul tău Gusturi Românești, vezi istoricul comenzilor și lista de favorite.">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assistant-bot.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                Gusturi Românești
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Acasă</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Produse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="offers.html">Oferte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Despre Noi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <i class="bi bi-person"></i> Cont
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="cart.html">
+                            <i class="bi bi-basket"></i> Coș
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="bg-primary text-white py-4" style="margin-top: 76px;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="h3 mb-0" id="user-welcome">Contul Meu</h1>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-outline-light" onclick="logout()">
+                        <i class="bi bi-box-arrow-right me-2"></i>Deconectare
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Client Dashboard Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Meniu Cont</h5>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <a href="#dashboard" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                                <i class="bi bi-speedometer2 me-2"></i>Tablou de Bord
+                            </a>
+                            <a href="#profile" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-person me-2"></i>Profilul Meu
+                            </a>
+                            <a href="#order-history" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-clock-history me-2"></i>Istoric Comenzi
+                            </a>
+                            <a href="#wishlist" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-heart me-2"></i>Lista de Dorințe
+                            </a>
+                            <a href="#addresses" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-geo-alt me-2"></i>Adresele Mele
+                            </a>
+                            <a href="#vouchers" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="bi bi-ticket-perforated me-2"></i>Vouchere
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <div class="tab-content">
+                        <!-- Dashboard Tab -->
+                        <div class="tab-pane fade show active" id="dashboard">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Tablou de Bord</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <div class="card border-0 bg-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="bi bi-star text-warning" style="font-size: 2.5rem;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h6 class="mb-1">Puncte de Fidelitate</h6>
+                                                            <h3 class="mb-0" id="loyalty-points">0</h3>
+                                                            <small class="text-muted">Folosește punctele pentru reduceri</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card border-0 bg-light">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="bi bi-bag-check text-success" style="font-size: 2.5rem;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <h6 class="mb-1">Comenzi Plasate</h6>
+                                                            <h3 class="mb-0" id="total-orders">0</h3>
+                                                            <small class="text-muted">Valoare totală: <span id="total-spent">0</span> RON</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <h6>Recomandări pentru tine</h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="card h-100">
+                                                    <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Produs+Recomandat" class="card-img-top" alt="Produs recomandat">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Dulceață de Căpșuni</h6>
+                                                        <p class="text-primary fw-bold">18.99 RON</p>
+                                                        <button class="btn btn-sm btn-primary w-100">Vezi Detalii</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card h-100">
+                                                    <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Produs+Recomandat" class="card-img-top" alt="Produs recomandat">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Brânză de Burduf</h6>
+                                                        <p class="text-primary fw-bold">32.00 RON</p>
+                                                        <button class="btn btn-sm btn-primary w-100">Vezi Detalii</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card h-100">
+                                                    <img src="https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Produs+Recomandat" class="card-img-top" alt="Produs recomandat">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Miere de Salcâm</h6>
+                                                        <p class="text-primary fw-bold">28.50 RON</p>
+                                                        <button class="btn btn-sm btn-primary w-100">Vezi Detalii</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Latest Order -->
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Ultima Comandă</h5>
+                                    <a href="#order-history" class="btn btn-sm btn-outline-primary" data-bs-toggle="list">
+                                        Vezi Toate
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    <div id="latest-order">
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-bag text-muted" style="font-size: 3rem;"></i>
+                                            <p class="mt-3">Nu ai plasat încă nicio comandă.</p>
+                                            <a href="products.html" class="btn btn-primary">
+                                                Începe Cumpărăturile
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profile Tab -->
+                        <div class="tab-pane fade" id="profile">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Profilul Meu</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="profileForm" onsubmit="return updateProfile(event)">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="profileFirstName" class="form-label">Prenume</label>
+                                                <input type="text" class="form-control" id="profileFirstName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="profileLastName" class="form-label">Nume</label>
+                                                <input type="text" class="form-control" id="profileLastName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="profileEmail" class="form-label">Email</label>
+                                                <input type="email" class="form-control" id="profileEmail" required readonly>
+                                                <div class="form-text">Adresa de email nu poate fi modificată</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="profilePhone" class="form-label">Telefon</label>
+                                                <input type="tel" class="form-control" id="profilePhone">
+                                            </div>
+                                            <div class="col-12">
+                                                <hr>
+                                                <h6>Schimbă Parola</h6>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="currentPassword" class="form-label">Parola Actuală</label>
+                                                <input type="password" class="form-control" id="currentPassword">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="newPassword" class="form-label">Parola Nouă</label>
+                                                <input type="password" class="form-control" id="newPassword">
+                                                <div class="form-text">Lăsați gol dacă nu doriți să schimbați parola</div>
+                                            </div>
+                                            <div class="col-12">
+                                                <hr>
+                                                <h6>Preferințe</h6>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="newsletterPreference">
+                                                    <label class="form-check-label" for="newsletterPreference">
+                                                        Doresc să primesc oferte și noutăți pe email
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mt-4">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-2"></i>Salvează Modificările
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order History Tab -->
+                        <div class="tab-pane fade" id="order-history">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Istoric Comenzi</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nr. Comandă</th>
+                                                    <th>Data</th>
+                                                    <th>Status</th>
+                                                    <th>Total</th>
+                                                    <th>Acțiuni</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="orders-table-body">
+                                                <tr>
+                                                    <td colspan="5" class="text-center py-4">
+                                                        <i class="bi bi-clock-history text-muted" style="font-size: 2rem;"></i>
+                                                        <p class="mt-2">Nu ai plasat încă nicio comandă.</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wishlist Tab -->
+                        <div class="tab-pane fade" id="wishlist">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Lista de Dorințe</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-4" id="wishlist-items">
+                                        <div class="col-12 text-center py-4">
+                                            <i class="bi bi-heart text-muted" style="font-size: 3rem;"></i>
+                                            <p class="mt-3">Lista ta de dorințe este goală.</p>
+                                            <a href="products.html" class="btn btn-primary">
+                                                Descoperă Produse
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Addresses Tab -->
+                        <div class="tab-pane fade" id="addresses">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Adresele Mele</h5>
+                                    <button class="btn btn-sm btn-primary" onclick="showAddAddressForm()">
+                                        <i class="bi bi-plus-lg me-1"></i>Adaugă Adresă
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div id="addresses-container">
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-geo-alt text-muted" style="font-size: 3rem;"></i>
+                                            <p class="mt-3">Nu ai salvat încă nicio adresă.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vouchers Tab -->
+                        <div class="tab-pane fade" id="vouchers">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">Voucherele Mele</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="vouchers-container">
+                                        <div class="text-center py-4">
+                                            <i class="bi bi-ticket-perforated text-muted" style="font-size: 3rem;"></i>
+                                            <p class="mt-3">Nu ai niciun voucher disponibil.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5>Gusturi Românești</h5>
+                    <p>Cea mai mare platformă online de produse tradiționale românești.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Navigare</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Acasă</a></li>
+                        <li><a href="products.html" class="text-light text-decoration-none">Produse</a></li>
+                        <li><a href="offers.html" class="text-light text-decoration-none">Oferte</a></li>
+                        <li><a href="about.html" class="text-light text-decoration-none">Despre Noi</a></li>
+                        <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Cont</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light text-decoration-none">Autentificare</a></li>
+                        <li><a href="cart.html" class="text-light text-decoration-none">Coșul Meu</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Informații</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="privacy.html" class="text-light text-decoration-none">Politica de Confidențialitate</a></li>
+                        <li><a href="terms.html" class="text-light text-decoration-none">Termeni și Condiții</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Contact</h6>
+                    <p class="small mb-1">📍 București, România</p>
+                    <p class="small mb-1">📞 +40 721 234 567</p>
+                    <p class="small">✉️ contact@gusturi-romanesti.ro</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Gusturi Românești. Toate drepturile rezervate.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
+    <script src="assistant-bot.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in and has client role
+            const userData = await getUserData();
+            if (!userData.loggedIn || userData.role !== 'client') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Update welcome message
+            document.getElementById('user-welcome').textContent = `Bun venit, ${userData.name}!`;
+            
+            // Update dashboard stats
+            document.getElementById('loyalty-points').textContent = userData.points || 0;
+            document.getElementById('total-orders').textContent = userData.totalOrders || 0;
+            document.getElementById('total-spent').textContent = userData.totalSpent || 0;
+            
+            // Load profile data
+            document.getElementById('profileFirstName').value = userData.name.split(' ')[0] || '';
+            document.getElementById('profileLastName').value = userData.name.split(' ')[1] || '';
+            document.getElementById('profileEmail').value = userData.email || '';
+            document.getElementById('profilePhone').value = userData.phone || '';
+            
+            // Handle tab navigation from URL hash
+            if (window.location.hash) {
+                const targetTab = document.querySelector(`a[href="${window.location.hash}"]`);
+                if (targetTab) {
+                    const tab = new bootstrap.Tab(targetTab);
+                    tab.show();
+                }
+            }
+        });
+        
+        // Update profile
+        function updateProfile(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const firstName = document.getElementById('profileFirstName').value;
+            const lastName = document.getElementById('profileLastName').value;
+            const phone = document.getElementById('profilePhone').value;
+            const newsletter = document.getElementById('newsletterPreference').checked;
+            
+            // Get current user data
+            const userData = getUserData();
+            
+            // Update user data
+            userData.name = `${firstName} ${lastName}`;
+            userData.phone = phone;
+            userData.newsletter = newsletter;
+            
+            // Save updated data
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Show success message
+            showNotification('Profilul a fost actualizat cu succes!', 'success');
+            
+            // Update navigation
+            updateNavigation();
+            
+            return false;
+        }
+        
+        // Show add address form
+        function showAddAddressForm() {
+            alert('Funcționalitate în curs de implementare');
+        }
+    </script>
+</body>
+</html>
