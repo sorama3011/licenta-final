@@ -57,27 +57,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // Load products from database API
 async function loadProducts() {
-    // Try fallback first since API might not be working
-    try {
-        console.log('Loading products from products.json...');
-        const response = await fetch('products.json');
-        if (response.ok) {
-            const jsonData = await response.json();
-            if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
-                allProducts = jsonData;
-                filteredProducts = [...allProducts];
-                console.log('Products loaded successfully from JSON:', allProducts.length);
-                
-                // Try to also load from API in background
-                loadFromAPIInBackground();
-                return;
-            }
-        }
-    } catch (error) {
-        console.error('Error loading from products.json:', error);
-    }
-
-    // If JSON failed, try API
+    // Try API first (database products)
     try {
         console.log('Attempting to load products from API...');
         const response = await fetch('api/catalog.php?type=products&limit=100');
@@ -101,29 +81,36 @@ async function loadProducts() {
     } catch (error) {
         console.error('Error fetching products from API:', error);
         
-        // Create empty products array and show error
+        // Try JSON fallback only if API completely fails
+        try {
+            console.log('API failed, trying fallback products.json...');
+            const response = await fetch('products.json');
+            if (response.ok) {
+                const jsonData = await response.json();
+                if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
+                    allProducts = jsonData;
+                    filteredProducts = [...allProducts];
+                    console.log('Products loaded from JSON fallback:', allProducts.length);
+                    console.warn('⚠️ Using JSON fallback - orders may fail due to ID mismatches!');
+                    return;
+                }
+            }
+        } catch (jsonError) {
+            console.error('Error loading from products.json:', jsonError);
+        }
+        
+        // If both failed, show error
         allProducts = [];
         filteredProducts = [];
         throw new Error('Nu s-au putut încărca produsele din nicio sursă disponibilă');
     }
 }
 
-// Try to load from API in background
-async function loadFromAPIInBackground() {
-    try {
-        const response = await fetch('api/catalog.php?type=products&limit=100');
-        if (response.ok) {
-            const result = await response.json();
-            if (result.success && result.products && result.products.length > 0) {
-                console.log('Background API load successful, updating products');
-                allProducts = result.products;
-                filteredProducts = [...allProducts];
-                applyFiltersAndSort(); // Refresh the display
-            }
-        }
-    } catch (error) {
-        console.log('Background API load failed, continuing with JSON data');
-    }
+// Check if products are from database or JSON
+function isUsingDatabaseProducts() {
+    if (allProducts.length === 0) return false;
+    // Database products have 'nume' field, JSON products have 'name' field
+    return allProducts[0].hasOwnProperty('nume');
 }
 
 function applyCategoryFromURL(category) {
@@ -311,6 +298,7 @@ function renderProducts() {
 }
 
 function createProductCard(product) {
+    // Handle both database (Romanian) and JSON (English) field names
     const productName = product.nume || product.name;
     const productImage = product.imagine || product.image;
     const productRegion = product.regiune || product.region;
@@ -318,6 +306,11 @@ function createProductCard(product) {
     const productPrice = parseFloat(product.pret || product.price);
     const productWeight = product.cantitate || product.weight;
     const productCategory = product.categorie || product.category;
+    
+    // Show warning if using JSON fallback
+    if (!isUsingDatabaseProducts() && !product.nume) {
+        console.warn(`⚠️ Product ${productName} loaded from JSON - order functionality may not work properly`);
+    }
     
     const tagBadges = (product.tags || []).map(tag => {
         const tagLabels = {
