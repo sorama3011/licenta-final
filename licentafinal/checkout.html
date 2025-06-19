@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizare Comandă - Gusturi Românești</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🇷🇴 Gusturi Românești
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Acasă</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Produse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="offers.html">Oferte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Despre Noi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html" id="auth-link">
+                            <i class="bi bi-person"></i> Cont
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="cart.html">
+                            <i class="bi bi-basket"></i> Coș
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" id="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="bg-primary text-white py-4" style="margin-top: 76px;">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb text-white mb-2">
+                    <li class="breadcrumb-item"><a href="index.html" class="text-white">Acasă</a></li>
+                    <li class="breadcrumb-item"><a href="cart.html" class="text-white">Coș</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">Finalizare Comandă</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">Finalizare Comandă</h1>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <!-- Login Required Message -->
+        <div id="login-required" class="alert alert-warning" style="display: none;">
+            <h5><i class="bi bi-exclamation-triangle me-2"></i>Autentificare Necesară</h5>
+            <p>Pentru a finaliza comanda, trebuie să te autentifici sau să îți creezi un cont.</p>
+            <a href="login.html?redirect=checkout.html" class="btn btn-primary me-2">Autentificare</a>
+            <a href="login.html?tab=register&redirect=checkout.html" class="btn btn-outline-primary">Cont Nou</a>
+        </div>
+
+        <!-- Empty Cart Message -->
+        <div id="empty-cart" class="alert alert-info" style="display: none;">
+            <h5><i class="bi bi-basket me-2"></i>Coșul Este Gol</h5>
+            <p>Nu ai produse în coș. Adaugă produse pentru a putea finaliza o comandă.</p>
+            <a href="products.html" class="btn btn-primary">Explorează Produsele</a>
+        </div>
+
+        <!-- Checkout Form -->
+        <div id="checkout-content" style="display: none;">
+            <div class="row">
+                <div class="col-lg-8">
+                    <form id="checkout-form">
+                        <!-- Delivery Address -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="bi bi-truck me-2"></i>Adresa de Livrare</h5>
+                            </div>
+                            <div class="card-body" id="delivery-addresses">
+                                <!-- Default address form -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label">Prenume *</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label">Nume *</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <label for="address" class="form-label">Adresa *</label>
+                                        <input type="text" class="form-control" id="address" placeholder="Strada, numărul" required>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <label for="city" class="form-label">Oraș *</label>
+                                        <input type="text" class="form-control" id="city" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="county" class="form-label">Județ *</label>
+                                        <input type="text" class="form-control" id="county" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="postalCode" class="form-label">Cod Poștal *</label>
+                                        <input type="text" class="form-control" id="postalCode" required>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Telefon *</label>
+                                        <input type="tel" class="form-control" id="phone" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="bi bi-credit-card me-2"></i>Metoda de Plată</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="ramburs" value="ramburs" checked>
+                                    <label class="form-check-label" for="ramburs">
+                                        <i class="bi bi-cash me-2"></i>Ramburs (plata la livrare)
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="card" value="card">
+                                    <label class="form-check-label" for="card">
+                                        <i class="bi bi-credit-card me-2"></i>Card bancar
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="transfer" value="transfer">
+                                    <label class="form-check-label" for="transfer">
+                                        <i class="bi bi-bank me-2"></i>Transfer bancar
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Notes -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5><i class="bi bi-chat-text me-2"></i>Observații</h5>
+                            </div>
+                            <div class="card-body">
+                                <textarea class="form-control" name="notes" id="notes" rows="3" 
+                                          placeholder="Observații speciale pentru comandă (opțional)"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Order Summary -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-receipt me-2"></i>Sumar Comandă</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="order-summary">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Se încarcă...</span>
+                                    </div>
+                                    <p class="mt-2">Se încarcă coșul...</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Voucher Section -->
+                            <div class="mb-3" id="voucher-section">
+                                <label for="voucherCode" class="form-label">
+                                    <i class="bi bi-ticket-perforated me-1"></i>Cod voucher
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="voucherCode" placeholder="ex: FID-ABC123">
+                                    <button class="btn btn-outline-primary" type="button" onclick="applyVoucher()">
+                                        Aplică
+                                    </button>
+                                </div>
+                                <div id="voucherMessage" class="mt-2" style="display: none;"></div>
+                            </div>
+                            
+                            <div id="order-totals" style="display: none;">
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal">0.00 RON</span>
+                                </div>
+                                <div class="d-flex justify-content-between" id="discount-row" style="display: none;">
+                                    <span>Reducere voucher:</span>
+                                    <span id="discount" class="text-success">-0.00 RON</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Transport:</span>
+                                    <span id="shipping">15.00 RON</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>Total:</span>
+                                    <span id="total">0.00 RON</span>
+                                </div>
+                                
+                                <button type="submit" form="checkout-form" class="btn btn-primary w-100 mt-3" id="place-order-btn">
+                                    <i class="bi bi-check-circle me-2"></i>Plasează Comanda
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5>Gusturi Românești</h5>
+                    <p>Cea mai mare platformă online de produse tradiționale românești.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Navigare</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light text-decoration-none">Acasă</a></li>
+                        <li><a href="products.html" class="text-light text-decoration-none">Produse</a></li>
+                        <li><a href="offers.html" class="text-light text-decoration-none">Oferte</a></li>
+                        <li><a href="about.html" class="text-light text-decoration-none">Despre Noi</a></li>
+                        <li><a href="contact.html" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Cont</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="login.html" class="text-light text-decoration-none">Autentificare</a></li>
+                        <li><a href="cart.html" class="text-light text-decoration-none">Coșul Meu</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Informații</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="privacy.html" class="text-light text-decoration-none">Politica de Confidențialitate</a></li>
+                        <li><a href="terms.html" class="text-light text-decoration-none">Termeni și Condiții</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Contact</h6>
+                    <p class="small mb-1">📍 București, România</p>
+                    <p class="small mb-1">📞 +40 721 234 567</p>
+                    <p class="small">✉️ contact@gusturi-romanesti.ro</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Gusturi Românești. Toate drepturile rezervate.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        let appliedVoucher = null;
+        const FREE_SHIPPING_THRESHOLD = 150;
+
+        // Load page content when DOM is ready
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateCartCount();
+            await checkAuthAndCart();
+        });
+
+        // Check authentication and cart status
+        async function checkAuthAndCart() {
+            const loggedIn = await isUserLoggedIn();
+            const cart = getCart();
+
+            if (!loggedIn) {
+                document.getElementById('login-required').style.display = 'block';
+                return;
+            }
+
+            if (cart.length === 0) {
+                document.getElementById('empty-cart').style.display = 'block';
+                return;
+            }
+
+            // Show checkout content and load cart
+            document.getElementById('checkout-content').style.display = 'block';
+            loadUserData();
+            displayOrderSummary();
+        }
+
+        // Load user data into form
+        async function loadUserData() {
+            try {
+                const userData = getUserData();
+                if (userData) {
+                    document.getElementById('firstName').value = userData.firstName || '';
+                    document.getElementById('lastName').value = userData.lastName || '';
+                    document.getElementById('email').value = userData.email || '';
+                    document.getElementById('phone').value = userData.phone || '';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Display order summary
+        function displayOrderSummary() {
+            const cart = getCart();
+            const container = document.getElementById('order-summary');
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="alert alert-warning">Coșul este gol</div>';
+                return;
+            }
+
+            let html = '';
+            cart.forEach(item => {
+                html += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <small class="fw-bold">${item.name}</small><br>
+                            <small class="text-muted">${item.quantity} x ${parseFloat(item.price).toFixed(2)} RON</small>
+                        </div>
+                        <span class="fw-bold">${(item.price * item.quantity).toFixed(2)} RON</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            updateOrderTotals();
+            document.getElementById('order-totals').style.display = 'block';
+        }
+
+        // Update order totals
+        function updateOrderTotals() {
+            const cart = getCart();
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            let discount = 0;
+            if (appliedVoucher) {
+                discount = subtotal * (appliedVoucher.discount / 100);
+            }
+            
+            const discountedSubtotal = subtotal - discount;
+            const shipping = discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 15;
+            const total = discountedSubtotal + shipping;
+            
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' RON';
+            document.getElementById('shipping').textContent = shipping === 0 ? 'Gratuit' : shipping.toFixed(2) + ' RON';
+            document.getElementById('total').textContent = total.toFixed(2) + ' RON';
+            
+            // Show/hide discount row
+            const discountRow = document.getElementById('discount-row');
+            const discountElement = document.getElementById('discount');
+            
+            if (appliedVoucher && discount > 0) {
+                discountRow.style.display = 'flex';
+                discountElement.textContent = `-${discount.toFixed(2)} RON`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+        }
+
+        // Apply voucher function
+        function applyVoucher() {
+            const voucherCode = document.getElementById('voucherCode').value.trim().toUpperCase();
+            const messageDiv = document.getElementById('voucherMessage');
+            
+            if (!voucherCode) {
+                showVoucherMessage('Te rugăm să introduci un cod voucher.', 'danger');
+                return;
+            }
+
+            // Get user vouchers
+            const userData = getUserData();
+            const userEmail = userData.email || 'default';
+            const vouchersKey = `vouchers_${userEmail}`;
+            const vouchers = JSON.parse(localStorage.getItem(vouchersKey) || '[]');
+            
+            const voucher = vouchers.find(v => v.code === voucherCode);
+
+            if (!voucher) {
+                showVoucherMessage('Codul voucher nu este valid.', 'danger');
+                return;
+            }
+
+            if (voucher.used) {
+                showVoucherMessage('Acest voucher a fost deja folosit.', 'danger');
+                return;
+            }
+
+            const now = new Date();
+            const expirationDate = new Date(voucher.expirationDate);
+            
+            if (now > expirationDate) {
+                showVoucherMessage('Acest voucher a expirat.', 'danger');
+                return;
+            }
+
+            // Apply voucher
+            appliedVoucher = voucher;
+            showVoucherMessage(`Voucher aplicat cu succes! Reducere de ${voucher.discount}%`, 'success');
+            
+            // Disable input and button
+            document.getElementById('voucherCode').disabled = true;
+            document.querySelector('button[onclick="applyVoucher()"]').disabled = true;
+            document.querySelector('button[onclick="applyVoucher()"]').innerHTML = 'Aplicat';
+            
+            updateOrderTotals();
+        }
+
+        // Show voucher message
+        function showVoucherMessage(message, type) {
+            const messageDiv = document.getElementById('voucherMessage');
+            messageDiv.className = `alert alert-${type} small mb-0`;
+            messageDiv.innerHTML = message;
+            messageDiv.style.display = 'block';
+        }
+
+        // Handle form submission
+        document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('place-order-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Se procesează...';
+            btn.disabled = true;
+
+            try {
+                // Get form data
+                const formData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    county: document.getElementById('county').value,
+                    postalCode: document.getElementById('postalCode').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    payment_method: document.querySelector('input[name="payment_method"]:checked').value,
+                    notes: document.getElementById('notes').value,
+                    voucher_code: appliedVoucher ? appliedVoucher.code : '',
+                    cart: getCart()
+                };
+
+                // Validate required fields
+                if (!formData.firstName || !formData.lastName || !formData.address || 
+                    !formData.city || !formData.county || !formData.postalCode || 
+                    !formData.phone || !formData.email) {
+                    alert('Te rugăm să completezi toate câmpurile obligatorii.');
+                    return;
+                }
+
+                // Generate order number
+                const orderNumber = 'GR-' + Date.now();
+                
+                // Store order in localStorage (for demo purposes)
+                const order = {
+                    orderNumber: orderNumber,
+                    ...formData,
+                    date: new Date().toISOString(),
+                    status: 'plasata',
+                    total: calculateTotal()
+                };
+
+                // Save order
+                const userData = getUserData();
+                const userEmail = userData.email || 'default';
+                const ordersKey = `orders_${userEmail}`;
+                const orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
+                orders.unshift(order);
+                localStorage.setItem(ordersKey, JSON.stringify(orders));
+
+                // Mark voucher as used if applied
+                if (appliedVoucher) {
+                    const vouchersKey = `vouchers_${userEmail}`;
+                    const vouchers = JSON.parse(localStorage.getItem(vouchersKey) || '[]');
+                    const voucher = vouchers.find(v => v.code === appliedVoucher.code);
+                    if (voucher) {
+                        voucher.used = true;
+                        localStorage.setItem(vouchersKey, JSON.stringify(vouchers));
+                    }
+                }
+
+                // Clear cart
+                clearCart();
+                
+                // Redirect to success page
+                window.location.href = `order-success.html?order=${orderNumber}`;
+                
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert('A apărut o eroare. Vă rugăm să încercați din nou.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Calculate total
+        function calculateTotal() {
+            const cart = getCart();
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            let discount = 0;
+            if (appliedVoucher) {
+                discount = subtotal * (appliedVoucher.discount / 100);
+            }
+            
+            const discountedSubtotal = subtotal - discount;
+            const shipping = discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 15;
+            
+            return discountedSubtotal + shipping;
+        }
+    </script>
+</body>
+</html>

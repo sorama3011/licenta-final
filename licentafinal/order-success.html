@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comandă Plasată cu Succes - Gusturi Românești</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                🇷🇴 Gusturi Românești
+            </a>
+        </div>
+    </nav>
+
+    <div class="container my-5" style="margin-top: 100px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        </div>
+                        
+                        <h1 class="display-6 fw-bold text-success mb-3">Comandă Plasată cu Succes!</h1>
+                        
+                        <div class="alert alert-success mb-4">
+                            <h5 class="alert-heading">
+                                <i class="bi bi-receipt me-2"></i>Numărul comenzii tale: 
+                                <span id="order-number" class="fw-bold">--</span>
+                            </h5>
+                            <p class="mb-0">Vei primi un email de confirmare cu detaliile comenzii în scurt timp.</p>
+                        </div>
+
+                        <div class="row text-start mb-4">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Ce urmează?</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-1-circle text-primary me-2"></i>Procesăm comanda (1-2 ore)</li>
+                                    <li><i class="bi bi-2-circle text-primary me-2"></i>Pregătim produsele (24 ore)</li>
+                                    <li><i class="bi bi-3-circle text-primary me-2"></i>Livrare (2-3 zile lucrătoare)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">Informații Livrare</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-truck text-primary me-2"></i>Transport: 2-3 zile lucrătoare</li>
+                                    <li><i class="bi bi-telephone text-primary me-2"></i>Vei fi contactat înainte de livrare</li>
+                                    <li><i class="bi bi-shield-check text-primary me-2"></i>Produse ambalate cu grijă</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-3 justify-content-center">
+                            <a href="account.html#order-history" class="btn btn-primary">
+                                <i class="bi bi-clock-history me-1"></i> Vezi Comenzile Mele
+                            </a>
+                            <a href="products.html" class="btn btn-outline-primary">
+                                <i class="bi bi-basket me-1"></i> Continuă Cumpărăturile
+                            </a>
+                            <a href="index.html" class="btn btn-outline-secondary">
+                                <i class="bi bi-house me-1"></i> Acasă
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="card shadow-sm mt-4" id="order-details" style="display: none;">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Detalii Comandă</h5>
+                    </div>
+                    <div class="card-body" id="order-summary">
+                        <!-- Order details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5>Gusturi Românești</h5>
+                    <p>Cea mai mare platformă online de produse tradiționale românești.</p>
+                </div>
+                <div class="col-lg-8 text-center text-lg-end">
+                    <p class="mb-0">&copy; 2024 Gusturi Românești. Toate drepturile rezervate.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get order number from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderNumber = urlParams.get('order');
+            
+            if (orderNumber) {
+                document.getElementById('order-number').textContent = orderNumber;
+                loadOrderDetails(orderNumber);
+            }
+
+            // Celebration effect
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Update cart count (should be 0 now)
+            updateCartCount();
+        });
+
+        function loadOrderDetails(orderNumber) {
+            try {
+                // Get user data
+                const userData = getUserData();
+                const userEmail = userData?.email || 'default';
+                const ordersKey = `orders_${userEmail}`;
+                const orders = JSON.parse(localStorage.getItem(ordersKey) || '[]');
+                
+                // Find the order
+                const order = orders.find(o => o.orderNumber === orderNumber);
+                
+                if (order) {
+                    displayOrderDetails(order);
+                }
+            } catch (error) {
+                console.error('Error loading order details:', error);
+            }
+        }
+
+        function displayOrderDetails(order) {
+            const container = document.getElementById('order-summary');
+            
+            // Calculate totals
+            const subtotal = order.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal >= 150 ? 0 : 15;
+            
+            let html = `
+                <div class="row text-start">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Adresa de Livrare</h6>
+                        <p class="mb-1">${order.firstName} ${order.lastName}</p>
+                        <p class="mb-1">${order.address}</p>
+                        <p class="mb-1">${order.city}, ${order.county} ${order.postalCode}</p>
+                        <p class="mb-0">Tel: ${order.phone}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Informații Comandă</h6>
+                        <p class="mb-1"><strong>Metoda de plată:</strong> ${getPaymentMethodName(order.payment_method)}</p>
+                        <p class="mb-1"><strong>Status:</strong> <span class="badge bg-warning">În procesare</span></p>
+                        <p class="mb-0"><strong>Data:</strong> ${new Date(order.date).toLocaleDateString('ro-RO')}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="fw-bold">Produse Comandate</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Produs</th>
+                                <th>Cantitate</th>
+                                <th>Preț</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            order.cart.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${parseFloat(item.price).toFixed(2)} RON</td>
+                        <td>${(item.price * item.quantity).toFixed(2)} RON</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 offset-md-6">
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal:</span>
+                            <span>${subtotal.toFixed(2)} RON</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Transport:</span>
+                            <span>${shipping === 0 ? 'Gratuit' : shipping.toFixed(2) + ' RON'}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span>${order.total.toFixed(2)} RON</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            document.getElementById('order-details').style.display = 'block';
+        }
+
+        function getPaymentMethodName(method) {
+            const methods = {
+                'ramburs': 'Ramburs (plata la livrare)',
+                'card': 'Card bancar',
+                'transfer': 'Transfer bancar'
+            };
+            return methods[method] || method;
+        }
+    </script>
+</body>
+</html>
