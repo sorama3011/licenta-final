@@ -1,1 +1,1 @@
-<form id="checkout-form" method="post" action="api/order.php">
+<form id="checkout-form" method="post" action="plasare_comanda.php">
