@@ -50,20 +50,43 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Load products from database API
 async function loadProducts() {
     try {
+        console.log('Attempting to load products from API...');
         const response = await fetch('api/catalog.php?type=products&limit=100');
+        console.log('Response status:', response.status);
+        
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        
         const result = await response.json();
+        console.log('API Response:', result);
+        
         if (result.success) {
             allProducts = result.products;
             filteredProducts = [...allProducts];
+            console.log('Products loaded successfully:', allProducts.length);
         } else {
             throw new Error(result.message || 'Failed to load products');
         }
     } catch (error) {
         console.error('Error fetching products:', error);
-        throw error;
+        
+        // Fallback to JSON file if API fails
+        console.log('Attempting to load from products.json as fallback...');
+        try {
+            const response = await fetch('products.json');
+            if (response.ok) {
+                allProducts = await response.json();
+                filteredProducts = [...allProducts];
+                console.log('Fallback products loaded:', allProducts.length);
+                showNotification('Loaded products from local data', 'warning');
+            } else {
+                throw new Error('Both API and local data failed');
+            }
+        } catch (fallbackError) {
+            console.error('Fallback also failed:', fallbackError);
+            throw error;
+        }
     }
 }
 

@@ -4,6 +4,12 @@ session_start();
 
 header('Content-Type: application/json');
 
+// Check database connection
+if (!$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    exit;
+}
+
 $type = $_GET['type'] ?? '';
 $user_id = $_SESSION['user_id'] ?? null;
 
@@ -45,6 +51,11 @@ switch ($type) {
 
         $sql = "SELECT * FROM produse WHERE $where_clause ORDER BY $sort LIMIT $limit OFFSET $offset";
         $result = mysqli_query($conn, $sql);
+
+        if (!$result) {
+            echo json_encode(['success' => false, 'message' => 'Database query failed: ' . mysqli_error($conn)]);
+            exit;
+        }
 
         $products = [];
         while ($row = mysqli_fetch_assoc($result)) {
