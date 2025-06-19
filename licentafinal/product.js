@@ -46,82 +46,82 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Render product details
 function renderProductDetails() {
     // Update page title and meta description
-    document.title = `${productData.name} - Gusturi Românești`;
-    document.querySelector('meta[name="description"]').setAttribute('content', productData.description);
-    
+    document.title = `${productData.nume} - Gusturi Românești`;
+    document.querySelector('meta[name="description"]').setAttribute('content', productData.descriere);
+
     // Update breadcrumb
-    document.getElementById('product-breadcrumb').textContent = productData.name;
-    
+    document.getElementById('product-breadcrumb').textContent = productData.nume;
+
     // Basic product info
-    document.getElementById('product-name').textContent = productData.name;
-    document.getElementById('product-image').src = productData.image;
-    document.getElementById('product-image').alt = productData.name;
-    document.getElementById('product-region').textContent = `Produs local din ${productData.region}`;
-    document.getElementById('product-price').textContent = `${productData.price.toFixed(2)} RON`;
-    document.getElementById('product-weight').textContent = `/ ${productData.weight}`;
-    document.getElementById('product-description').textContent = productData.description;
-    document.getElementById('product-long-description').textContent = productData.longDescription;
-    document.getElementById('product-ingredients').textContent = productData.ingredients;
-    
+    document.getElementById('product-name').textContent = productData.nume;
+    document.getElementById('product-image').src = productData.imagine;
+    document.getElementById('product-image').alt = productData.nume;
+    document.getElementById('product-region').textContent = `Produs local din ${productData.regiune}`;
+    document.getElementById('product-price').textContent = `${parseFloat(productData.pret).toFixed(2)} RON`;
+    document.getElementById('product-weight').textContent = `/ ${productData.greutate}`;
+    document.getElementById('product-description').textContent = productData.descriere;
+    document.getElementById('product-long-description').textContent = productData.descriere_lunga;
+    document.getElementById('product-ingredients').textContent = productData.ingrediente;
+
     // Product details
     const detailsContainer = document.getElementById('product-details');
     detailsContainer.innerHTML = '';
-    
+
     // Add origin
-    if (productData.details.origin) {
+    if (productData.detalii.origine) {
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Origine:</strong> ${productData.details.origin}
+                <strong>Origine:</strong> ${productData.detalii.origine}
             </div>
         `;
     }
-    
+
     // Add packaging
-    if (productData.details.packaging) {
+    if (productData.detalii.ambalaj) {
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Tip ambalaj:</strong> ${productData.details.packaging}
+                <strong>Tip ambalaj:</strong> ${productData.detalii.ambalaj}
             </div>
         `;
     }
-    
+
     // Add alcohol content if applicable
-    if (productData.details.alcoholContent) {
+    if (productData.detalii.concentratie_alcool) {
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Concentrație alcool:</strong> ${productData.details.alcoholContent}
+                <strong>Concentrație alcool:</strong> ${productData.detalii.concentratie_alcool}
             </div>
         `;
     }
-    
+
     // Add expiration date if applicable
-    if (productData.details.expiration) {
+    if (productData.detalii.expirare) {
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Expiră la:</strong> ${productData.details.expiration}
+                <strong>Expiră la:</strong> ${productData.detalii.expirare}
             </div>
         `;
     }
-    
+
     // Show age restriction warning if applicable
-    if (productData.ageRestriction) {
+    if (productData.restrictie_varsta) {
         document.getElementById('age-restriction-warning').style.display = 'block';
     } else {
         document.getElementById('age-restriction-warning').style.display = 'none';
     }
-    
+
     // Show special badge if applicable
-    if (productData.specialBadge) {
+    if (productData.badge_special) {
         document.getElementById('special-badge').style.display = 'block';
-        document.getElementById('special-badge-text').textContent = productData.specialBadge.text;
-        document.getElementById('special-badge-description').textContent = productData.specialBadge.description;
+        document.getElementById('special-badge-text').textContent = productData.badge_special.text;
+        document.getElementById('special-badge-description').textContent = productData.badge_special.description;
     } else {
         document.getElementById('special-badge').style.display = 'none';
     }
-    
+
     // Render nutritional info or product info
     renderInfoTable();
-    
+
     // Render related products
     renderRelatedProducts();
 }
@@ -131,37 +131,37 @@ function renderInfoTable() {
     const tableBody = document.getElementById('info-table-body');
     const tableTitle = document.getElementById('info-table-title');
     tableBody.innerHTML = '';
-    
+
     // Check if product has nutritional info or product info
-    if (productData.nutritionalInfo) {
+    if (productData.informatii_nutritionale) {
         tableTitle.textContent = 'Informații Nutriționale (per 100g)';
-        
-        productData.nutritionalInfo.forEach(item => {
+
+        productData.informatii_nutritionale.forEach(item => {
             const row = document.createElement('tr');
-            
+
             // Add indentation for sub-items if needed
             if (item.indented) {
                 row.innerHTML = `
-                    <td class="ps-4">${item.name}</td>
-                    <td>${item.value}</td>
+                    <td class="ps-4">${item.nume}</td>
+                    <td>${item.valoare}</td>
                 `;
             } else {
                 row.innerHTML = `
-                    <td><strong>${item.name}</strong></td>
-                    <td>${item.value}</td>
+                    <td><strong>${item.nume}</strong></td>
+                    <td>${item.valoare}</td>
                 `;
             }
-            
+
             tableBody.appendChild(row);
         });
-    } else if (productData.productInfo) {
+    } else if (productData.informatii_produs) {
         tableTitle.textContent = 'Informații despre Produs';
-        
-        productData.productInfo.forEach(item => {
+
+        productData.informatii_produs.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><strong>${item.name}</strong></td>
-                <td>${item.value}</td>
+                <td><strong>${item.nume}</strong></td>
+                <td>${item.valoare}</td>
             `;
             tableBody.appendChild(row);
         });
@@ -172,17 +172,17 @@ function renderInfoTable() {
 function renderRelatedProducts() {
     const container = document.getElementById('related-products');
     container.innerHTML = '';
-    
+
     // Get related products data
     const relatedProductsData = productData.relatedProducts
         .map(id => allProducts.find(product => product.id === id))
         .filter(product => product !== undefined);
-    
+
     // Render each related product
     relatedProductsData.forEach(product => {
         const productCard = document.createElement('div');
         productCard.className = 'col-md-6 col-lg-3';
-        
+
         productCard.innerHTML = `
             <div class="card product-card h-100 shadow-sm">
                 <a href="product.html?id=${product.id}" class="text-decoration-none">
@@ -206,7 +206,7 @@ function renderRelatedProducts() {
                 </div>
             </div>
         `;
-        
+
         container.appendChild(productCard);
     });
 }
@@ -214,14 +214,14 @@ function renderRelatedProducts() {
 // Add to cart from product detail page
 function addToCartFromDetail() {
     const quantity = parseInt(document.getElementById('quantity').value);
-    
+
     for (let i = 0; i < quantity; i++) {
         addToCart(
             productData.id, 
-            productData.name, 
-            productData.price, 
-            productData.image, 
-            productData.weight
+            productData.nume,
+            productData.pret,
+            productData.imagine,
+            productData.greutate
         );
     }
 }
@@ -235,8 +235,8 @@ function addToFavorites() {
 function shareProduct() {
     if (navigator.share) {
         navigator.share({
-            title: `${productData.name} - Gusturi Românești`,
-            text: `Descoperă acest produs tradițional românesc: ${productData.name}!`,
+            title: `${productData.nume} - Gusturi Românești`,
+            text: `Descoperă acest produs tradițional românesc: ${productData.nume}!`,
             url: window.location.href
         });
     } else {
@@ -268,7 +268,7 @@ function showNotification(message, type = 'info') {
         window.showNotification(message, type);
         return;
     }
-    
+
     // If not defined, create our own implementation
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-custom position-fixed`;
@@ -277,12 +277,16 @@ function showNotification(message, type = 'info') {
         ${message}
         <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         if (notification.parentElement) {
             notification.remove();
         }
     }, 4000);
 }
+```
+
+```
+</replit_final_file>
