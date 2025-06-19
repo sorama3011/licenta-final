@@ -33,6 +33,28 @@ switch ($action) {
         $voucher_code = isset($_POST['voucher_code']) ? sanitize_input($_POST['voucher_code']) : '';
         $use_points = isset($_POST['use_points']) ? (int)$_POST['use_points'] : 0;
 
+        // Handle new address creation if needed
+        if (isset($_POST['new_address']) && $_POST['new_address'] == '1') {
+            $nume_complet = sanitize_input($_POST['nume_complet']);
+            $telefon = sanitize_input($_POST['telefon']);
+            $adresa = sanitize_input($_POST['adresa']);
+            $oras = sanitize_input($_POST['oras']);
+            $judet = sanitize_input($_POST['judet']);
+            $cod_postal = sanitize_input($_POST['cod_postal']);
+            
+            // Create new address
+            $new_address_sql = "INSERT INTO adrese (user_id, nume_complet, telefon, adresa, oras, judet, cod_postal) 
+                               VALUES ($user_id, '$nume_complet', '$telefon', '$adresa', '$oras', '$judet', '$cod_postal')";
+            
+            if (mysqli_query($conn, $new_address_sql)) {
+                $adresa_livrare_id = mysqli_insert_id($conn);
+                $adresa_facturare_id = $adresa_livrare_id;
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Eroare la salvarea adresei']);
+                exit;
+            }
+        }
+
         // Validate addresses
         if ($adresa_livrare_id == 0) {
             echo json_encode(['success' => false, 'message' => 'Selectează o adresă de livrare']);

@@ -53,6 +53,9 @@ $show_address_form = empty($addresses);
 
                 <form id="checkout-form" method="post" action="api/order.php">
                     <input type="hidden" name="action" value="place_order">
+                    <?php if ($show_address_form): ?>
+                    <input type="hidden" name="new_address" value="1">
+                    <?php endif; ?>
 
                     <!-- Delivery Address -->
                     <div class="card mb-4">
@@ -271,7 +274,7 @@ $show_address_form = empty($addresses);
                 const result = await response.json();
 
                 if (result.success) {
-                    window.location.href = result.redirect || 'order-success.php?order=' + result.order_number;
+                    window.location.href = 'order-success.php?order=' + result.order_number;
                 } else {
                     alert('Eroare: ' + result.message);
                 }

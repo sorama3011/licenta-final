@@ -31,7 +31,8 @@ $order_result = mysqli_query($conn, $order_sql);
 
 // Check if order exists
 if (mysqli_num_rows($order_result) == 0) {
-    header("Location: client-dashboard.html#order-history");
+    $_SESSION['error_message'] = 'Comanda nu a fost găsită.';
+    header("Location: index.html");
     exit;
 }
 
