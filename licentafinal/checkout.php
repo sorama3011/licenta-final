@@ -1,4 +1,3 @@
-
 <?php
 require_once 'db-config.php';
 session_start();
@@ -51,10 +50,10 @@ $show_address_form = empty($addresses);
         <div class="row">
             <div class="col-lg-8">
                 <h2>Finalizare Comandă</h2>
-                
+
                 <form id="checkout-form" method="post" action="api/order.php">
                     <input type="hidden" name="action" value="place_order">
-                    
+
                     <!-- Delivery Address -->
                     <div class="card mb-4">
                         <div class="card-header">
@@ -168,7 +167,7 @@ $show_address_form = empty($addresses);
                                 <p class="mt-2">Se încarcă coșul...</p>
                             </div>
                         </div>
-                        
+
                         <div id="order-totals" style="display: none;">
                             <hr>
                             <div class="d-flex justify-content-between">
@@ -188,7 +187,7 @@ $show_address_form = empty($addresses);
                                 <span>Total:</span>
                                 <span id="total">0.00 RON</span>
                             </div>
-                            
+
                             <button type="submit" form="checkout-form" class="btn btn-danger w-100 mt-3" id="place-order-btn">
                                 <i class="bi bi-check-circle me-2"></i>Plasează Comanda
                             </button>
@@ -207,7 +206,7 @@ $show_address_form = empty($addresses);
             try {
                 const response = await fetch('api/cart.php?action=get_cart');
                 const result = await response.json();
-                
+
                 if (result.success) {
                     displayOrderSummary(result);
                 } else {
@@ -223,7 +222,7 @@ $show_address_form = empty($addresses);
 
         function displayOrderSummary(data) {
             const container = document.getElementById('order-summary');
-            
+
             if (data.items.length === 0) {
                 container.innerHTML = '<div class="alert alert-warning">Coșul este gol</div>';
                 return;
@@ -243,20 +242,20 @@ $show_address_form = empty($addresses);
             });
 
             container.innerHTML = html;
-            
+
             // Update totals
             document.getElementById('subtotal').textContent = data.subtotal.toFixed(2) + ' RON';
             document.getElementById('shipping').textContent = (data.subtotal >= 150 ? 'Gratuit' : '15.00 RON');
             document.getElementById('discount').textContent = data.discount.toFixed(2) + ' RON';
             document.getElementById('total').textContent = data.total.toFixed(2) + ' RON';
-            
+
             document.getElementById('order-totals').style.display = 'block';
         }
 
         // Handle form submission
         document.getElementById('checkout-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const btn = document.getElementById('place-order-btn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Se procesează...';
@@ -268,9 +267,9 @@ $show_address_form = empty($addresses);
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     window.location.href = result.redirect || 'order-success.php?order=' + result.order_number;
                 } else {
