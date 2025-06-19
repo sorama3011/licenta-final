@@ -106,7 +106,10 @@ switch ($type) {
             exit;
         }
 
-        $sql = "SELECT * FROM produse WHERE id = $product_id AND activ = 1";
+        $sql = "SELECT id, nume, descriere, descriere_lunga, ingrediente, pret, imagine, 
+                       categorie, regiune, cantitate, stoc, producator, recomandat, 
+                       restrictie_varsta, data_adaugarii, activ 
+                FROM produse WHERE id = $product_id AND activ = 1";
         $result = mysqli_query($conn, $sql);
 
         if (mysqli_num_rows($result) == 0) {
@@ -115,6 +118,13 @@ switch ($type) {
         }
 
         $product = mysqli_fetch_assoc($result);
+
+        // Ensure all fields have default values if missing
+        $product['descriere'] = $product['descriere'] ?? '';
+        $product['descriere_lunga'] = $product['descriere_lunga'] ?? $product['descriere'];
+        $product['ingrediente'] = $product['ingrediente'] ?? 'Informații indisponibile';
+        $product['cantitate'] = $product['cantitate'] ?? '';
+        $product['producator'] = $product['producator'] ?? '';
 
         // Get product tags
         $tags_sql = "SELECT tag FROM produse_taguri WHERE produs_id = $product_id";
@@ -126,7 +136,8 @@ switch ($type) {
         $product['tags'] = $tags;
 
         // Get related products (same category, different products)
-        $related_sql = "SELECT * FROM produse WHERE categorie = '{$product['categorie']}' AND id != $product_id AND activ = 1 LIMIT 4";
+        $related_sql = "SELECT id, nume, descriere, pret, imagine, categorie, regiune, cantitate 
+                        FROM produse WHERE categorie = '{$product['categorie']}' AND id != $product_id AND activ = 1 LIMIT 4";
         $related_result = mysqli_query($conn, $related_sql);
         $related_products = [];
         while ($related = mysqli_fetch_assoc($related_result)) {

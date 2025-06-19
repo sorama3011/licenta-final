@@ -1,3 +1,4 @@
+
 // Global variables
 let productData = null;
 let allProducts = [];
@@ -41,13 +42,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// Load all products from JSON file
-
 // Render product details
 function renderProductDetails() {
     // Update page title and meta description
     document.title = `${productData.nume} - Gusturi Românești`;
-    document.querySelector('meta[name="description"]').setAttribute('content', productData.descriere);
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+        metaDescription.setAttribute('content', productData.descriere || '');
+    }
 
     // Update breadcrumb
     document.getElementById('product-breadcrumb').textContent = productData.nume;
@@ -58,63 +60,75 @@ function renderProductDetails() {
     document.getElementById('product-image').alt = productData.nume;
     document.getElementById('product-region').textContent = `Produs local din ${productData.regiune}`;
     document.getElementById('product-price').textContent = `${parseFloat(productData.pret).toFixed(2)} RON`;
-    document.getElementById('product-weight').textContent = `/ ${productData.greutate}`;
-    document.getElementById('product-description').textContent = productData.descriere;
-    document.getElementById('product-long-description').textContent = productData.descriere_lunga;
-    document.getElementById('product-ingredients').textContent = productData.ingrediente;
+    
+    // Handle weight/quantity display
+    const weightText = productData.cantitate || productData.greutate || '';
+    document.getElementById('product-weight').textContent = weightText ? `/ ${weightText}` : '';
+    
+    // Product descriptions
+    document.getElementById('product-description').textContent = productData.descriere || '';
+    document.getElementById('product-long-description').textContent = productData.descriere_lunga || productData.descriere || '';
+    document.getElementById('product-ingredients').textContent = productData.ingrediente || 'Informații indisponibile';
 
-    // Product details
+    // Product details section
     const detailsContainer = document.getElementById('product-details');
     detailsContainer.innerHTML = '';
 
-    // Add origin
-    if (productData.detalii.origine) {
+    // Add origin if available
+    if (productData.regiune) {
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Origine:</strong> ${productData.detalii.origine}
+                <strong>Origine:</strong> ${productData.regiune}
             </div>
         `;
     }
 
-    // Add packaging
-    if (productData.detalii.ambalaj) {
+    // Add category
+    if (productData.categorie) {
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Tip ambalaj:</strong> ${productData.detalii.ambalaj}
+                <strong>Categorie:</strong> ${productData.categorie}
             </div>
         `;
     }
 
-    // Add alcohol content if applicable
-    if (productData.detalii.concentratie_alcool) {
+    // Add stock information
+    if (productData.stoc !== undefined) {
+        const stockText = parseInt(productData.stoc) > 0 ? 'În stoc' : 'Stoc epuizat';
+        const stockClass = parseInt(productData.stoc) > 0 ? 'text-success' : 'text-danger';
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Concentrație alcool:</strong> ${productData.detalii.concentratie_alcool}
+                <strong>Disponibilitate:</strong> <span class="${stockClass}">${stockText}</span>
             </div>
         `;
     }
 
-    // Add expiration date if applicable
-    if (productData.detalii.expirare) {
+    // Add producer if available
+    if (productData.producator) {
         detailsContainer.innerHTML += `
             <div class="col-6">
-                <strong>Expiră la:</strong> ${productData.detalii.expirare}
+                <strong>Producător:</strong> ${productData.producator}
             </div>
         `;
     }
 
     // Show age restriction warning if applicable
-    if (productData.restrictie_varsta) {
+    if (productData.restrictie_varsta || (productData.tags && productData.tags.includes('18+'))) {
         document.getElementById('age-restriction-warning').style.display = 'block';
     } else {
         document.getElementById('age-restriction-warning').style.display = 'none';
     }
 
-    // Show special badge if applicable
-    if (productData.badge_special) {
+    // Show special badges if product is recommended or has special tags
+    if (productData.recomandat == 1 || (productData.tags && productData.tags.length > 0)) {
         document.getElementById('special-badge').style.display = 'block';
-        document.getElementById('special-badge-text').textContent = productData.badge_special.text;
-        document.getElementById('special-badge-description').textContent = productData.badge_special.description;
+        if (productData.recomandat == 1) {
+            document.getElementById('special-badge-text').textContent = 'Produs Recomandat';
+            document.getElementById('special-badge-description').textContent = 'Acest produs este recomandat de echipa noastră.';
+        } else if (productData.tags && productData.tags.length > 0) {
+            document.getElementById('special-badge-text').textContent = 'Produs Special';
+            document.getElementById('special-badge-description').textContent = productData.tags.join(', ');
+        }
     } else {
         document.getElementById('special-badge').style.display = 'none';
     }
@@ -132,39 +146,57 @@ function renderInfoTable() {
     const tableTitle = document.getElementById('info-table-title');
     tableBody.innerHTML = '';
 
-    // Check if product has nutritional info or product info
-    if (productData.informatii_nutritionale) {
-        tableTitle.textContent = 'Informații Nutriționale (per 100g)';
+    // For now, show basic product information since we don't have structured nutritional data
+    tableTitle.textContent = 'Informații despre Produs';
 
-        productData.informatii_nutritionale.forEach(item => {
-            const row = document.createElement('tr');
+    // Add basic product information
+    const productInfo = [];
+    
+    if (productData.categorie) {
+        productInfo.push({ nume: 'Categorie', valoare: productData.categorie });
+    }
+    
+    if (productData.regiune) {
+        productInfo.push({ nume: 'Regiunea de origine', valoare: productData.regiune });
+    }
+    
+    if (productData.cantitate) {
+        productInfo.push({ nume: 'Cantitate/Greutate', valoare: productData.cantitate });
+    }
+    
+    if (productData.producator) {
+        productInfo.push({ nume: 'Producător', valoare: productData.producator });
+    }
+    
+    if (productData.data_adaugarii) {
+        const addedDate = new Date(productData.data_adaugarii).toLocaleDateString('ro-RO');
+        productInfo.push({ nume: 'Adăugat în catalog', valoare: addedDate });
+    }
 
-            // Add indentation for sub-items if needed
-            if (item.indented) {
-                row.innerHTML = `
-                    <td class="ps-4">${item.nume}</td>
-                    <td>${item.valoare}</td>
-                `;
-            } else {
-                row.innerHTML = `
-                    <td><strong>${item.nume}</strong></td>
-                    <td>${item.valoare}</td>
-                `;
-            }
+    // Add tags if available
+    if (productData.tags && productData.tags.length > 0) {
+        productInfo.push({ nume: 'Caracteristici speciale', valoare: productData.tags.join(', ') });
+    }
 
-            tableBody.appendChild(row);
-        });
-    } else if (productData.informatii_produs) {
-        tableTitle.textContent = 'Informații despre Produs';
+    // Render the product information
+    productInfo.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${item.nume}</strong></td>
+            <td>${item.valoare}</td>
+        `;
+        tableBody.appendChild(row);
+    });
 
-        productData.informatii_produs.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><strong>${item.nume}</strong></td>
-                <td>${item.valoare}</td>
-            `;
-            tableBody.appendChild(row);
-        });
+    // If no product info available, show a message
+    if (productInfo.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td colspan="2" class="text-center text-muted">
+                Informații suplimentare indisponibile momentan
+            </td>
+        `;
+        tableBody.appendChild(row);
     }
 }
 
@@ -173,42 +205,55 @@ function renderRelatedProducts() {
     const container = document.getElementById('related-products');
     container.innerHTML = '';
 
-    // Get related products data
-    const relatedProductsData = productData.relatedProducts
-        .map(id => allProducts.find(product => product.id === id))
-        .filter(product => product !== undefined);
-
-    // Render each related product
-    relatedProductsData.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'col-md-6 col-lg-3';
-
-        productCard.innerHTML = `
-            <div class="card product-card h-100 shadow-sm">
-                <a href="product.html?id=${product.id}" class="text-decoration-none">
-                    <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-                </a>
-                <div class="card-body d-flex flex-column">
-                    <span class="badge region-badge mb-2 align-self-start">Produs local din ${product.region}</span>
-                    <h5 class="card-title">
-                        <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${product.name}</a>
-                    </h5>
-                    <p class="card-text text-muted small">${product.description.substring(0, 60)}...</p>
-                    <div class="mt-auto">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="price">${product.price.toFixed(2)} RON</span>
-                            <span class="text-muted small">${product.weight}</span>
-                        </div>
-                        <button class="btn btn-add-to-cart w-100" onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image}', '${product.weight}')">
-                            <i class="bi bi-basket"></i> Adaugă în Coș
-                        </button>
-                    </div>
+    // Check if we have related products from the API
+    if (productData.related_products && productData.related_products.length > 0) {
+        productData.related_products.forEach(product => {
+            const productCard = createRelatedProductCard(product);
+            container.appendChild(productCard);
+        });
+    } else {
+        // Show message if no related products
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Nu sunt disponibile produse similare momentan.
                 </div>
             </div>
         `;
+    }
+}
 
-        container.appendChild(productCard);
-    });
+// Create related product card
+function createRelatedProductCard(product) {
+    const productCard = document.createElement('div');
+    productCard.className = 'col-md-6 col-lg-3';
+
+    productCard.innerHTML = `
+        <div class="card product-card h-100 shadow-sm">
+            <a href="product.html?id=${product.id}" class="text-decoration-none">
+                <img src="${product.imagine}" class="card-img-top" alt="${product.nume}" style="height: 200px; object-fit: cover;">
+            </a>
+            <div class="card-body d-flex flex-column">
+                <span class="badge region-badge mb-2 align-self-start">Produs local din ${product.regiune}</span>
+                <h5 class="card-title">
+                    <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${product.nume}</a>
+                </h5>
+                <p class="card-text text-muted small">${(product.descriere || '').substring(0, 60)}...</p>
+                <div class="mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="price">${parseFloat(product.pret).toFixed(2)} RON</span>
+                        <span class="text-muted small">${product.cantitate || ''}</span>
+                    </div>
+                    <button class="btn btn-add-to-cart w-100" onclick="addToCart(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate || ''}')">
+                        <i class="bi bi-basket"></i> Adaugă în Coș
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    return productCard;
 }
 
 // Add to cart from product detail page
@@ -221,7 +266,7 @@ function addToCartFromDetail() {
             productData.nume,
             productData.pret,
             productData.imagine,
-            productData.greutate
+            productData.cantitate || productData.greutate || ''
         );
     }
 }
@@ -286,7 +331,3 @@ function showNotification(message, type = 'info') {
         }
     }, 4000);
 }
-```
-
-```
-</replit_final_file>
