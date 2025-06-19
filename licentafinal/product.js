@@ -18,10 +18,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Fetch product data from consolidated API
         const response = await fetch(`api/catalog.php?type=product&id=${productId}`);
         if (!response.ok) {
+            console.error(`HTTP error! Status: ${response.status}`);
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        
         const result = await response.json();
+        console.log('API Response:', result);
+        
         if (!result.success) {
+            console.error('API Error:', result.message);
             showError(result.message || 'Produsul nu a fost găsit. Vă rugăm să selectați un produs valid.');
             return;
         }

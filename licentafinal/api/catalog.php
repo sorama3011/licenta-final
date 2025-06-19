@@ -102,9 +102,12 @@ switch ($type) {
         $product_id = (int)$_GET['id'];
 
         if (!$product_id) {
+            error_log('Invalid product ID provided: ' . $_GET['id']);
             echo json_encode(['success' => false, 'message' => 'ID produs invalid']);
             exit;
         }
+
+        error_log('Fetching product with ID: ' . $product_id);
 
         $sql = "SELECT p.id, p.nume, p.descriere, p.descriere_lunga, p.ingrediente, p.pret, p.imagine, 
                        p.categorie, p.regiune, p.cantitate, p.stoc, p.producator, p.recomandat, 
@@ -114,10 +117,19 @@ switch ($type) {
                 FROM produse p
                 LEFT JOIN produse_nutritionale pn ON p.id = pn.produs_id
                 WHERE p.id = $product_id AND p.activ = 1";
+        
+        error_log('Executing product query: ' . $sql);
         $result = mysqli_query($conn, $sql);
 
+        if (!$result) {
+            error_log('Product query failed: ' . mysqli_error($conn));
+            echo json_encode(['success' => false, 'message' => 'Eroare baza de date: ' . mysqli_error($conn)]);
+            exit;
+        }
+
         if (mysqli_num_rows($result) == 0) {
-            echo json_encode(['success' => false, 'message' => 'Produsul nu a fost găsit']);
+            error_log('No product found with ID: ' . $product_id);
+            echo json_encode(['success' => false, 'message' => 'Produsul nu a fost găsit sau nu este activ']);
             exit;
         }
 

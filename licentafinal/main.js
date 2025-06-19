@@ -188,7 +188,7 @@ async function loadFeaturedProducts() {
     try {
         const response = await fetch('api/catalog.php?type=featured');
         const result = await response.json();
-        
+
         if (result.success) {
             container.innerHTML = '';
             result.products.forEach(product => {
@@ -243,7 +243,54 @@ function createProductCard(product) {
 }
 
 // Add to cart function
-function addToCart(id, name, price, image, weight) {
+async function addToCart(id, name, price, image, weight) {
+    // Check if user is logged in for database cart functionality
+    const isLoggedIn = await isUserLoggedIn();
+
+    if (isLoggedIn) {
+        // Use database cart
+        await addToCartDatabase(id, name, price, image, weight);
+    } else {
+        // Use localStorage cart for non-logged in users
+        addToCartLocal(id, name, price, image, weight);
+    }
+}
+
+// Add database cart functionality
+async function addToCartDatabase(id, name, price, image, weight) {
+    try {
+        const response = await fetch('api/cart.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=add_item&produs_id=${id}&cantitate=1`
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('Produsul a fost adăugat în coș!', 'success');
+            updateCartCount();
+        } else {
+            if (data.message.includes('autentificat')) {
+                // User needs to login
+                showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            } else {
+                showNotification(data.message || 'Eroare la adăugarea în coș', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('Eroare la adăugarea în coș', 'error');
+    }
+}
+
+// Add to cart locally (localStorage)
+function addToCartLocal(id, name, price, image, weight) {
     const existingItem = cart.find(item => item.id === id);
 
     if (existingItem) {
@@ -557,7 +604,7 @@ async function subscribeNewsletter(email) {
         showNotification('Vă rugăm introduceți o adresă de email validă.', 'danger');
         return false;
     }
-    
+
     try {
         const response = await fetch('api/newsletter.php', {
             method: 'POST',
@@ -566,9 +613,9 @@ async function subscribeNewsletter(email) {
             },
             body: `action=subscribe&email=${encodeURIComponent(email)}`
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             showNotification('Te-ai abonat cu succes la newsletter!', 'success');
             return true;
@@ -639,7 +686,7 @@ function proceedToCheckout() {
         }, 2000);
         return;
     }
-    
+
     // Redirect to checkout page
     window.location.href = 'checkout.php';rn;
     }
