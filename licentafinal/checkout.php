@@ -24,11 +24,8 @@ while ($addr = mysqli_fetch_assoc($addresses_result)) {
     $addresses[] = $addr;
 }
 
-// If no addresses, redirect to add address
-if (empty($addresses)) {
-    header('Location: account.html?tab=addresses&message=Adaugă o adresă pentru a continua');
-    exit;
-}
+// If no addresses, show address form in checkout
+$show_address_form = empty($addresses);
 ?>
 <!DOCTYPE html>
 <html lang="ro">
@@ -64,6 +61,41 @@ if (empty($addresses)) {
                             <h5><i class="bi bi-truck me-2"></i>Adresa de Livrare</h5>
                         </div>
                         <div class="card-body">
+                            <?php if ($show_address_form): ?>
+                            <!-- Address form for new users -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="nume_complet" class="form-label">Nume complet *</label>
+                                    <input type="text" class="form-control" name="nume_complet" required 
+                                           value="<?php echo htmlspecialchars($user['prenume'] . ' ' . $user['nume']); ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="telefon" class="form-label">Telefon *</label>
+                                    <input type="tel" class="form-control" name="telefon" required>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <label for="adresa" class="form-label">Adresa *</label>
+                                    <input type="text" class="form-control" name="adresa" placeholder="Strada, numărul" required>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <label for="oras" class="form-label">Oraș *</label>
+                                    <input type="text" class="form-control" name="oras" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="judet" class="form-label">Județ *</label>
+                                    <input type="text" class="form-control" name="judet" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="cod_postal" class="form-label">Cod Poștal *</label>
+                                    <input type="text" class="form-control" name="cod_postal" required>
+                                </div>
+                            </div>
+                            <?php else: ?>
+                            <!-- Existing addresses -->
                             <?php foreach ($addresses as $index => $addr): ?>
                             <div class="form-check mb-3">
                                 <input class="form-check-input" type="radio" name="adresa_livrare" 
@@ -77,6 +109,7 @@ if (empty($addresses)) {
                                 </label>
                             </div>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 

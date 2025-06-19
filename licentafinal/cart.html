@@ -456,6 +456,13 @@
         async function proceedToCheckout() {
             const loggedIn = await requireLogin('checkout.php');
             if (loggedIn) {
+                // Check if cart has items
+                const cart = getCart();
+                if (cart.length === 0) {
+                    showNotification('Coșul este gol. Adaugă produse pentru a continua.', 'warning');
+                    return;
+                }
+                
                 window.location.href = 'checkout.php';
             }
         }
