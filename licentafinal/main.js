@@ -56,7 +56,7 @@ function logout() {
     localStorage.removeItem('redirectAfterLogin');
     updateNavigation();
     showNotification('Te-ai deconectat cu succes!', 'info');
-    
+
     // Redirect to home page if on account page
     if (window.location.pathname.includes('account.html')) {
         window.location.href = 'index.html';
@@ -67,7 +67,7 @@ function updateNavigation() {
     const accountLinks = document.querySelectorAll('a[href="login.html"]');
     const isLoggedIn = isUserLoggedIn();
     const userData = getUserData();
-    
+
     accountLinks.forEach(link => {
         const parentLi = link.closest('li');
         if (parentLi) {
@@ -122,19 +122,19 @@ function requireLogin(redirectUrl = null) {
 document.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
     updateNavigation();
-    
+
     // Load featured products on homepage
     if (document.getElementById('featured-products')) {
         loadFeaturedProducts();
     }
-    
+
     // Check if we're on account page and user is not logged in
     if (window.location.pathname.includes('account.html')) {
         if (!requireLogin()) {
             return;
         }
     }
-    
+
     // Handle hash navigation for account page
     if (window.location.hash && window.location.pathname.includes('account.html')) {
         setTimeout(() => {
@@ -144,18 +144,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
     }
-    
+
     // Add smooth scrolling
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const href = this.getAttribute('href');
-            
+
             // Skip if href is just '#' (invalid selector)
             if (href === '#') {
                 return;
             }
-            
+
             const target = document.querySelector(href);
             if (target) {
                 target.scrollIntoView({
@@ -164,10 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Add back to top button
     addBackToTopButton();
-    
+
     // Handle account link clicks
     document.addEventListener('click', function(e) {
         const accountLink = e.target.closest('a[href="account.html"]');
@@ -184,9 +184,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadFeaturedProducts() {
     const container = document.getElementById('featured-products');
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     featuredProducts.forEach(product => {
         const productCard = createProductCard(product);
         container.appendChild(productCard);
@@ -197,7 +197,7 @@ function loadFeaturedProducts() {
 function createProductCard(product) {
     const col = document.createElement('div');
     col.className = 'col-md-6 col-lg-3';
-    
+
     col.innerHTML = `
         <div class="card product-card h-100 shadow-sm">
             <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
@@ -217,14 +217,14 @@ function createProductCard(product) {
             </div>
         </div>
     `;
-    
+
     return col;
 }
 
 // Add to cart function
 function addToCart(id, name, price, image, weight) {
     const existingItem = cart.find(item => item.id === id);
-    
+
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
@@ -237,12 +237,12 @@ function addToCart(id, name, price, image, weight) {
             quantity: 1
         });
     }
-    
+
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
     updateCartSubtotal(); // Update subtotal for free shipping progress
     showAddToCartNotification(name);
-    
+
     // Check if we've reached free shipping threshold
     checkFreeShippingThreshold();
 }
@@ -253,7 +253,7 @@ function updateCartCount() {
     if (cartCount) {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         cartCount.textContent = totalItems;
-        
+
         if (totalItems > 0) {
             cartCount.style.display = 'inline';
         } else {
@@ -273,16 +273,16 @@ function updateCartSubtotal() {
 function checkFreeShippingThreshold() {
     const FREE_SHIPPING_THRESHOLD = 150;
     const subtotal = updateCartSubtotal();
-    
+
     // If we just crossed the threshold, trigger celebration
     if (subtotal >= FREE_SHIPPING_THRESHOLD && 
         (localStorage.getItem('freeShippingCelebrated') !== 'true' || 
          parseFloat(localStorage.getItem('previousSubtotal') || '0') < FREE_SHIPPING_THRESHOLD)) {
-        
+
         celebrateFreeShipping();
         localStorage.setItem('freeShippingCelebrated', 'true');
     }
-    
+
     // Store previous subtotal to check if we crossed the threshold
     localStorage.setItem('previousSubtotal', subtotal.toString());
 }
@@ -296,7 +296,7 @@ function celebrateFreeShipping() {
             spread: 70,
             origin: { y: 0.6 }
         });
-        
+
         // Show notification
         showNotification('Felicitări! Ai obținut transport GRATUIT! 🚚', 'success');
     }
@@ -312,9 +312,9 @@ function showAddToCartNotification(productName) {
         <i class="bi bi-check-circle"></i> <strong>${productName}</strong> a fost adăugat în coș!
         <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Auto remove after 3 seconds
     setTimeout(() => {
         if (notification.parentElement) {
@@ -329,7 +329,7 @@ function removeFromCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
     updateCartSubtotal();
-    
+
     // Reload cart page if we're on it
     if (window.location.pathname.includes('cart.html')) {
         loadCartItems();
@@ -347,7 +347,7 @@ function updateCartQuantity(id, quantity) {
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
             updateCartSubtotal();
-            
+
             // Update cart total if we're on cart page
             if (window.location.pathname.includes('cart.html')) {
                 updateCartTotal();
@@ -361,7 +361,7 @@ function updateCartQuantity(id, quantity) {
 function loadCartItems() {
     const cartContainer = document.getElementById('cart-items');
     if (!cartContainer) return;
-    
+
     if (cart.length === 0) {
         cartContainer.innerHTML = `
             <div class="text-center py-5">
@@ -374,9 +374,9 @@ function loadCartItems() {
         document.getElementById('cart-summary').style.display = 'none';
         return;
     }
-    
+
     cartContainer.innerHTML = '';
-    
+
     cart.forEach(item => {
         const cartItem = document.createElement('div');
         cartItem.className = 'cart-item border-bottom py-3';
@@ -407,7 +407,7 @@ function loadCartItems() {
         `;
         cartContainer.appendChild(cartItem);
     });
-    
+
     updateCartTotal();
     updateShippingProgress();
 }
@@ -417,7 +417,7 @@ function updateCartTotal() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const shipping = subtotal > 150 ? 0 : 15; // Free shipping over 150 RON
     const total = subtotal + shipping;
-    
+
     document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} RON`;
     document.getElementById('shipping').textContent = shipping === 0 ? 'Gratuit' : `${shipping.toFixed(2)} RON`;
     document.getElementById('total').textContent = `${total.toFixed(2)} RON`;
@@ -428,12 +428,12 @@ function updateShippingProgress() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const container = document.getElementById('shipping-progress-container');
     const FREE_SHIPPING_THRESHOLD = 150; // RON
-    
+
     if (!container) return;
-    
+
     // Store subtotal in localStorage for progress tracking
     localStorage.setItem('cartSubtotal', subtotal.toString());
-    
+
     if (subtotal >= FREE_SHIPPING_THRESHOLD) {
         // Free shipping achieved
         container.innerHTML = `
@@ -447,7 +447,7 @@ function updateShippingProgress() {
                 </div>
             </div>
         `;
-        
+
         // Check if we should celebrate (only if we just crossed the threshold)
         if (localStorage.getItem('freeShippingCelebrated') !== 'true') {
             celebrateFreeShipping();
@@ -457,7 +457,7 @@ function updateShippingProgress() {
         // Calculate remaining amount
         const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
         const progressPercentage = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
-        
+
         container.innerHTML = `
             <div class="alert alert-info mb-0 d-flex align-items-center">
                 <i class="bi bi-truck me-2 fs-5"></i>
@@ -478,7 +478,7 @@ function updateShippingProgress() {
                 </div>
             </div>
         `;
-        
+
         // Reset celebration flag if we're below threshold
         localStorage.setItem('freeShippingCelebrated', 'false');
     }
@@ -490,9 +490,9 @@ function addBackToTopButton() {
     backToTop.className = 'back-to-top';
     backToTop.innerHTML = '<i class="bi bi-arrow-up"></i>';
     backToTop.setAttribute('aria-label', 'Înapoi sus');
-    
+
     document.body.appendChild(backToTop);
-    
+
     window.addEventListener('scroll', () => {
         if (window.pageYOffset > 300) {
             backToTop.style.display = 'block';
@@ -500,7 +500,7 @@ function addBackToTopButton() {
             backToTop.style.display = 'none';
         }
     });
-    
+
     backToTop.addEventListener('click', () => {
         window.scrollTo({
             top: 0,
@@ -513,10 +513,10 @@ function addBackToTopButton() {
 function validateForm(formId) {
     const form = document.getElementById(formId);
     if (!form) return false;
-    
+
     const inputs = form.querySelectorAll('input[required], textarea[required]');
     let isValid = true;
-    
+
     inputs.forEach(input => {
         if (!input.value.trim()) {
             input.classList.add('is-invalid');
@@ -526,12 +526,19 @@ function validateForm(formId) {
             input.classList.add('is-valid');
         }
     });
-    
+
     return isValid;
 }
 
 // Newsletter subscription
 function subscribeNewsletter(email) {
+    fetch('api/newsletter.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=subscribe&email=${encodeURIComponent(email)}`
+    })
     if (email && email.includes('@')) {
         showNotification('Te-ai abonat cu succes la newsletter!', 'success');
         return true;
@@ -550,9 +557,9 @@ function showNotification(message, type = 'info') {
         ${message}
         <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         if (notification.parentElement) {
             notification.remove();
@@ -586,7 +593,7 @@ function proceedToCheckout() {
         alert('Coșul este gol. Adăugați produse pentru a continua.');
         return;
     }
-    
+
     // Check if user is logged in
     if (!isUserLoggedIn()) {
         // Store current page as redirect after login
@@ -597,7 +604,7 @@ function proceedToCheckout() {
         }, 2000);
         return;
     }
-    
+
     // Redirect to checkout page
     window.location.href = 'checkout.php';
 }
