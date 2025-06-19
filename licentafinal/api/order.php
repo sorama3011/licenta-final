@@ -19,6 +19,17 @@ switch ($action) {
         $mod_plata = sanitize_input($_POST['payment_method'] ?? $_POST['mod_plata'] ?? '');
         $observatii = sanitize_input($_POST['notes'] ?? $_POST['observatii'] ?? '');
         
+        // Validate required fields
+        if ($adresa_id <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Vă rugăm să selectați o adresă de livrare.']);
+            exit;
+        }
+        
+        if (empty($mod_plata)) {
+            echo json_encode(['success' => false, 'message' => 'Vă rugăm să selectați o metodă de plată.']);
+            exit;
+        }
+        
         // Get cart items
         $cart_sql = "SELECT cc.produs_id, cc.cantitate, cc.pret, p.nume, p.pret as pret_curent, p.stoc 
                      FROM cos_cumparaturi cc 
@@ -69,6 +80,9 @@ switch ($action) {
         if (mysqli_query($conn, $order_sql)) {
             $order_id = mysqli_insert_id($conn);
             
+            // Log successful order creation
+            error_log("Order created successfully: ID $order_id, Number $numar_comanda");
+            
             // Add order items
             foreach ($cart_items as $item) {
                 $item_subtotal = $item['pret_curent'] * $item['cantitate'];
@@ -101,7 +115,9 @@ switch ($action) {
                 'message' => 'Comanda a fost plasată cu succes'
             ]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Eroare la plasarea comenzii']);
+            $error = mysqli_error($conn);
+            error_log("Order creation failed: " . $error);
+            echo json_encode(['success' => false, 'message' => 'Eroare la plasarea comenzii: ' . $error]);
         }
         break;
 

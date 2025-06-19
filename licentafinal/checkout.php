@@ -342,7 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <h5 class="mb-0">Adresa de Livrare</h5>
                         </div>
                         <div class="card-body">
-                            <form id="checkoutForm" method="post" action="api/order.php">
+                            <form id="checkoutForm" method="post" action="checkout.php">
                                 <?php if (mysqli_num_rows($addresses_result) > 0): ?>
                                 <div class="mb-4">
                                     <h6>Adresele Mele Salvate</h6>
@@ -656,13 +656,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 transferDetails.style.display = paymentTransfer.checked ? 'block' : 'none';
             }
             
-            // Handle form submission
+            // Handle form submission via AJAX
             const checkoutForm = document.getElementById('checkoutForm');
             if (checkoutForm) {
                 checkoutForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
                     const formData = new FormData(this);
+                    formData.append('action', 'place_order');
+                    
+                    // Show loading state
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const originalText = submitButton.innerHTML;
+                    submitButton.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Procesăm comanda...';
+                    submitButton.disabled = true;
                     
                     fetch('api/order.php', {
                         method: 'POST',
@@ -671,16 +678,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Redirect to success page
+                            // Show success message and redirect
+                            alert('Comanda a fost plasată cu succes! Numărul comenzii: ' + data.order_number);
                             window.location.href = 'order-success.php?order=' + data.order_number;
                         } else {
                             // Show error message
                             alert('Eroare: ' + data.message);
+                            submitButton.innerHTML = originalText;
+                            submitButton.disabled = false;
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('A apărut o eroare la plasarea comenzii.');
+                        alert('A apărut o eroare la plasarea comenzii. Vă rugăm să încercați din nou.');
+                        submitButton.innerHTML = originalText;
+                        submitButton.disabled = false;
                     });
                 });
             }
