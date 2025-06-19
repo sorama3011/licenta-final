@@ -272,7 +272,6 @@
 
         async function applyVoucher() {
             const voucherCode = document.getElementById('voucherCode').value.trim().toUpperCase();
-            const messageDiv = document.getElementById('voucherMessage');
             
             if (!voucherCode) {
                 showVoucherMessage('Te rugăm să introduci un cod voucher.', 'danger');
@@ -280,46 +279,51 @@
             }
 
             // Check if user is logged in
-            if (!(await isUserLoggedIn())) {
+            if (!isUserLoggedIn()) {
                 showVoucherMessage('Trebuie să fii autentificat pentru a folosi vouchere.', 'warning');
                 return;
             }
 
-            const vouchers = getVouchers();
-            const voucher = vouchers.find(v => v.code === voucherCode);
+            try {
+                const formData = new FormData();
+                formData.append('voucher_code', voucherCode);
 
-            if (!voucher) {
-                showVoucherMessage('Codul voucher nu este valid.', 'danger');
-                return;
+                const response = await fetch('aplica_voucher.php', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    appliedVoucher = result.voucher;
+                    showVoucherMessage(result.message, 'success');
+                    
+                    // Disable input and button
+                    document.getElementById('voucherCode').disabled = true;
+                    document.querySelector('button[onclick="applyVoucher()"]').disabled = true;
+                    document.querySelector('button[onclick="applyVoucher()"]').innerHTML = 'Aplicat';
+                    
+                    // Add remove button
+                    const voucherMessage = document.getElementById('voucherMessage');
+                    voucherMessage.innerHTML += `
+                        <button class="btn btn-sm btn-outline-secondary mt-2" onclick="removeVoucher()">
+                            <i class="bi bi-x"></i> Elimină voucher
+                        </button>
+                    `;
+                    
+                    // Update cart total
+                    updateCartTotal();
+                } else {
+                    showVoucherMessage(result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error applying voucher:', error);
+                showVoucherMessage('A apărut o eroare la aplicarea voucher-ului.', 'danger');
             }
-
-            if (voucher.used) {
-                showVoucherMessage('Acest voucher a fost deja folosit.', 'danger');
-                return;
-            }
-
-            const now = new Date();
-            const expirationDate = new Date(voucher.expirationDate);
-            
-            if (now > expirationDate) {
-                showVoucherMessage('Acest voucher a expirat.', 'danger');
-                return;
-            }
-
-            // Apply voucher
-            appliedVoucher = voucher;
-            showVoucherMessage(`Voucher aplicat cu succes! Reducere de ${voucher.discount}%`, 'success');
-            
-            // Store voucher in session for PHP processing
-            sessionStorage.setItem('appliedVoucher', JSON.stringify(voucher));
-            
-            // Disable input and button
-            document.getElementById('voucherCode').disabled = true;
-            document.querySelector('button[onclick="applyVoucher()"]').disabled = true;
-            document.querySelector('button[onclick="applyVoucher()"]').innerHTML = 'Aplicat';
-            
-            // Update cart total
-            updateCartTotal();
         }
 
         function removeVoucher() {

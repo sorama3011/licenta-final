@@ -243,54 +243,7 @@ function createProductCard(product) {
 }
 
 // Add to cart function
-async function addToCart(id, name, price, image, weight) {
-    // Check if user is logged in for database cart functionality
-    const isLoggedIn = await isUserLoggedIn();
-
-    if (isLoggedIn) {
-        // Use database cart
-        await addToCartDatabase(id, name, price, image, weight);
-    } else {
-        // Use localStorage cart for non-logged in users
-        addToCartLocal(id, name, price, image, weight);
-    }
-}
-
-// Add database cart functionality
-async function addToCartDatabase(id, name, price, image, weight) {
-    try {
-        const response = await fetch('api/cart.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=add_item&produs_id=${id}&cantitate=1`
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showNotification('Produsul a fost adăugat în coș!', 'success');
-            updateCartCount();
-        } else {
-            if (data.message.includes('autentificat')) {
-                // User needs to login
-                showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
-            } else {
-                showNotification(data.message || 'Eroare la adăugarea în coș', 'error');
-            }
-        }
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-        showNotification('Eroare la adăugarea în coș', 'error');
-    }
-}
-
-// Add to cart locally (localStorage)
-function addToCartLocal(id, name, price, image, weight) {
+function addToCart(id, name, price, image, weight) {
     const existingItem = cart.find(item => item.id === id);
 
     if (existingItem) {
@@ -391,37 +344,96 @@ function showAddToCartNotification(productName) {
     }, 3000);
 }
 
-// Remove from cart
-function removeFromCart(id) {
-    cart = cart.filter(item => item.id !== id);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-    updateCartSubtotal();
+// Update cart item quantity
+async function updateCartQuantity(id, quantity) {
+    if (!isUserLoggedIn()) {
+        showNotification('Trebuie să fii autentificat pentru a modifica coșul.', 'warning');
+        return;
+    }
 
-    // Reload cart page if we're on it
-    if (window.location.pathname.includes('cart.html')) {
-        loadCartItems();
+    try {
+        const formData = new FormData();
+        formData.append('action', 'update_quantity');
+        formData.append('produs_id', id);
+        formData.append('cantitate', quantity);
+
+        const response = await fetch('api/cart.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Update localStorage
+            const item = cart.find(item => item.id == id);
+            if (item) {
+                if (parseInt(quantity) <= 0) {
+                    cart = cart.filter(item => item.id != id);
+                } else {
+                    item.quantity = parseInt(quantity);
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                updateCartSubtotal();
+
+                // Update cart page if we're on it
+                if (window.location.pathname.includes('cart.html')) {
+                    updateCartTotal();
+                    updateShippingProgress();
+                }
+            }
+        } else {
+            showNotification('Eroare: ' + result.message, 'danger');
+            // Reload cart to sync with server
+            if (window.location.pathname.includes('cart.html')) {
+                loadCartItems();
+            }
+        }
+    } catch (error) {
+        console.error('Error updating cart quantity:', error);
+        showNotification('A apărut o eroare la actualizarea coșului.', 'danger');
     }
 }
 
-// Update cart item quantity
-function updateCartQuantity(id, quantity) {
-    const item = cart.find(item => item.id === id);
-    if (item) {
-        item.quantity = parseInt(quantity);
-        if (item.quantity <= 0) {
-            removeFromCart(id);
-        } else {
+// Remove from cart
+async function removeFromCart(id) {
+    if (!isUserLoggedIn()) {
+        showNotification('Trebuie să fii autentificat pentru a modifica coșul.', 'warning');
+        return;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'remove_item');
+        formData.append('produs_id', id);
+
+        const response = await fetch('api/cart.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Update localStorage
+            cart = cart.filter(item => item.id != id);
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
             updateCartSubtotal();
 
-            // Update cart total if we're on cart page
+            // Reload cart page if we're on it
             if (window.location.pathname.includes('cart.html')) {
-                updateCartTotal();
-                updateShippingProgress();
+                loadCartItems();
             }
+
+            showNotification('Produsul a fost eliminat din coș.', 'success');
+        } else {
+            showNotification('Eroare: ' + result.message, 'danger');
         }
+    } catch (error) {
+        console.error('Error removing from cart:', error);
+        showNotification('A apărut o eroare la eliminarea din coș.', 'danger');
     }
 }
 
