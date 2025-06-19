@@ -154,7 +154,7 @@ async function requireLogin(redirectUrl = null) {
     const userData = await getUserData();
     if (!userData.loggedIn) {
         if (redirectUrl) {
-            window.location.href = `login.php?redirect=${redirectUrl}`;
+            window.location.href = `login.php?redirect=${encodeURIComponent(redirectUrl)}`;
         } else {
             window.location.href = 'login.php';
         }
