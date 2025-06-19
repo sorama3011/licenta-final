@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
-        // Fetch product data from PHP backend
-        const response = await fetch(`get_produs.php?id=${productId}`);
+        // Fetch product data from consolidated API
+        const response = await fetch(`api/catalog.php?type=product&id=${productId}`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }

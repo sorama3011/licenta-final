@@ -180,17 +180,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Load featured products
-function loadFeaturedProducts() {
+// Load featured products from database
+async function loadFeaturedProducts() {
     const container = document.getElementById('featured-products');
     if (!container) return;
 
-    container.innerHTML = '';
-
-    featuredProducts.forEach(product => {
-        const productCard = createProductCard(product);
-        container.appendChild(productCard);
-    });
+    try {
+        const response = await fetch('api/catalog.php?type=featured');
+        const result = await response.json();
+        
+        if (result.success) {
+            container.innerHTML = '';
+            result.products.forEach(product => {
+                const productCard = createProductCard(product);
+                container.appendChild(productCard);
+            });
+        } else {
+            console.error('Error loading featured products:', result.message);
+        }
+    } catch (error) {
+        console.error('Error fetching featured products:', error);
+    }
 }
 
 // Create product card element
@@ -198,19 +208,30 @@ function createProductCard(product) {
     const col = document.createElement('div');
     col.className = 'col-md-6 col-lg-3';
 
+    const productName = product.nume || product.name;
+    const productImage = product.imagine || product.image;
+    const productRegion = product.regiune || product.region;
+    const productDescription = product.descriere || product.description;
+    const productPrice = parseFloat(product.pret || product.price);
+    const productWeight = product.cantitate || product.weight;
+
     col.innerHTML = `
         <div class="card product-card h-100 shadow-sm">
-            <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
+            <a href="product.html?id=${product.id}" class="text-decoration-none">
+                <img src="${productImage}" class="card-img-top" alt="${productName}" style="height: 200px; object-fit: cover;">
+            </a>
             <div class="card-body d-flex flex-column">
-                <span class="badge region-badge mb-2 align-self-start">Produs local din ${product.region}</span>
-                <h5 class="card-title">${product.name}</h5>
-                <p class="card-text text-muted small">${product.description}</p>
+                <span class="badge region-badge mb-2 align-self-start">Produs local din ${productRegion}</span>
+                <h5 class="card-title">
+                    <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${productName}</a>
+                </h5>
+                <p class="card-text text-muted small">${productDescription.substring(0, 80)}...</p>
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="price">${product.price} RON</span>
-                        <span class="text-muted small">${product.weight}</span>
+                        <span class="price">${productPrice.toFixed(2)} RON</span>
+                        <span class="text-muted small">${productWeight}</span>
                     </div>
-                    <button class="btn btn-add-to-cart w-100" onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image}', '${product.weight}')" aria-label="Adaugă ${product.name} în coș">
+                    <button class="btn btn-add-to-cart w-100" onclick="addToCart(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}')" aria-label="Adaugă ${productName} în coș">
                         <i class="bi bi-basket"></i> Adaugă în Coș
                     </button>
                 </div>
@@ -531,19 +552,33 @@ function validateForm(formId) {
 }
 
 // Newsletter subscription
-function subscribeNewsletter(email) {
-    fetch('api/newsletter.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=subscribe&email=${encodeURIComponent(email)}`
-    })
-    if (email && email.includes('@')) {
-        showNotification('Te-ai abonat cu succes la newsletter!', 'success');
-        return true;
-    } else {
+async function subscribeNewsletter(email) {
+    if (!email || !email.includes('@')) {
         showNotification('Vă rugăm introduceți o adresă de email validă.', 'danger');
+        return false;
+    }
+    
+    try {
+        const response = await fetch('api/newsletter.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=subscribe&email=${encodeURIComponent(email)}`
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Te-ai abonat cu succes la newsletter!', 'success');
+            return true;
+        } else {
+            showNotification(result.message || 'A apărut o eroare la abonare.', 'danger');
+            return false;
+        }
+    } catch (error) {
+        console.error('Newsletter subscription error:', error);
+        showNotification('A apărut o eroare la abonare. Vă rugăm să încercați din nou.', 'danger');
         return false;
     }
 }

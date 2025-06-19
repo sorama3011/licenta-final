@@ -47,15 +47,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// Load products from JSON file
+// Load products from database API
 async function loadProducts() {
     try {
-        const response = await fetch('products.json');
+        const response = await fetch('api/catalog.php?type=products&limit=100');
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        allProducts = await response.json();
-        filteredProducts = [...allProducts];
+        const result = await response.json();
+        if (result.success) {
+            allProducts = result.products;
+            filteredProducts = [...allProducts];
+        } else {
+            throw new Error(result.message || 'Failed to load products');
+        }
     } catch (error) {
         console.error('Error fetching products:', error);
         throw error;
@@ -170,21 +175,21 @@ function applyFiltersAndSort() {
     // Apply category filters
     if (currentFilters.categories.length > 0) {
         filteredProducts = filteredProducts.filter(product => 
-            currentFilters.categories.includes(product.category)
+            currentFilters.categories.includes(product.categorie || product.category)
         );
     }
 
     // Apply region filters
     if (currentFilters.regions.length > 0) {
         filteredProducts = filteredProducts.filter(product => 
-            currentFilters.regions.includes(product.region)
+            currentFilters.regions.includes(product.regiune || product.region)
         );
     }
 
     // Apply tag filters
     if (currentFilters.tags.length > 0) {
         filteredProducts = filteredProducts.filter(product => 
-            currentFilters.tags.some(tag => product.tags.includes(tag))
+            currentFilters.tags.some(tag => (product.tags || []).includes(tag))
         );
     }
 
@@ -199,17 +204,29 @@ function applyFiltersAndSort() {
 function sortProducts() {
     switch (currentSort) {
         case 'price-asc':
-            filteredProducts.sort((a, b) => a.price - b.price);
+            filteredProducts.sort((a, b) => {
+                const priceA = parseFloat(a.pret || a.price);
+                const priceB = parseFloat(b.pret || b.price);
+                return priceA - priceB;
+            });
             break;
         case 'price-desc':
-            filteredProducts.sort((a, b) => b.price - a.price);
+            filteredProducts.sort((a, b) => {
+                const priceA = parseFloat(a.pret || a.price);
+                const priceB = parseFloat(b.pret || b.price);
+                return priceB - priceA;
+            });
             break;
         case 'recommended':
         default:
             filteredProducts.sort((a, b) => {
-                if (a.recommended && !b.recommended) return -1;
-                if (!a.recommended && b.recommended) return 1;
-                return a.price - b.price; // Secondary sort by price
+                const recommendedA = a.recomandat || a.recommended;
+                const recommendedB = b.recomandat || b.recommended;
+                if (recommendedA && !recommendedB) return -1;
+                if (!recommendedA && recommendedB) return 1;
+                const priceA = parseFloat(a.pret || a.price);
+                const priceB = parseFloat(b.pret || b.price);
+                return priceA - priceB; // Secondary sort by price
             });
             break;
     }
@@ -235,7 +252,15 @@ function renderProducts() {
 }
 
 function createProductCard(product) {
-    const tagBadges = product.tags.map(tag => {
+    const productName = product.nume || product.name;
+    const productImage = product.imagine || product.image;
+    const productRegion = product.regiune || product.region;
+    const productDescription = product.descriere || product.description;
+    const productPrice = parseFloat(product.pret || product.price);
+    const productWeight = product.cantitate || product.weight;
+    const productCategory = product.categorie || product.category;
+    
+    const tagBadges = (product.tags || []).map(tag => {
         const tagLabels = {
             'produs-de-post': { text: 'Produs de post', class: 'bg-success' },
             'fara-zahar': { text: 'Fără zahăr', class: 'bg-info' },
@@ -247,7 +272,7 @@ function createProductCard(product) {
         return `<span class="badge ${tagInfo.class} me-1 mb-1">${tagInfo.text}</span>`;
     }).join('');
 
-    const recommendedBadge = product.recommended ? 
+    const recommendedBadge = product.recomandat || product.recommended ? 
         '<span class="badge bg-danger position-absolute top-0 end-0 m-2">Recomandat</span>' : '';
 
     const col = document.createElement('div');
@@ -257,23 +282,23 @@ function createProductCard(product) {
         <div class="card product-card h-100 shadow-sm position-relative">
             ${recommendedBadge}
             <a href="product.html?id=${product.id}" class="text-decoration-none">
-                <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
+                <img src="${productImage}" class="card-img-top" alt="${productName}" style="height: 200px; object-fit: cover;">
             </a>
             <div class="card-body d-flex flex-column">
-                <span class="badge region-badge mb-2 align-self-start">Produs local din ${product.region}</span>
+                <span class="badge region-badge mb-2 align-self-start">Produs local din ${productRegion}</span>
                 <div class="mb-2">
                     ${tagBadges}
                 </div>
                 <h5 class="card-title">
-                    <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${product.name}</a>
+                    <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${productName}</a>
                 </h5>
-                <p class="card-text text-muted small">${product.description.substring(0, 100)}...</p>
+                <p class="card-text text-muted small">${productDescription.substring(0, 100)}...</p>
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="price">${product.price.toFixed(2)} RON</span>
-                        <span class="text-muted small">${product.weight}</span>
+                        <span class="price">${productPrice.toFixed(2)} RON</span>
+                        <span class="text-muted small">${productWeight}</span>
                     </div>
-                    <button class="btn btn-add-to-cart w-100" onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image}', '${product.weight}')" aria-label="Adaugă ${product.name} în coș">
+                    <button class="btn btn-add-to-cart w-100" onclick="addToCart(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}')" aria-label="Adaugă ${productName} în coș">
                         <i class="bi bi-basket"></i> Adaugă în Coș
                     </button>
                 </div>
