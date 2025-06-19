@@ -1,0 +1,42 @@
+The Plan
+Create an api directory: This will house the new consolidated PHP API endpoints.
+
+Consolidate User-Related Operations into api/user.php:
+
+This file will handle all actions related to user profiles, addresses, favorites, loyalty points, and reviews.
+It will replace actualizeaza_profil.php, adauga_adresa.php, actualizeaza_adresa.php, sterge_adresa.php, favorit.php, adauga_recenzie.php, get_adrese.php, get_favorite.php, get_puncte_fidelitate.php, get_recenzii.php, and get_vouchere.php.
+Each request to api/user.php will include an action parameter (e.g., action=update_profile, action=add_address, action=get_favorites) to determine the specific operation to perform.
+Consolidate Cart Operations into api/cart.php:
+
+This file will manage all actions related to adding, updating, and removing items from the shopping cart, as well as applying vouchers.
+It will replace adauga_in_cos.php, actualizeaza_cos.php, sterge_din_cos.php, aplica_voucher.php, and get_cos.php.
+Requests will use an action parameter (e.g., action=add_item, action=update_quantity, action=apply_voucher).
+Consolidate Order Operations into api/order.php:
+
+This file will handle placing new orders and fetching order details or lists for clients.
+It will replace plasare_comanda.php, get_comanda.php, and get_comenzi.php.
+Requests will use an action parameter (e.g., action=place_order, action=get_details, action=get_list).
+Consolidate Catalog Data Fetching into api/catalog.php:
+
+This file will be responsible for retrieving information about products, categories, regions, tags, offers, and packages.
+It will replace get_categorii.php, get_etichete.php, get_oferte.php, get_pachete.php, get_produs.php, get_produse.php, and get_regiuni.php.
+Requests will use a type parameter (e.g., type=products, type=categories, type=product_details).
+Consolidate Admin/Employee Operations into api/admin.php:
+
+This file will handle actions and reports specific to administrators and employees, such as updating prices, changing order statuses, approving reviews, and fetching various reports and statistics.
+It will replace actualizeaza_pret.php, actualizeaza_status_comanda.php, admin_aproba_recenzie.php, get_istoric_preturi.php, get_jurnalizare.php, get_raport_clienti.php, get_raport_produse.php, get_raport_vanzari.php, and get_statistici.php.
+Requests will use an action or type parameter to specify the administrative task or report.
+Consolidate Newsletter Operations into api/newsletter.php:
+
+This file will handle subscribing and unsubscribing from the newsletter.
+It will replace newsletter_subscribe.php and newsletter_unsubscribe.php.
+Requests will use an action parameter (e.g., action=subscribe, action=unsubscribe).
+Update Client-Side JavaScript:
+
+All JavaScript files (main.js, cart.html, product.js, products.js, admin-dashboard.js, client-dashboard.html, employee-dashboard.html, etc.) that currently make AJAX calls to the individual PHP files will need to be updated to point to the new consolidated API endpoints and include the appropriate action or type parameters.
+Review and Adjust Existing PHP Pages:
+
+Pages like checkout.php, order-success.php, admin-orders.php, detalii-comanda.php, and print-comanda.php that contain embedded PHP logic will need to be reviewed to ensure they correctly interact with the new API structure or if their logic can also be moved to the new API files.
+db-config.php will remain a standalone file as it contains core database connection and utility functions.
+login.php, signup.php, forgot-password.php, reset-password.php, logout.php, and session_check.php are entry points for specific pages or session checks and are generally kept separate for clarity in web server routing.
+This refactoring will make your PHP backend more modular and easier to scale in the future.
