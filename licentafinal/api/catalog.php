@@ -99,11 +99,11 @@ switch ($type) {
         break;
 
     case 'product':
-        $product_id = (int)$_GET['id'];
+        $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-        if (!$product_id) {
-            error_log('Invalid product ID provided: ' . $_GET['id']);
-            echo json_encode(['success' => false, 'message' => 'ID produs invalid']);
+        if (!$product_id || $product_id <= 0) {
+            error_log('Invalid product ID provided: ' . ($_GET['id'] ?? 'null'));
+            echo json_encode(['success' => false, 'message' => 'ID produs invalid sau lipsă']);
             exit;
         }
 

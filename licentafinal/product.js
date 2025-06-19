@@ -17,9 +17,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Fetch product data from consolidated API
         const response = await fetch(`api/catalog.php?type=product&id=${productId}`);
+        
         if (!response.ok) {
             console.error(`HTTP error! Status: ${response.status}`);
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            const errorText = await response.text();
+            console.error('Response body:', errorText);
+            throw new Error(`Eroare server: ${response.status}. Vă rugăm să încercați din nou.`);
         }
         
         const result = await response.json();
@@ -27,7 +30,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         if (!result.success) {
             console.error('API Error:', result.message);
-            showError(result.message || 'Produsul nu a fost găsit. Vă rugăm să selectați un produs valid.');
+            if (result.message && result.message.includes('nu a fost găsit')) {
+                showError('Produsul solicitat nu există sau nu este disponibil momentan.');
+            } else {
+                showError(result.message || 'A apărut o problemă la încărcarea produsului. Vă rugăm să încercați din nou.');
+            }
             return;
         }
         productData = result.product;
@@ -349,15 +356,24 @@ function shareProduct() {
 
 // Show error message
 function showError(message) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    
     const container = document.querySelector('.container');
     container.innerHTML = `
         <div class="alert alert-danger text-center my-5">
             <i class="bi bi-exclamation-triangle-fill fs-1 d-block mb-3"></i>
             <h3>Eroare</h3>
             <p>${message}</p>
-            <a href="products.html" class="btn btn-primary mt-3">
-                <i class="bi bi-arrow-left"></i> Înapoi la Produse
-            </a>
+            ${productId ? `<p class="small text-muted">ID produs: ${productId}</p>` : ''}
+            <div class="mt-4">
+                <a href="products.html" class="btn btn-primary me-2">
+                    <i class="bi bi-arrow-left"></i> Înapoi la Produse
+                </a>
+                <button class="btn btn-secondary" onclick="location.reload()">
+                    <i class="bi bi-arrow-clockwise"></i> Reîncarcă
+                </button>
+            </div>
         </div>
     `;
 }
