@@ -6,7 +6,15 @@ header('Content-Type: application/json');
 
 // Check database connection
 if (!$conn) {
+    error_log('Database connection failed: ' . mysqli_connect_error());
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
+    exit;
+}
+
+// Test database connection
+if (!mysqli_ping($conn)) {
+    error_log('Database connection lost');
+    echo json_encode(['success' => false, 'message' => 'Database connection lost']);
     exit;
 }
 
@@ -50,12 +58,17 @@ switch ($type) {
         }
 
         $sql = "SELECT * FROM produse WHERE $where_clause ORDER BY $sort LIMIT $limit OFFSET $offset";
+        error_log("Executing SQL: " . $sql);
         $result = mysqli_query($conn, $sql);
 
         if (!$result) {
+            error_log('Database query failed: ' . mysqli_error($conn));
             echo json_encode(['success' => false, 'message' => 'Database query failed: ' . mysqli_error($conn)]);
             exit;
         }
+
+        $row_count = mysqli_num_rows($result);
+        error_log("Query returned $row_count rows");
 
         $products = [];
         while ($row = mysqli_fetch_assoc($result)) {

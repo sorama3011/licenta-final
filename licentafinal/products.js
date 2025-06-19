@@ -26,6 +26,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Load products data
         await loadProducts();
         
+        // Check if products were loaded successfully
+        if (!allProducts || allProducts.length === 0) {
+            showError('Nu s-au găsit produse disponibile. Vă rugăm să încercați din nou mai târziu.');
+            return;
+        }
+        
         // Check for category parameter in URL
         const urlParams = new URLSearchParams(window.location.search);
         urlCategory = urlParams.get('category');
@@ -38,12 +44,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         setupEventListeners();
         applyFiltersAndSort();
         
-        // Update cart count
-        updateCartCount();
+        // Update cart count if function exists
+        if (typeof updateCartCount === 'function') {
+            updateCartCount();
+        }
         
     } catch (error) {
         console.error('Error initializing products page:', error);
-        showError('A apărut o eroare la încărcarea produselor. Vă rugăm să încercați din nou.');
+        showError(`A apărut o eroare la încărcarea produselor: ${error.message}`);
     }
 });
 
@@ -61,31 +69,40 @@ async function loadProducts() {
         const result = await response.json();
         console.log('API Response:', result);
         
-        if (result.success) {
+        if (result.success && result.products && result.products.length > 0) {
             allProducts = result.products;
             filteredProducts = [...allProducts];
-            console.log('Products loaded successfully:', allProducts.length);
+            console.log('Products loaded successfully from API:', allProducts.length);
+            return;
         } else {
-            throw new Error(result.message || 'Failed to load products');
+            throw new Error(result.message || 'No products returned from API');
         }
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching products from API:', error);
         
         // Fallback to JSON file if API fails
         console.log('Attempting to load from products.json as fallback...');
         try {
             const response = await fetch('products.json');
-            if (response.ok) {
-                allProducts = await response.json();
+            if (!response.ok) {
+                throw new Error(`Failed to load products.json: ${response.status}`);
+            }
+            
+            const jsonData = await response.json();
+            if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
+                allProducts = jsonData;
                 filteredProducts = [...allProducts];
-                console.log('Fallback products loaded:', allProducts.length);
-                showNotification('Loaded products from local data', 'warning');
+                console.log('Fallback products loaded successfully:', allProducts.length);
+                showNotification('Încărcat din datele locale - unele funcții pot fi limitate', 'warning');
             } else {
-                throw new Error('Both API and local data failed');
+                throw new Error('Products.json is empty or invalid');
             }
         } catch (fallbackError) {
             console.error('Fallback also failed:', fallbackError);
-            throw error;
+            // Create empty products array to prevent further errors
+            allProducts = [];
+            filteredProducts = [];
+            throw new Error('Nu s-au putut încărca produsele din nicio sursă disponibilă');
         }
     }
 }
