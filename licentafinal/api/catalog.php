@@ -106,10 +106,14 @@ switch ($type) {
             exit;
         }
 
-        $sql = "SELECT id, nume, descriere, descriere_lunga, ingrediente, pret, imagine, 
-                       categorie, regiune, cantitate, stoc, producator, recomandat, 
-                       restrictie_varsta, data_adaugarii, activ 
-                FROM produse WHERE id = $product_id AND activ = 1";
+        $sql = "SELECT p.id, p.nume, p.descriere, p.descriere_lunga, p.ingrediente, p.pret, p.imagine, 
+                       p.categorie, p.regiune, p.cantitate, p.stoc, p.producator, p.recomandat, 
+                       p.restrictie_varsta, p.data_adaugarii, p.activ,
+                       pn.valoare_energetica, pn.grasimi, pn.grasimi_saturate, pn.glucide, 
+                       pn.zaharuri, pn.fibre, pn.proteine, pn.sare, pn.ingrediente as ingrediente_nutritionale
+                FROM produse p
+                LEFT JOIN produse_nutritionale pn ON p.id = pn.produs_id
+                WHERE p.id = $product_id AND p.activ = 1";
         $result = mysqli_query($conn, $sql);
 
         if (mysqli_num_rows($result) == 0) {
@@ -125,6 +129,17 @@ switch ($type) {
         $product['ingrediente'] = $product['ingrediente'] ?? 'Informații indisponibile';
         $product['cantitate'] = $product['cantitate'] ?? '';
         $product['producator'] = $product['producator'] ?? '';
+        
+        // Ensure nutritional fields have default values
+        $product['valoare_energetica'] = $product['valoare_energetica'] ?? '';
+        $product['grasimi'] = $product['grasimi'] ?? '';
+        $product['grasimi_saturate'] = $product['grasimi_saturate'] ?? '';
+        $product['glucide'] = $product['glucide'] ?? '';
+        $product['zaharuri'] = $product['zaharuri'] ?? '';
+        $product['fibre'] = $product['fibre'] ?? '';
+        $product['proteine'] = $product['proteine'] ?? '';
+        $product['sare'] = $product['sare'] ?? '';
+        $product['ingrediente_nutritionale'] = $product['ingrediente_nutritionale'] ?? $product['ingrediente'];
 
         // Get product tags
         $tags_sql = "SELECT tag FROM produse_taguri WHERE produs_id = $product_id";

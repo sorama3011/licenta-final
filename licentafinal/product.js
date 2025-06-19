@@ -146,57 +146,108 @@ function renderInfoTable() {
     const tableTitle = document.getElementById('info-table-title');
     tableBody.innerHTML = '';
 
-    // For now, show basic product information since we don't have structured nutritional data
-    tableTitle.textContent = 'Informații despre Produs';
+    // Check if we have nutritional information
+    if (productData.nutritionalInfo && productData.nutritionalInfo.length > 0) {
+        tableTitle.textContent = 'Informații Nutriționale (per 100g)';
+        
+        // Render nutritional information
+        productData.nutritionalInfo.forEach(item => {
+            const row = document.createElement('tr');
+            const nameClass = item.indented ? 'ps-3' : '';
+            row.innerHTML = `
+                <td class="${nameClass}"><strong>${item.name}</strong></td>
+                <td>${item.value}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else if (productData.valoare_energetica || productData.grasimi || productData.glucide || productData.proteine) {
+        // Use database nutritional data
+        tableTitle.textContent = 'Informații Nutriționale (per 100g)';
+        
+        const nutritionalData = [
+            { name: 'Valoare energetică', value: productData.valoare_energetica },
+            { name: 'Grăsimi', value: productData.grasimi },
+            { name: 'din care acizi grași saturați', value: productData.grasimi_saturate, indented: true },
+            { name: 'Glucide', value: productData.glucide },
+            { name: 'din care zaharuri', value: productData.zaharuri, indented: true },
+            { name: 'Fibre', value: productData.fibre },
+            { name: 'Proteine', value: productData.proteine },
+            { name: 'Sare', value: productData.sare }
+        ].filter(item => item.value && item.value !== '0g' && item.value !== '0');
 
-    // Add basic product information
-    const productInfo = [];
-    
-    if (productData.categorie) {
-        productInfo.push({ nume: 'Categorie', valoare: productData.categorie });
-    }
-    
-    if (productData.regiune) {
-        productInfo.push({ nume: 'Regiunea de origine', valoare: productData.regiune });
-    }
-    
-    if (productData.cantitate) {
-        productInfo.push({ nume: 'Cantitate/Greutate', valoare: productData.cantitate });
-    }
-    
-    if (productData.producator) {
-        productInfo.push({ nume: 'Producător', valoare: productData.producator });
-    }
-    
-    if (productData.data_adaugarii) {
-        const addedDate = new Date(productData.data_adaugarii).toLocaleDateString('ro-RO');
-        productInfo.push({ nume: 'Adăugat în catalog', valoare: addedDate });
+        nutritionalData.forEach(item => {
+            const row = document.createElement('tr');
+            const nameClass = item.indented ? 'ps-3' : '';
+            row.innerHTML = `
+                <td class="${nameClass}"><strong>${item.name}</strong></td>
+                <td>${item.value}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else {
+        // Show basic product information
+        tableTitle.textContent = 'Informații despre Produs';
+
+        const productInfo = [];
+        
+        if (productData.categorie) {
+            productInfo.push({ nume: 'Categorie', valoare: productData.categorie });
+        }
+        
+        if (productData.regiune) {
+            productInfo.push({ nume: 'Regiunea de origine', valoare: productData.regiune });
+        }
+        
+        if (productData.cantitate) {
+            productInfo.push({ nume: 'Cantitate/Greutate', valoare: productData.cantitate });
+        }
+        
+        if (productData.producator) {
+            productInfo.push({ nume: 'Producător', valoare: productData.producator });
+        }
+        
+        if (productData.data_adaugarii) {
+            const addedDate = new Date(productData.data_adaugarii).toLocaleDateString('ro-RO');
+            productInfo.push({ nume: 'Adăugat în catalog', valoare: addedDate });
+        }
+
+        // Add tags if available
+        if (productData.tags && productData.tags.length > 0) {
+            productInfo.push({ nume: 'Caracteristici speciale', valoare: productData.tags.join(', ') });
+        }
+
+        // Render the product information
+        productInfo.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${item.nume}</strong></td>
+                <td>${item.valoare}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // If no product info available, show a message
+        if (productInfo.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td colspan="2" class="text-center text-muted">
+                    Informații suplimentare indisponibile momentan
+                </td>
+            `;
+            tableBody.appendChild(row);
+        }
     }
 
-    // Add tags if available
-    if (productData.tags && productData.tags.length > 0) {
-        productInfo.push({ nume: 'Caracteristici speciale', valoare: productData.tags.join(', ') });
-    }
-
-    // Render the product information
-    productInfo.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><strong>${item.nume}</strong></td>
-            <td>${item.valoare}</td>
-        `;
-        tableBody.appendChild(row);
-    });
-
-    // If no product info available, show a message
-    if (productInfo.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td colspan="2" class="text-center text-muted">
-                Informații suplimentare indisponibile momentan
+    // Add ingredients section if available
+    if (productData.ingrediente_nutritionale || productData.ingrediente) {
+        const ingredientsRow = document.createElement('tr');
+        ingredientsRow.innerHTML = `
+            <td colspan="2" class="pt-4">
+                <h6 class="mb-2">Ingrediente:</h6>
+                <p class="mb-0 text-muted">${productData.ingrediente_nutritionale || productData.ingrediente}</p>
             </td>
         `;
-        tableBody.appendChild(row);
+        tableBody.appendChild(ingredientsRow);
     }
 }
 
