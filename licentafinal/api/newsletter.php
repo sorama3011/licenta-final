@@ -16,16 +16,16 @@ switch ($action) {
         }
         
         // Check if already subscribed
-        $check_sql = "SELECT id FROM newsletter WHERE email = '$email'";
+        $check_sql = "SELECT id FROM newsletter_abonati WHERE email = '$email'";
         $result = mysqli_query($conn, $check_sql);
         
         if (mysqli_num_rows($result) > 0) {
             // Update subscription status if exists
-            $sql = "UPDATE newsletter SET activ = 1, data_actualizarii = NOW() WHERE email = '$email'";
+            $sql = "UPDATE newsletter_abonati SET activ = 1 WHERE email = '$email'";
             $message = 'Abonarea ta a fost reactivată';
         } else {
             // Insert new subscription
-            $sql = "INSERT INTO newsletter (email, activ) VALUES ('$email', 1)";
+            $sql = "INSERT INTO newsletter_abonati (email, activ) VALUES ('$email', 1)";
             $message = 'Te-ai abonat cu succes la newsletter';
         }
         
@@ -54,7 +54,7 @@ switch ($action) {
             }
         }
         
-        $sql = "UPDATE newsletter SET activ = 0, data_actualizarii = NOW() WHERE email = '$email'";
+        $sql = "UPDATE newsletter_abonati SET activ = 0 WHERE email = '$email'";
         
         if (mysqli_query($conn, $sql)) {
             if (mysqli_affected_rows($conn) > 0) {
@@ -70,7 +70,7 @@ switch ($action) {
     case 'check_status':
         $email = sanitize_input($_GET['email']);
         
-        $sql = "SELECT activ FROM newsletter WHERE email = '$email'";
+        $sql = "SELECT activ FROM newsletter_abonati WHERE email = '$email'";
         $result = mysqli_query($conn, $sql);
         
         if (mysqli_num_rows($result) > 0) {
