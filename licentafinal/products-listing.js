@@ -23,7 +23,7 @@ let urlCategory = null; // Category from URL parameter
 // Initialize page
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Initializing products page...');
-    
+
     try {
         // Show loading message
         const container = document.getElementById('products-container');
@@ -37,37 +37,37 @@ document.addEventListener('DOMContentLoaded', async function() {
                 </div>
             `;
         }
-        
+
         // Load products data
         await loadProducts();
-        
+
         console.log('Products after loading:', allProducts.length);
-        
+
         // Check if products were loaded successfully
         if (!allProducts || allProducts.length === 0) {
             showError('Nu s-au găsit produse disponibile. Vă rugăm să încercați din nou mai târziu.');
             return;
         }
-        
+
         // Check for category parameter in URL
         const urlParams = new URLSearchParams(window.location.search);
         urlCategory = urlParams.get('category');
-        
+
         if (urlCategory && categoryNames[urlCategory]) {
             // Apply category filter from URL
             applyCategoryFromURL(urlCategory);
         }
-        
+
         setupEventListeners();
         applyFiltersAndSort();
-        
+
         // Update cart count if function exists
         if (typeof updateCartCount === 'function') {
             updateCartCount();
         }
-        
+
         console.log('✅ Products page initialized successfully');
-        
+
     } catch (error) {
         console.error('❌ Error initializing products page:', error);
         showError(`A apărut o eroare la încărcarea produselor: ${error.message}`);
@@ -79,14 +79,14 @@ async function loadProducts() {
     try {
         console.log('Loading products from JSON (demo mode)...');
         const response = await fetch('products.json');
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const jsonData = await response.json();
         console.log('Raw JSON data:', jsonData);
-        
+
         if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
             allProducts = jsonData;
             filteredProducts = [...allProducts];
@@ -99,7 +99,7 @@ async function loadProducts() {
         }
     } catch (error) {
         console.error('❌ Error loading from products.json:', error);
-        
+
         // Create fallback products if JSON fails
         allProducts = [
             {
@@ -148,7 +148,7 @@ async function loadProducts() {
                 "activ": 1
             }
         ];
-        
+
         filteredProducts = [...allProducts];
         console.log('⚠️ Using fallback products:', allProducts.length);
     }
@@ -167,26 +167,26 @@ function applyCategoryFromURL(category) {
     const categoryCheckbox = document.getElementById(`cat-${category}`);
     if (categoryCheckbox) {
         categoryCheckbox.checked = true;
-        
+
         // Add visual highlight to the category filter
         categoryCheckbox.closest('.form-check').classList.add('bg-light', 'rounded', 'p-2');
     }
-    
+
     // Show category breadcrumb
     const breadcrumb = document.getElementById('category-breadcrumb');
     const currentCategory = document.getElementById('current-category');
-    
+
     if (breadcrumb && currentCategory) {
         currentCategory.textContent = categoryNames[category];
         breadcrumb.style.display = 'block';
     }
-    
+
     // Update page title
     document.title = `${categoryNames[category]} - Gusturi Românești`;
-    
+
     // Update current filters
     currentFilters.categories = [category];
-    
+
     // Show notification about applied filter
     setTimeout(() => {
         showNotification(`Filtrare aplicată: ${categoryNames[category]}`, 'info');
@@ -241,13 +241,13 @@ function updateCurrentFilters() {
 function updateBreadcrumb() {
     const breadcrumb = document.getElementById('category-breadcrumb');
     const currentCategory = document.getElementById('current-category');
-    
+
     if (currentFilters.categories.length === 1) {
         // Show breadcrumb for single category
         const category = currentFilters.categories[0];
         currentCategory.textContent = categoryNames[category];
         breadcrumb.style.display = 'block';
-        
+
         // Update URL without page reload
         const newUrl = new URL(window.location);
         newUrl.searchParams.set('category', category);
@@ -255,7 +255,7 @@ function updateBreadcrumb() {
     } else {
         // Hide breadcrumb for multiple or no categories
         breadcrumb.style.display = 'none';
-        
+
         // Remove category parameter from URL
         const newUrl = new URL(window.location);
         newUrl.searchParams.delete('category');
@@ -349,16 +349,43 @@ function renderProducts() {
     if (noResults) {
         noResults.style.display = 'none';
     }
-    
+
     container.innerHTML = '';
-    
-    filteredProducts.forEach((product, index) => {
-        console.log(`Creating card for product ${index + 1}:`, product.nume);
-        const productCard = createProductCard(product);
+
+    // Create product cards
+    filteredProducts.forEach(product => {
+        // Check if product is in favorites
+        const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        const isFavorited = favorites.some(fav => fav.id == product.id);
+
+        const productCard = document.createElement('div');
+        productCard.className = 'col-md-6 col-lg-4 mb-4';
+
+        productCard.innerHTML = `
+            <div class="card">
+                <img src="${product.imagine || product.image}" class="card-img-top" alt="${product.nume || product.name}">
+                <div class="card-body">
+                    <h5 class="card-title">${product.nume || product.name}</h5>
+                    <p class="card-text">${product.descriere_scurta || product.short_description}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>${product.pret || product.price} RON</span>
+                        
+                    </div>
+					<div class="d-grid gap-2">
+                        <button class="btn btn-add-to-cart" onclick="addToCart(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate || ''}')">
+                            <i class="bi bi-basket"></i> Adaugă în Coș
+                        </button>
+                        <button class="btn ${isFavorited ? 'btn-danger' : 'btn-outline-danger'} btn-sm" 
+                                onclick="toggleFavorite(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate || ''}', '${(product.descriere_scurta || '').replace(/'/g, "\\'")}', '${product.cantitate || ''}')">
+                            <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}"></i> ${isFavorited ? 'Elimină' : 'Favorite'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
         container.appendChild(productCard);
     });
-    
-    console.log('✅ Products rendered successfully');
 }
 
 function createProductCard(product) {
@@ -370,9 +397,9 @@ function createProductCard(product) {
     const productPrice = parseFloat(product.pret || product.price);
     const productWeight = product.cantitate || product.weight;
     const productCategory = product.categorie || product.category;
-    
+
     // Products are loaded from JSON demo data - this is intentional
-    
+
     const tagBadges = (product.tags || []).map(tag => {
         const tagLabels = {
             'produs-de-post': { text: 'Produs de post', class: 'bg-success' },
@@ -390,7 +417,11 @@ function createProductCard(product) {
 
     const col = document.createElement('div');
     col.className = 'col-md-6 col-lg-4';
-    
+
+     // Check if product is in favorites
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const isFavorited = favorites.some(fav => fav.id == product.id);
+
     col.innerHTML = `
         <div class="card product-card h-100 shadow-sm position-relative">
             ${recommendedBadge}
@@ -415,22 +446,23 @@ function createProductCard(product) {
                         <button class="btn btn-add-to-cart" onclick="addToCart(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}')" aria-label="Adaugă ${productName} în coș">
                             <i class="bi bi-basket"></i> Adaugă în Coș
                         </button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="toggleFavorite(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}', '${(product.descriere_scurta || 'Produs tradițional').replace(/'/g, '\\\'\')}', '${productWeight}')" aria-label="Adaugă ${productName} la favorite">
-                            <i class="bi bi-heart"></i> Favorite
+                        <button class="btn ${isFavorited ? 'btn-danger' : 'btn-outline-danger'} btn-sm" 
+                                onclick="toggleFavorite(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}', '${(productDescription || 'Produs tradițional').replace(/'/g, "\\'")}', '${productWeight}')" aria-label="Adaugă ${productName} la favorite">
+                            <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}"></i> ${isFavorited ? 'Elimină' : 'Favorite'}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
     `;
-    
+
     return col;
 }
 
 function updateResultsCount() {
     const count = filteredProducts.length;
     const total = allProducts.length;
-    
+
     let resultsText;
     if (urlCategory && currentFilters.categories.length === 1 && currentFilters.categories[0] === urlCategory) {
         // Show category-specific count
@@ -440,7 +472,7 @@ function updateResultsCount() {
     } else {
         resultsText = `Afișez ${count} din ${total} produse`;
     }
-    
+
     document.getElementById('results-count').textContent = resultsText;
 }
 
@@ -465,21 +497,21 @@ function clearAllFilters() {
 
     // Clear URL category
     urlCategory = null;
-    
+
     // Update URL to remove category parameter
     const newUrl = new URL(window.location);
     newUrl.searchParams.delete('category');
     window.history.replaceState({}, '', newUrl);
-    
+
     // Hide breadcrumb
     document.getElementById('category-breadcrumb').style.display = 'none';
-    
+
     // Reset page title
     document.title = 'Produse Tradiționale - Gusturi Românești';
 
     // Apply changes
     applyFiltersAndSort();
-    
+
     // Show notification
     showNotification('Toate filtrele au fost șterse', 'info');
 }
@@ -547,7 +579,7 @@ function showNotification(message, type = 'info') {
         window.showNotification(message, type);
         return;
     }
-    
+
     // If not defined, create our own implementation
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-custom position-fixed`;
@@ -556,9 +588,9 @@ function showNotification(message, type = 'info') {
         ${message}
         <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         if (notification.parentElement) {
             notification.remove();

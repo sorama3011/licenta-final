@@ -523,21 +523,29 @@
             favorites.forEach(product => {
                 const favoriteCard = document.createElement('div');
                 favoriteCard.className = 'col-md-6 col-lg-4';
+                
+                // Handle both old and new property names for backward compatibility
+                const productName = product.nume || product.name;
+                const productPrice = product.pret || product.price;
+                const productImage = product.imagine || product.image || 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Produs';
+                const productWeight = product.cantitate || product.weight || '';
+                const productDescription = product.descriere_scurta || 'Produs tradițional românesc';
+                
                 favoriteCard.innerHTML = `
                     <div class="card h-100 shadow-sm">
-                        <img src="${product.imagine || 'https://via.placeholder.com/300x200/8B0000/FFFFFF?text=Produs'}" 
-                             class="card-img-top" alt="${product.nume}" style="height: 200px; object-fit: cover;">
+                        <img src="${productImage}" 
+                             class="card-img-top" alt="${productName}" style="height: 200px; object-fit: cover;">
                         <div class="card-body d-flex flex-column">
-                            <h6 class="card-title">${product.nume}</h6>
-                            <p class="text-muted small">${product.descriere_scurta || 'Produs tradițional românesc'}</p>
+                            <h6 class="card-title">${productName}</h6>
+                            <p class="text-muted small">${productDescription}</p>
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="fw-bold text-primary">${parseFloat(product.pret).toFixed(2)} RON</span>
-                                    <span class="text-muted small">${product.cantitate || ''}</span>
+                                    <span class="fw-bold text-primary">${parseFloat(productPrice).toFixed(2)} RON</span>
+                                    <span class="text-muted small">${productWeight}</span>
                                 </div>
                                 <div class="d-grid gap-2">
                                     <button class="btn btn-primary btn-sm" 
-                                            onclick="addToCartFromFavorites(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate}')">
+                                            onclick="addToCartFromFavorites(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}')">
                                         <i class="bi bi-basket me-1"></i>Adaugă în Coș
                                     </button>
                                     <button class="btn btn-outline-danger btn-sm" 
@@ -555,6 +563,16 @@
         
         // Add to cart from favorites
         async function addToCartFromFavorites(id, name, price, image, weight) {
+            // Check if user is logged in
+            if (!isUserLoggedIn()) {
+                showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
+                setTimeout(() => {
+                    localStorage.setItem('redirectAfterLogin', window.location.href);
+                    window.location.href = 'login.html';
+                }, 2000);
+                return;
+            }
+
             // Use the global addToCart function from main.js
             if (typeof addToCart === 'function') {
                 await addToCart(id, name, price, image, weight);
@@ -592,7 +610,8 @@
             const productIndex = favorites.findIndex(p => p.id == productId);
             
             if (productIndex > -1) {
-                const productName = favorites[productIndex].nume;
+                const product = favorites[productIndex];
+                const productName = product.nume || product.name;
                 favorites.splice(productIndex, 1);
                 localStorage.setItem('favorites', JSON.stringify(favorites));
                 

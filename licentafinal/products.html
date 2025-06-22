@@ -407,17 +407,34 @@
             } else {
                 favorites.push({
                     id: parseInt(id),
-                    name: name,
+                    nume: name,
                     price: parseFloat(price),
-                    image: image,
-                    weight: weight,
-                    descriere_scurta: descriere_scurta,
-                    cantitate: cantitate
+                    pret: parseFloat(price),
+                    imagine: image,
+                    cantitate: weight,
+                    descriere_scurta: descriere_scurta || 'Produs tradițional românesc'
                 });
                 showNotification(`${name} a fost adăugat la favorite!`, 'success');
             }
 
             localStorage.setItem('favorites', JSON.stringify(favorites));
+            
+            // Update heart button if it exists
+            const heartButton = document.querySelector(`[onclick*="toggleFavorite(${id}"]`);
+            if (heartButton) {
+                const heartIcon = heartButton.querySelector('i');
+                if (heartIcon) {
+                    if (existingItem) {
+                        heartIcon.className = 'bi bi-heart';
+                        heartButton.classList.remove('btn-danger');
+                        heartButton.classList.add('btn-outline-danger');
+                    } else {
+                        heartIcon.className = 'bi bi-heart-fill';
+                        heartButton.classList.remove('btn-outline-danger');
+                        heartButton.classList.add('btn-danger');
+                    }
+                }
+            }
         };
     </script>
 </body>
