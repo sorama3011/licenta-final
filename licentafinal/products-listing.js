@@ -55,48 +55,44 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// Load products from database API
+// Load products from JSON (demo version)
 async function loadProducts() {
-    // Try API first (database products)
+    // Try JSON first (demo version)
     try {
-        console.log('Attempting to load products from API...');
-        const response = await fetch('api/catalog.php?type=products&limit=100');
-        console.log('Response status:', response.status);
+        console.log('Loading products from JSON (demo mode)...');
+        const response = await fetch('products.json');
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+        if (response.ok) {
+            const jsonData = await response.json();
+            if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
+                allProducts = jsonData;
+                filteredProducts = [...allProducts];
+                console.log('Products loaded successfully from JSON:', allProducts.length);
+                console.log('📋 Demo mode: Using local product catalog');
+                return;
+            }
         }
-        
-        const result = await response.json();
-        console.log('API Response:', result);
-        
-        if (result.success && result.products && result.products.length > 0) {
-            allProducts = result.products;
-            filteredProducts = [...allProducts];
-            console.log('Products loaded successfully from API:', allProducts.length);
-            return;
-        } else {
-            throw new Error(result.message || 'No products returned from API');
-        }
+        throw new Error('Failed to load products.json');
     } catch (error) {
-        console.error('Error fetching products from API:', error);
+        console.error('Error loading from products.json:', error);
         
-        // Try JSON fallback only if API completely fails
+        // Try API as fallback only if JSON completely fails
         try {
-            console.log('API failed, trying fallback products.json...');
-            const response = await fetch('products.json');
+            console.log('JSON failed, trying API fallback...');
+            const response = await fetch('api/catalog.php?type=products&limit=100');
+            
             if (response.ok) {
-                const jsonData = await response.json();
-                if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
-                    allProducts = jsonData;
+                const result = await response.json();
+                if (result.success && result.products && result.products.length > 0) {
+                    allProducts = result.products;
                     filteredProducts = [...allProducts];
-                    console.log('Products loaded from JSON fallback:', allProducts.length);
-                    console.warn('⚠️ Using JSON fallback - orders may fail due to ID mismatches!');
+                    console.log('Products loaded from API fallback:', allProducts.length);
+                    console.warn('⚠️ Using database fallback');
                     return;
                 }
             }
-        } catch (jsonError) {
-            console.error('Error loading from products.json:', jsonError);
+        } catch (apiError) {
+            console.error('Error fetching products from API:', apiError);
         }
         
         // If both failed, show error
@@ -109,8 +105,9 @@ async function loadProducts() {
 // Check if products are from database or JSON
 function isUsingDatabaseProducts() {
     if (allProducts.length === 0) return false;
-    // Database products have 'nume' field, JSON products have 'name' field
-    return allProducts[0].hasOwnProperty('nume');
+    // We're now prioritizing JSON, so we're mainly using JSON products
+    // JSON products have 'nume' field (they're already in Romanian format)
+    return false; // Always return false since we're using JSON demo mode
 }
 
 function applyCategoryFromURL(category) {
@@ -307,10 +304,7 @@ function createProductCard(product) {
     const productWeight = product.cantitate || product.weight;
     const productCategory = product.categorie || product.category;
     
-    // Show warning if using JSON fallback
-    if (!isUsingDatabaseProducts() && !product.nume) {
-        console.warn(`⚠️ Product ${productName} loaded from JSON - order functionality may not work properly`);
-    }
+    // Products are loaded from JSON demo data - this is intentional
     
     const tagBadges = (product.tags || []).map(tag => {
         const tagLabels = {
