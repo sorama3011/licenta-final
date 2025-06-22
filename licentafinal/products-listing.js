@@ -440,6 +440,45 @@ function showError(message) {
     `;
 }
 
+// Add to favorites function
+function toggleFavorite(id, name, price, image, weight, description, quantity) {
+    if (!isUserLoggedIn()) {
+        showNotification('Pentru a adăuga la favorite, trebuie să te autentifici.', 'warning');
+        setTimeout(() => {
+            localStorage.setItem('redirectAfterLogin', window.location.href);
+            window.location.href = 'login.html';
+        }, 2000);
+        return;
+    }
+
+    try {
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        const existingFavorite = favorites.find(fav => fav.id == id);
+
+        if (existingFavorite) {
+            // Remove from favorites
+            favorites = favorites.filter(fav => fav.id != id);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            showNotification(`${name} a fost eliminat din favorite.`, 'info');
+        } else {
+            // Add to favorites
+            favorites.push({
+                id: parseInt(id),
+                nume: name,
+                pret: parseFloat(price),
+                imagine: image,
+                cantitate: weight,
+                descriere_scurta: description
+            });
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            showNotification(`${name} a fost adăugat la favorite!`, 'success');
+        }
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+        showNotification('A apărut o eroare la gestionarea favoritelor.', 'danger');
+    }
+}
+
 // Generic notification function (if not already defined in main.js)
 function showNotification(message, type = 'info') {
     // Check if the function is already defined in main.js

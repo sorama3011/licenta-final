@@ -256,43 +256,44 @@ async function addToCart(id, name, price, image, weight) {
     }
 
     try {
-        // Add to database via API
-        const formData = new FormData();
-        formData.append('action', 'add_item');
-        formData.append('produs_id', id);
-        formData.append('cantitate', 1);
-
-        const response = await fetch('api/cart.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // Also update localStorage for immediate UI feedback
-            const existingItem = cart.find(item => item.id == id);
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: parseInt(id),
-                    name: name,
-                    price: parseFloat(price),
-                    image: image,
-                    weight: weight,
-                    quantity: 1
-                });
-            }
-
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            updateCartSubtotal();
-            showAddToCartNotification(name);
-            checkFreeShippingThreshold();
+        // Update localStorage cart immediately for demo functionality
+        const existingItem = cart.find(item => item.id == id);
+        if (existingItem) {
+            existingItem.quantity += 1;
         } else {
-            showNotification('Eroare: ' + result.message, 'danger');
+            cart.push({
+                id: parseInt(id),
+                name: name,
+                price: parseFloat(price),
+                image: image,
+                weight: weight,
+                quantity: 1
+            });
         }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        updateCartSubtotal();
+        showAddToCartNotification(name);
+        checkFreeShippingThreshold();
+
+        // Try to sync with database in background (non-blocking)
+        try {
+            const formData = new FormData();
+            formData.append('action', 'add_item');
+            formData.append('produs_id', id);
+            formData.append('cantitate', 1);
+
+            fetch('api/cart.php', {
+                method: 'POST',
+                body: formData
+            }).catch(error => {
+                console.log('Database sync failed, continuing with localStorage:', error);
+            });
+        } catch (dbError) {
+            console.log('Database not available, using localStorage only:', dbError);
+        }
+
     } catch (error) {
         console.error('Error adding to cart:', error);
         showNotification('A apărut o eroare la adăugarea în coș. Încearcă din nou.', 'danger');
@@ -383,44 +384,42 @@ async function updateCartQuantity(id, quantity) {
     }
 
     try {
-        const formData = new FormData();
-        formData.append('action', 'update_quantity');
-        formData.append('produs_id', id);
-        formData.append('cantitate', quantity);
-
-        const response = await fetch('api/cart.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // Update localStorage
-            const item = cart.find(item => item.id == id);
-            if (item) {
-                if (parseInt(quantity) <= 0) {
-                    cart = cart.filter(item => item.id != id);
-                } else {
-                    item.quantity = parseInt(quantity);
-                }
-                localStorage.setItem('cart', JSON.stringify(cart));
-                updateCartCount();
-                updateCartSubtotal();
-
-                // Update cart page if we're on it
-                if (window.location.pathname.includes('cart.html')) {
-                    updateCartTotal();
-                    updateShippingProgress();
-                }
+        // Update localStorage immediately
+        const item = cart.find(item => item.id == id);
+        if (item) {
+            if (parseInt(quantity) <= 0) {
+                cart = cart.filter(item => item.id != id);
+            } else {
+                item.quantity = parseInt(quantity);
             }
-        } else {
-            showNotification('Eroare: ' + result.message, 'danger');
-            // Reload cart to sync with server
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            updateCartSubtotal();
+
+            // Update cart page if we're on it
             if (window.location.pathname.includes('cart.html')) {
-                loadCartItems();
+                updateCartTotal();
+                updateShippingProgress();
             }
         }
+
+        // Try to sync with database in background
+        try {
+            const formData = new FormData();
+            formData.append('action', 'update_quantity');
+            formData.append('produs_id', id);
+            formData.append('cantitate', quantity);
+
+            fetch('api/cart.php', {
+                method: 'POST',
+                body: formData
+            }).catch(error => {
+                console.log('Database sync failed for quantity update:', error);
+            });
+        } catch (dbError) {
+            console.log('Database not available for quantity update:', dbError);
+        }
+
     } catch (error) {
         console.error('Error updating cart quantity:', error);
         showNotification('A apărut o eroare la actualizarea coșului.', 'danger');
@@ -435,33 +434,35 @@ async function removeFromCart(id) {
     }
 
     try {
-        const formData = new FormData();
-        formData.append('action', 'remove_item');
-        formData.append('produs_id', id);
+        // Update localStorage immediately
+        cart = cart.filter(item => item.id != id);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        updateCartSubtotal();
 
-        const response = await fetch('api/cart.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // Update localStorage
-            cart = cart.filter(item => item.id != id);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            updateCartSubtotal();
-
-            // Reload cart page if we're on it
-            if (window.location.pathname.includes('cart.html')) {
-                loadCartItems();
-            }
-
-            showNotification('Produsul a fost eliminat din coș.', 'success');
-        } else {
-            showNotification('Eroare: ' + result.message, 'danger');
+        // Reload cart page if we're on it
+        if (window.location.pathname.includes('cart.html')) {
+            loadCartItems();
         }
+
+        showNotification('Produsul a fost eliminat din coș.', 'success');
+
+        // Try to sync with database in background
+        try {
+            const formData = new FormData();
+            formData.append('action', 'remove_item');
+            formData.append('produs_id', id);
+
+            fetch('api/cart.php', {
+                method: 'POST',
+                body: formData
+            }).catch(error => {
+                console.log('Database sync failed for item removal:', error);
+            });
+        } catch (dbError) {
+            console.log('Database not available for item removal:', dbError);
+        }
+
     } catch (error) {
         console.error('Error removing from cart:', error);
         showNotification('A apărut o eroare la eliminarea din coș.', 'danger');

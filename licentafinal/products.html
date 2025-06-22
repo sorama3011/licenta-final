@@ -364,8 +364,30 @@
                 }
 
                 localStorage.setItem('cart', JSON.stringify(cart));
-                updateCartCount();
                 showNotification(`${name} a fost adăugat în coș!`, 'success');
+
+                // Update cart count if function exists
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount();
+                }
+
+                // Try to sync with database in background (non-blocking)
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'add_item');
+                    formData.append('produs_id', id);
+                    formData.append('cantitate', 1);
+
+                    fetch('api/cart.php', {
+                        method: 'POST',
+                        body: formData
+                    }).catch(error => {
+                        console.log('Database sync failed, continuing with localStorage:', error);
+                    });
+                } catch (dbError) {
+                    console.log('Database not available, using localStorage only:', dbError);
+                }
+
             } else {
                 showNotification('Eroare: ' + result.message, 'danger');
             }
