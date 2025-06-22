@@ -17,6 +17,16 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         console.log('Loading product with ID:', productId);
 
+        // Show loading state
+        document.body.innerHTML = `
+            <div class="container mt-5 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Se încarcă...</span>
+                </div>
+                <p class="mt-3">Se încarcă produsul...</p>
+            </div>
+        `;
+
         // Load from products.json first (demo version)
         let jsonSuccess = false;
         try {
@@ -33,10 +43,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                     
                     if (productData) {
                         // Enhance product data with additional fields for consistency
-                        enhanceProductData();
+                        await enhanceProductData();
                         jsonSuccess = true;
                         console.log('Product loaded successfully from JSON');
-                        showNotification('📋 Modul demonstrație - folosim catalog JSON', 'info');
                     }
                 }
             }
@@ -56,8 +65,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                     
                     if (result.success && result.product) {
                         productData = result.product;
+                        await enhanceProductData();
                         console.log('Product loaded from API as fallback');
-                        showNotification('⚠️ Încărcat de la baza de date', 'warning');
                     }
                 }
             } catch (apiError) {
@@ -69,14 +78,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!productData) {
             console.log('Using hardcoded fallback product');
             productData = getHardcodedProduct(productId);
-            showNotification('⚠️ Modul de urgență - produs de test', 'warning');
+            await enhanceProductData();
         }
 
         if (!productData) {
             throw new Error('Nu s-au putut încărca datele produsului');
         }
 
-        // Render product details
+        // Restore the original page structure and render product details
+        await restorePageStructure();
         renderProductDetails();
         
         // Update cart count if function exists
@@ -91,20 +101,23 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // Enhance product data with missing fields for consistency
-function enhanceProductData() {
+async function enhanceProductData() {
+    if (!productData) return;
+    
     // Ensure all required fields exist
-    productData.descriere = productData.descriere || productData.descriere_scurta || '';
-    productData.descriere_lunga = productData.descriere || productData.descriere_scurta || '';
-    productData.ingrediente = getIngredientsByCategory(productData.categorie);
-    productData.cantitate = productData.cantitate || '';
-    productData.producator = getProducerByRegion(productData.regiune);
-    productData.imagine = productData.imagine || `img/placeholder-${productData.categorie}.png`;
+    productData.descriere = productData.descriere || productData.descriere_scurta || 'Produs tradițional românesc de calitate superioară.';
+    productData.descriere_lunga = productData.descriere_lunga || productData.descriere || productData.descriere_scurta || 'Acest produs tradițional românesc este preparat după rețete străvechi, transmise din generație în generație.';
+    productData.ingrediente = productData.ingrediente || getIngredientsByCategory(productData.categorie);
+    productData.cantitate = productData.cantitate || '500g';
+    productData.producator = productData.producator || getProducerByRegion(productData.regiune);
+    productData.imagine = productData.imagine || `img/placeholder.png`;
+    productData.stoc = productData.stoc !== undefined ? productData.stoc : 10;
     
     // Add nutritional information based on category
     productData.nutritionalInfo = getNutritionalInfoByCategory(productData.categorie);
     
     // Add related products from same category
-    productData.related_products = getRelatedProductsFromJSON(productData.id, productData.categorie);
+    productData.related_products = await getRelatedProductsFromJSON(productData.id, productData.categorie);
     
     // Ensure tags exist
     productData.tags = productData.tags || [];
@@ -113,6 +126,8 @@ function enhanceProductData() {
     productData.restrictie_varsta = productData.restrictie_varsta || 0;
     productData.recomandat = productData.recomandat || 0;
     productData.activ = productData.activ !== undefined ? productData.activ : 1;
+    
+    console.log('Enhanced product data:', productData);
 }
 
 // Get ingredients based on product category
@@ -205,6 +220,68 @@ function getNutritionalInfoByCategory(categorie) {
     ];
 }
 
+// Restore the original page structure
+async function restorePageStructure() {
+    // Load the original product.html content
+    try {
+        const response = await fetch('product.html');
+        if (response.ok) {
+            const htmlText = await response.text();
+            // Extract body content (excluding scripts and head)
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const bodyContent = doc.body.innerHTML;
+            document.body.innerHTML = bodyContent;
+        }
+    } catch (error) {
+        console.warn('Could not restore page structure, using fallback');
+        // Use a basic fallback structure
+        document.body.innerHTML = `
+            <div class="container mt-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Acasă</a></li>
+                        <li class="breadcrumb-item"><a href="products.html">Produse</a></li>
+                        <li class="breadcrumb-item active" id="product-breadcrumb">Produs</li>
+                    </ol>
+                </nav>
+                <div class="row">
+                    <div class="col-md-6">
+                        <img id="product-image" src="" alt="" class="img-fluid">
+                    </div>
+                    <div class="col-md-6">
+                        <h1 id="product-name"></h1>
+                        <p id="product-region" class="text-muted"></p>
+                        <p id="product-description"></p>
+                        <div class="d-flex align-items-center mb-3">
+                            <span id="product-price" class="h4 text-primary me-2"></span>
+                            <span id="product-weight" class="text-muted"></span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="addToCartFromDetail()">
+                                <i class="bi bi-basket"></i> Adaugă în Coș
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <h3>Informații despre Produs</h3>
+                    <div id="product-details" class="row"></div>
+                    <p id="product-long-description"></p>
+                    
+                    <h4 id="info-table-title">Informații Nutriționale</h4>
+                    <table class="table">
+                        <tbody id="info-table-body"></tbody>
+                    </table>
+                    
+                    <h3>Produse Similare</h3>
+                    <div id="related-products" class="row"></div>
+                </div>
+            </div>
+        `;
+    }
+}
+
 // Get related products from JSON data
 async function getRelatedProductsFromJSON(currentId, categorie) {
     try {
@@ -252,31 +329,55 @@ function getHardcodedProduct(id) {
 
 // Render product details
 function renderProductDetails() {
-    // Update page title and meta description
-    document.title = `${productData.nume} - Gusturi Românești`;
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-        metaDescription.setAttribute('content', productData.descriere || '');
+    if (!productData) {
+        showError('Nu s-au putut încărca datele produsului.');
+        return;
     }
 
-    // Update breadcrumb
-    document.getElementById('product-breadcrumb').textContent = productData.nume;
+    try {
+        // Update page title and meta description
+        document.title = `${productData.nume} - Gusturi Românești`;
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.setAttribute('content', productData.descriere || '');
+        }
 
-    // Basic product info
-    document.getElementById('product-name').textContent = productData.nume;
-    document.getElementById('product-image').src = productData.imagine;
-    document.getElementById('product-image').alt = productData.nume;
-    document.getElementById('product-region').textContent = `Produs local din ${productData.regiune}`;
-    document.getElementById('product-price').textContent = `${parseFloat(productData.pret).toFixed(2)} RON`;
-    
-    // Handle weight/quantity display
-    const weightText = productData.cantitate || '';
-    document.getElementById('product-weight').textContent = weightText ? `/ ${weightText}` : '';
-    
-    // Product descriptions
-    document.getElementById('product-description').textContent = productData.descriere || '';
-    document.getElementById('product-long-description').textContent = productData.descriere_lunga || productData.descriere || '';
-    document.getElementById('product-ingredients').textContent = productData.ingrediente || 'Informații indisponibile';
+        // Update breadcrumb
+        const breadcrumb = document.getElementById('product-breadcrumb');
+        if (breadcrumb) {
+            breadcrumb.textContent = productData.nume;
+        }
+
+        // Basic product info
+        const nameElement = document.getElementById('product-name');
+        const imageElement = document.getElementById('product-image');
+        const regionElement = document.getElementById('product-region');
+        const priceElement = document.getElementById('product-price');
+        const weightElement = document.getElementById('product-weight');
+        const descriptionElement = document.getElementById('product-description');
+        const longDescriptionElement = document.getElementById('product-long-description');
+
+        if (nameElement) nameElement.textContent = productData.nume;
+        if (imageElement) {
+            imageElement.src = productData.imagine;
+            imageElement.alt = productData.nume;
+        }
+        if (regionElement) regionElement.textContent = `Produs local din ${productData.regiune}`;
+        if (priceElement) priceElement.textContent = `${parseFloat(productData.pret).toFixed(2)} RON`;
+        
+        // Handle weight/quantity display
+        const weightText = productData.cantitate || '';
+        if (weightElement) weightElement.textContent = weightText ? `/ ${weightText}` : '';
+        
+        // Product descriptions
+        if (descriptionElement) descriptionElement.textContent = productData.descriere || '';
+        if (longDescriptionElement) longDescriptionElement.textContent = productData.descriere_lunga || productData.descriere || '';
+        
+        // Ingredients - check if element exists
+        const ingredientsElement = document.getElementById('product-ingredients');
+        if (ingredientsElement) {
+            ingredientsElement.textContent = productData.ingrediente || 'Informații indisponibile';
+        }
 
     // Product details section
     const detailsContainer = document.getElementById('product-details');
