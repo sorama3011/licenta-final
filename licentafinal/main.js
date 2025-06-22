@@ -120,6 +120,7 @@ function requireLogin(redirectUrl = null) {
 
 // Initialize authentication on page load
 document.addEventListener('DOMContentLoaded', function() {
+    syncCartWithDatabase();
     updateCartCount();
     updateNavigation();
 
@@ -243,29 +244,59 @@ function createProductCard(product) {
 }
 
 // Add to cart function
-function addToCart(id, name, price, image, weight) {
-    const existingItem = cart.find(item => item.id === id);
-
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            id: id,
-            name: name,
-            price: parseFloat(price),
-            image: image,
-            weight: weight,
-            quantity: 1
-        });
+async function addToCart(id, name, price, image, weight) {
+    // Check if user is logged in
+    if (!isUserLoggedIn()) {
+        showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
+        setTimeout(() => {
+            localStorage.setItem('redirectAfterLogin', window.location.href);
+            window.location.href = 'login.html';
+        }, 2000);
+        return;
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-    updateCartSubtotal(); // Update subtotal for free shipping progress
-    showAddToCartNotification(name);
+    try {
+        // Add to database via API
+        const formData = new FormData();
+        formData.append('action', 'add_item');
+        formData.append('produs_id', id);
+        formData.append('cantitate', 1);
 
-    // Check if we've reached free shipping threshold
-    checkFreeShippingThreshold();
+        const response = await fetch('api/cart.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Also update localStorage for immediate UI feedback
+            const existingItem = cart.find(item => item.id == id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: parseInt(id),
+                    name: name,
+                    price: parseFloat(price),
+                    image: image,
+                    weight: weight,
+                    quantity: 1
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            updateCartSubtotal();
+            showAddToCartNotification(name);
+            checkFreeShippingThreshold();
+        } else {
+            showNotification('Eroare: ' + result.message, 'danger');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('A apărut o eroare la adăugarea în coș. Încearcă din nou.', 'danger');
+    }
 }
 
 // Update cart count in navigation
@@ -639,6 +670,36 @@ async function subscribeNewsletter(email) {
         console.error('Newsletter subscription error:', error);
         showNotification('A apărut o eroare la abonare. Vă rugăm să încercați din nou.', 'danger');
         return false;
+    }
+}
+
+// Sync cart with database if user is logged in
+async function syncCartWithDatabase() {
+    if (!isUserLoggedIn()) {
+        return;
+    }
+
+    try {
+        const response = await fetch('api/cart.php?action=get_cart');
+        const result = await response.json();
+
+        if (result.success && result.items) {
+            // Convert database cart format to localStorage format
+            const dbCart = result.items.map(item => ({
+                id: parseInt(item.produs_id || item.id),
+                name: item.nume || item.name,
+                price: parseFloat(item.pret_curent || item.pret || item.price),
+                image: item.imagine || item.image,
+                weight: item.cantitate || item.weight || '',
+                quantity: parseInt(item.cantitate || item.quantity || 1)
+            }));
+
+            // Update localStorage with database cart
+            cart = dbCart;
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+    } catch (error) {
+        console.error('Error syncing cart with database:', error);
     }
 }
 

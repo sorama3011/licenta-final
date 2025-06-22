@@ -491,17 +491,63 @@ function createRelatedProductCard(product) {
 }
 
 // Add to cart from product detail page
-function addToCartFromDetail() {
+async function addToCartFromDetail() {
     const quantity = parseInt(document.getElementById('quantity').value);
 
-    for (let i = 0; i < quantity; i++) {
-        addToCart(
-            productData.id, 
-            productData.nume,
-            productData.pret,
-            productData.imagine,
-            productData.cantitate || ''
-        );
+    // Check if user is logged in
+    if (!isUserLoggedIn()) {
+        showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
+        setTimeout(() => {
+            localStorage.setItem('redirectAfterLogin', window.location.href);
+            window.location.href = 'login.html';
+        }, 2000);
+        return;
+    }
+
+    try {
+        // Add to database via API
+        const formData = new FormData();
+        formData.append('action', 'add_item');
+        formData.append('produs_id', productData.id);
+        formData.append('cantitate', quantity);
+
+        const response = await fetch('api/cart.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showNotification(`${productData.nume} a fost adăugat în coș!`, 'success');
+            
+            // Update localStorage for immediate UI feedback
+            if (typeof addToCart === 'function') {
+                // Update local cart without making another API call
+                const existingItem = cart.find(item => item.id == productData.id);
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    cart.push({
+                        id: parseInt(productData.id),
+                        name: productData.nume,
+                        price: parseFloat(productData.pret),
+                        image: productData.imagine,
+                        weight: productData.cantitate || '',
+                        quantity: quantity
+                    });
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount();
+                }
+            }
+        } else {
+            showNotification('Eroare: ' + result.message, 'danger');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('A apărut o eroare la adăugarea în coș. Încearcă din nou.', 'danger');
     }
 }
 
