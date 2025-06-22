@@ -350,9 +350,14 @@ function createProductCard(product) {
                         <span class="price">${productPrice.toFixed(2)} RON</span>
                         <span class="text-muted small">${productWeight}</span>
                     </div>
-                    <button class="btn btn-add-to-cart w-100" onclick="addToCart(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}')" aria-label="Adaugă ${productName} în coș">
-                        <i class="bi bi-basket"></i> Adaugă în Coș
-                    </button>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-add-to-cart" onclick="addToCart(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}')" aria-label="Adaugă ${productName} în coș">
+                            <i class="bi bi-basket"></i> Adaugă în Coș
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="toggleFavorite(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}', '${(product.descriere_scurta || 'Produs tradițional').replace(/'/g, '\\\'\')}', '${productWeight}')" aria-label="Adaugă ${productName} la favorite">
+                            <i class="bi bi-heart"></i> Favorite
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
