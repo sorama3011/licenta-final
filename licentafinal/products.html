@@ -333,29 +333,15 @@
         }
 
         try {
-            // Add to database via API
-            const formData = new FormData();
-            formData.append('action', 'add_item');
-            formData.append('produs_id', id);
-            formData.append('cantitate', 1);
-
-            const response = await fetch('api/cart.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                // Also update localStorage for immediate UI feedback
-                let cart = JSON.parse(localStorage.getItem('cart')) || [];
-                const existingItem = cart.find(item => item.id == id);
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    cart.push({
-                        id: parseInt(id),
-                        name: name,
+            // Use localStorage only
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingItem = cart.find(item => item.id == id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: parseInt(id),
+                    name: name,
                         price: parseFloat(price),
                         image: image,
                         weight: weight,
@@ -364,32 +350,11 @@
                 }
 
                 localStorage.setItem('cart', JSON.stringify(cart));
-                showNotification(`${name} a fost adăugat în coș!`, 'success');
+            showNotification(`${name} a fost adăugat în coș!`, 'success');
 
-                // Update cart count if function exists
-                if (typeof updateCartCount === 'function') {
-                    updateCartCount();
-                }
-
-                // Try to sync with database in background (non-blocking)
-                try {
-                    const formData = new FormData();
-                    formData.append('action', 'add_item');
-                    formData.append('produs_id', id);
-                    formData.append('cantitate', 1);
-
-                    fetch('api/cart.php', {
-                        method: 'POST',
-                        body: formData
-                    }).catch(error => {
-                        console.log('Database sync failed, continuing with localStorage:', error);
-                    });
-                } catch (dbError) {
-                    console.log('Database not available, using localStorage only:', dbError);
-                }
-
-            } else {
-                showNotification('Eroare: ' + result.message, 'danger');
+            // Update cart count if function exists
+            if (typeof updateCartCount === 'function') {
+                updateCartCount();
             }
         } catch (error) {
             console.error('Error adding to cart:', error);

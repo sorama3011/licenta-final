@@ -120,7 +120,7 @@ function requireLogin(redirectUrl = null) {
 
 // Initialize authentication on page load
 document.addEventListener('DOMContentLoaded', function() {
-    syncCartWithDatabase();
+    initializeCart();
     updateCartCount();
     updateNavigation();
 
@@ -256,7 +256,7 @@ window.addToCart = async function addToCart(id, name, price, image, weight) {
     }
 
     try {
-        // Update localStorage cart immediately for demo functionality
+        // Update localStorage cart only
         const existingItem = cart.find(item => item.id == id);
         if (existingItem) {
             existingItem.quantity += 1;
@@ -276,23 +276,6 @@ window.addToCart = async function addToCart(id, name, price, image, weight) {
         updateCartSubtotal();
         showAddToCartNotification(name);
         checkFreeShippingThreshold();
-
-        // Try to sync with database in background (non-blocking)
-        try {
-            const formData = new FormData();
-            formData.append('action', 'add_item');
-            formData.append('produs_id', id);
-            formData.append('cantitate', 1);
-
-            fetch('api/cart.php', {
-                method: 'POST',
-                body: formData
-            }).catch(error => {
-                console.log('Database sync failed, continuing with localStorage:', error);
-            });
-        } catch (dbError) {
-            console.log('Database not available, using localStorage only:', dbError);
-        }
 
     } catch (error) {
         console.error('Error adding to cart:', error);
@@ -384,7 +367,7 @@ async function updateCartQuantity(id, quantity) {
     }
 
     try {
-        // Update localStorage immediately
+        // Update localStorage only
         const item = cart.find(item => item.id == id);
         if (item) {
             if (parseInt(quantity) <= 0) {
@@ -403,23 +386,6 @@ async function updateCartQuantity(id, quantity) {
             }
         }
 
-        // Try to sync with database in background
-        try {
-            const formData = new FormData();
-            formData.append('action', 'update_quantity');
-            formData.append('produs_id', id);
-            formData.append('cantitate', quantity);
-
-            fetch('api/cart.php', {
-                method: 'POST',
-                body: formData
-            }).catch(error => {
-                console.log('Database sync failed for quantity update:', error);
-            });
-        } catch (dbError) {
-            console.log('Database not available for quantity update:', dbError);
-        }
-
     } catch (error) {
         console.error('Error updating cart quantity:', error);
         showNotification('A apărut o eroare la actualizarea coșului.', 'danger');
@@ -434,7 +400,7 @@ async function removeFromCart(id) {
     }
 
     try {
-        // Update localStorage immediately
+        // Update localStorage only
         cart = cart.filter(item => item.id != id);
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
@@ -446,22 +412,6 @@ async function removeFromCart(id) {
         }
 
         showNotification('Produsul a fost eliminat din coș.', 'success');
-
-        // Try to sync with database in background
-        try {
-            const formData = new FormData();
-            formData.append('action', 'remove_item');
-            formData.append('produs_id', id);
-
-            fetch('api/cart.php', {
-                method: 'POST',
-                body: formData
-            }).catch(error => {
-                console.log('Database sync failed for item removal:', error);
-            });
-        } catch (dbError) {
-            console.log('Database not available for item removal:', dbError);
-        }
 
     } catch (error) {
         console.error('Error removing from cart:', error);
@@ -674,33 +624,19 @@ async function subscribeNewsletter(email) {
     }
 }
 
-// Sync cart with database if user is logged in
-async function syncCartWithDatabase() {
+// Initialize cart from localStorage only
+function initializeCart() {
     if (!isUserLoggedIn()) {
         return;
     }
 
-    try {
-        const response = await fetch('api/cart.php?action=get_cart');
-        const result = await response.json();
-
-        if (result.success && result.items) {
-            // Convert database cart format to localStorage format
-            const dbCart = result.items.map(item => ({
-                id: parseInt(item.produs_id || item.id),
-                name: item.nume || item.name,
-                price: parseFloat(item.pret_curent || item.pret || item.price),
-                image: item.imagine || item.image,
-                weight: item.cantitate || item.weight || '',
-                quantity: parseInt(item.cantitate || item.quantity || 1)
-            }));
-
-            // Update localStorage with database cart
-            cart = dbCart;
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-    } catch (error) {
-        console.error('Error syncing cart with database:', error);
+    // Just make sure cart is loaded from localStorage
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    } else {
+        cart = [];
+        localStorage.setItem('cart', JSON.stringify(cart));
     }
 }
 
