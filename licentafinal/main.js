@@ -764,3 +764,11 @@ function proceedToCheckout() {
     // Redirect to checkout page
     window.location.href = 'demo-checkout.html';
 }
+
+// Check if user is logged in
+function isUserLoggedIn() {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const loggedIn = userData.loggedIn === true;
+    console.log('🔐 User logged in check:', loggedIn);
+    return loggedIn;
+}

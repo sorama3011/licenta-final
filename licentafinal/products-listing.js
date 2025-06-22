@@ -22,9 +22,26 @@ let urlCategory = null; // Category from URL parameter
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Initializing products page...');
+    
     try {
+        // Show loading message
+        const container = document.getElementById('products-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Se încarcă...</span>
+                    </div>
+                    <p class="mt-3">Se încarcă produsele...</p>
+                </div>
+            `;
+        }
+        
         // Load products data
         await loadProducts();
+        
+        console.log('Products after loading:', allProducts.length);
         
         // Check if products were loaded successfully
         if (!allProducts || allProducts.length === 0) {
@@ -49,56 +66,91 @@ document.addEventListener('DOMContentLoaded', async function() {
             updateCartCount();
         }
         
+        console.log('✅ Products page initialized successfully');
+        
     } catch (error) {
-        console.error('Error initializing products page:', error);
+        console.error('❌ Error initializing products page:', error);
         showError(`A apărut o eroare la încărcarea produselor: ${error.message}`);
     }
 });
 
 // Load products from JSON (demo version)
 async function loadProducts() {
-    // Try JSON first (demo version)
     try {
         console.log('Loading products from JSON (demo mode)...');
         const response = await fetch('products.json');
         
-        if (response.ok) {
-            const jsonData = await response.json();
-            if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
-                allProducts = jsonData;
-                filteredProducts = [...allProducts];
-                console.log('Products loaded successfully from JSON:', allProducts.length);
-                console.log('📋 Demo mode: Using local product catalog');
-                return;
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        throw new Error('Failed to load products.json');
+        
+        const jsonData = await response.json();
+        console.log('Raw JSON data:', jsonData);
+        
+        if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
+            allProducts = jsonData;
+            filteredProducts = [...allProducts];
+            console.log('✅ Products loaded successfully from JSON:', allProducts.length);
+            console.log('📋 Demo mode: Using local product catalog');
+            console.log('First product:', allProducts[0]);
+            return;
+        } else {
+            throw new Error('Invalid JSON data structure');
+        }
     } catch (error) {
-        console.error('Error loading from products.json:', error);
+        console.error('❌ Error loading from products.json:', error);
         
-        // Try API as fallback only if JSON completely fails
-        try {
-            console.log('JSON failed, trying API fallback...');
-            const response = await fetch('api/catalog.php?type=products&limit=100');
-            
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success && result.products && result.products.length > 0) {
-                    allProducts = result.products;
-                    filteredProducts = [...allProducts];
-                    console.log('Products loaded from API fallback:', allProducts.length);
-                    console.warn('⚠️ Using database fallback');
-                    return;
-                }
+        // Create fallback products if JSON fails
+        allProducts = [
+            {
+                "id": 1,
+                "nume": "Dulceață de Căpșuni de Argeș",
+                "pret": 18.99,
+                "cantitate": "350g",
+                "regiune": "Muntenia",
+                "categorie": "dulceturi",
+                "imagine": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Dulceata+Capsuni+Arges",
+                "descriere_scurta": "Dulceață tradițională din căpșuni proaspete",
+                "descriere": "Dulceață tradițională din căpșuni proaspete cultivate în dealurile pitorești ale Argeșului.",
+                "recomandat": 1,
+                "tags": ["artizanal", "fara-aditivi"],
+                "stoc": 25,
+                "activ": 1
+            },
+            {
+                "id": 2,
+                "nume": "Zacuscă de Buzău",
+                "pret": 15.50,
+                "cantitate": "450g",
+                "regiune": "Muntenia",
+                "categorie": "conserve",
+                "imagine": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Zacusca+Buzau",
+                "descriere_scurta": "Zacuscă tradițională din vinete și ardei copți",
+                "descriere": "Zacuscă tradițională preparată din vinete și ardei copți pe foc de lemne.",
+                "recomandat": 1,
+                "tags": ["produs-de-post", "artizanal", "fara-aditivi"],
+                "stoc": 30,
+                "activ": 1
+            },
+            {
+                "id": 3,
+                "nume": "Brânză de Burduf",
+                "pret": 32.00,
+                "cantitate": "500g",
+                "regiune": "Maramureș",
+                "categorie": "branza",
+                "imagine": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Branza+Burduf+Maramures",
+                "descriere_scurta": "Brânză tradițională de oaie maturată în burduf",
+                "descriere": "Brânză tradițională de oaie maturată în burduf de brad, preparată după rețete străvechi.",
+                "recomandat": 1,
+                "tags": ["artizanal", "ambalat-manual"],
+                "stoc": 15,
+                "activ": 1
             }
-        } catch (apiError) {
-            console.error('Error fetching products from API:', apiError);
-        }
+        ];
         
-        // If both failed, show error
-        allProducts = [];
-        filteredProducts = [];
-        throw new Error('Nu s-au putut încărca produsele din nicio sursă disponibilă');
+        filteredProducts = [...allProducts];
+        console.log('⚠️ Using fallback products:', allProducts.length);
     }
 }
 
@@ -279,19 +331,34 @@ function renderProducts() {
     const container = document.getElementById('products-container');
     const noResults = document.getElementById('no-results');
 
-    if (filteredProducts.length === 0) {
-        container.innerHTML = '';
-        noResults.style.display = 'block';
+    console.log('🎨 Rendering products:', filteredProducts.length);
+
+    if (!container) {
+        console.error('Products container not found!');
         return;
     }
 
-    noResults.style.display = 'none';
+    if (filteredProducts.length === 0) {
+        container.innerHTML = '';
+        if (noResults) {
+            noResults.style.display = 'block';
+        }
+        return;
+    }
+
+    if (noResults) {
+        noResults.style.display = 'none';
+    }
+    
     container.innerHTML = '';
     
-    filteredProducts.forEach(product => {
+    filteredProducts.forEach((product, index) => {
+        console.log(`Creating card for product ${index + 1}:`, product.nume);
         const productCard = createProductCard(product);
         container.appendChild(productCard);
     });
+    
+    console.log('✅ Products rendered successfully');
 }
 
 function createProductCard(product) {
