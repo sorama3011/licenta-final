@@ -3,89 +3,6 @@
 let productData = null;
 let allProducts = [];
 
-// Fallback product data when database fails
-const fallbackProducts = [
-    {
-        id: 1,
-        nume: "Dulceață de Căpșuni de Argeș",
-        descriere: "Dulceață tradițională din căpșuni proaspete, preparată după rețeta bunicii.",
-        descriere_lunga: "Această dulceață excepțională este preparată din căpșuni proaspete, culese în zorii zilei din livezile din județul Argeș. Rețeta tradițională, transmisă din generație în generație, păstrează gustul autentic și aroma intensă a fructelor.",
-        ingrediente: "Căpșuni (60%), zahăr, pectină naturală, acid citric",
-        pret: "18.99",
-        imagine: "img/dulceata.png",
-        categorie: "dulceturi",
-        regiune: "Argeș",
-        cantitate: "350g",
-        stoc: 15,
-        producator: "Gospodăria Margareta",
-        recomandat: 1,
-        restrictie_varsta: 0,
-        activ: 1,
-        tags: ["artizanal", "fara-aditivi"],
-        nutritionalInfo: [
-            {"name": "Valoare energetică", "value": "245 kcal / 1025 kJ"},
-            {"name": "Grăsimi", "value": "0.2g"},
-            {"name": "din care acizi grași saturați", "value": "0.1g", "indented": true},
-            {"name": "Glucide", "value": "60g"},
-            {"name": "din care zaharuri", "value": "58g", "indented": true},
-            {"name": "Fibre", "value": "1.2g"},
-            {"name": "Proteine", "value": "0.4g"},
-            {"name": "Sare", "value": "0.02g"},
-            {"name": "Vitamina C", "value": "25mg"}
-        ],
-        related_products: [
-            {
-                id: 2,
-                nume: "Zacuscă de Casă",
-                descriere: "Zacuscă tradițională preparată din legume proaspete",
-                pret: "15.99",
-                imagine: "img/zacusca.png",
-                regiune: "Muntenia",
-                cantitate: "300g"
-            }
-        ]
-    },
-    {
-        id: 2,
-        nume: "Zacuscă de Casă",
-        descriere: "Zacuscă tradițională preparată din legume proaspete de la producători locali.",
-        descriere_lunga: "Zacusca noastră este preparată după rețeta tradițională românească, folosind doar legume proaspete: vinete, ardei kapia, ceapă și roșii. Fără conservanți artificiali.",
-        ingrediente: "Vinete (40%), ardei kapia (25%), ceapă (20%), roșii (10%), ulei de floarea soarelui, sare, piper",
-        pret: "15.99",
-        imagine: "img/zacusca.png",
-        categorie: "conserve",
-        regiune: "Muntenia",
-        cantitate: "300g",
-        stoc: 25,
-        producator: "Gospodăria Ion",
-        recomandat: 0,
-        restrictie_varsta: 0,
-        activ: 1,
-        tags: ["artizanal", "fara-aditivi"],
-        nutritionalInfo: [
-            {"name": "Valoare energetică", "value": "95 kcal / 398 kJ"},
-            {"name": "Grăsimi", "value": "7.5g"},
-            {"name": "din care acizi grași saturați", "value": "1.2g", "indented": true},
-            {"name": "Glucide", "value": "6.2g"},
-            {"name": "din care zaharuri", "value": "4.8g", "indented": true},
-            {"name": "Fibre", "value": "2.1g"},
-            {"name": "Proteine", "value": "1.8g"},
-            {"name": "Sare", "value": "1.1g"}
-        ],
-        related_products: [
-            {
-                id: 1,
-                nume: "Dulceață de Căpșuni de Argeș",
-                descriere: "Dulceață tradițională din căpșuni proaspete",
-                pret: "18.99",
-                imagine: "img/dulceata.png",
-                regiune: "Argeș",
-                cantitate: "350g"
-            }
-        ]
-    }
-];
-
 // Load product data when page loads
 document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -100,44 +17,63 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         console.log('Loading product with ID:', productId);
 
-        // Try to load from API first
-        let apiSuccess = false;
+        // Load from products.json first (demo version)
+        let jsonSuccess = false;
         try {
-            const response = await fetch(`api/catalog.php?type=product&id=${productId}`);
+            console.log('Loading from products.json...');
+            const response = await fetch('products.json');
             
             if (response.ok) {
-                const result = await response.json();
-                console.log('API Response:', result);
+                const jsonData = await response.json();
+                console.log('JSON Response:', jsonData);
                 
-                if (result.success && result.product) {
-                    productData = result.product;
-                    apiSuccess = true;
-                    console.log('Product loaded successfully from API');
+                if (jsonData && Array.isArray(jsonData)) {
+                    // Find product by ID
+                    productData = jsonData.find(p => p.id === productId);
+                    
+                    if (productData) {
+                        // Enhance product data with additional fields for consistency
+                        enhanceProductData();
+                        jsonSuccess = true;
+                        console.log('Product loaded successfully from JSON');
+                        showNotification('📋 Modul demonstrație - folosim catalog JSON', 'info');
+                    }
                 }
             }
-        } catch (apiError) {
-            console.warn('API request failed:', apiError);
+        } catch (jsonError) {
+            console.warn('JSON request failed:', jsonError);
         }
 
-        // If API failed, try fallback data
-        if (!apiSuccess) {
-            console.log('API failed, using fallback data');
-            productData = fallbackProducts.find(p => p.id === productId);
-            
-            if (!productData) {
-                // If specific product not found, use the first one
-                productData = fallbackProducts[0];
-                console.log('Using first fallback product');
+        // If JSON failed, try API as fallback
+        if (!jsonSuccess) {
+            console.log('JSON failed, trying API...');
+            try {
+                const response = await fetch(`api/catalog.php?type=product&id=${productId}`);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('API Response:', result);
+                    
+                    if (result.success && result.product) {
+                        productData = result.product;
+                        console.log('Product loaded from API as fallback');
+                        showNotification('⚠️ Încărcat de la baza de date', 'warning');
+                    }
+                }
+            } catch (apiError) {
+                console.warn('API request also failed:', apiError);
             }
+        }
+
+        // If both failed, use hardcoded fallback
+        if (!productData) {
+            console.log('Using hardcoded fallback product');
+            productData = getHardcodedProduct(productId);
+            showNotification('⚠️ Modul de urgență - produs de test', 'warning');
         }
 
         if (!productData) {
             throw new Error('Nu s-au putut încărca datele produsului');
-        }
-
-        // Show warning if using fallback
-        if (!apiSuccess) {
-            showNotification('⚠️ Modul de demonstrație - folosim date de test', 'warning');
         }
 
         // Render product details
@@ -150,14 +86,169 @@ document.addEventListener('DOMContentLoaded', async function() {
         
     } catch (error) {
         console.error('Error loading product:', error);
-        
-        // Last resort - load first fallback product
-        console.log('Loading emergency fallback product');
-        productData = fallbackProducts[0];
-        renderProductDetails();
-        showNotification('⚠️ Modul de demonstrație - product de test încărcat', 'info');
+        showError('Eroare la încărcarea produsului. Vă rugăm să încercați din nou.');
     }
 });
+
+// Enhance product data with missing fields for consistency
+function enhanceProductData() {
+    // Ensure all required fields exist
+    productData.descriere = productData.descriere || productData.descriere_scurta || '';
+    productData.descriere_lunga = productData.descriere || productData.descriere_scurta || '';
+    productData.ingrediente = getIngredientsByCategory(productData.categorie);
+    productData.cantitate = productData.cantitate || '';
+    productData.producator = getProducerByRegion(productData.regiune);
+    productData.imagine = productData.imagine || `img/placeholder-${productData.categorie}.png`;
+    
+    // Add nutritional information based on category
+    productData.nutritionalInfo = getNutritionalInfoByCategory(productData.categorie);
+    
+    // Add related products from same category
+    productData.related_products = getRelatedProductsFromJSON(productData.id, productData.categorie);
+    
+    // Ensure tags exist
+    productData.tags = productData.tags || [];
+    
+    // Set defaults
+    productData.restrictie_varsta = productData.restrictie_varsta || 0;
+    productData.recomandat = productData.recomandat || 0;
+    productData.activ = productData.activ !== undefined ? productData.activ : 1;
+}
+
+// Get ingredients based on product category
+function getIngredientsByCategory(categorie) {
+    const ingredients = {
+        'dulceturi': 'Fructe (60%), zahăr, pectină naturală, acid citric',
+        'conserve': 'Legume proaspete (80%), oțet de vin, sare, condimente naturale',
+        'branza': 'Lapte pasteurizat, fermenți lactici, cheag, sare',
+        'bauturi': 'Fructe distilate (100%), fără aditivi artificiali',
+        'mezeluri': 'Carne de porc (90%), condimente naturale, sare, afumat natural'
+    };
+    
+    return ingredients[categorie] || 'Ingrediente naturale, fără conservanți artificiali';
+}
+
+// Get producer based on region
+function getProducerByRegion(regiune) {
+    const producers = {
+        'Muntenia': 'Gospodăria Tradițională SRL',
+        'Transilvania': 'Ferma de Familie Transilvania',
+        'Maramureș': 'Meșteri Artizani Maramureș',
+        'Banat': 'Cooperativa Agricolă Banat',
+        'Oltenia': 'Producători Locali Oltenia',
+        'Bucovina': 'Gospodării Unite Bucovina',
+        'Crișana': 'Tradiții Crișana SRL',
+        'Dobrogea': 'Ferme Dobrogea'
+    };
+    
+    return producers[regiune] || 'Producător local autorizat';
+}
+
+// Get nutritional info based on category
+function getNutritionalInfoByCategory(categorie) {
+    const nutritionalData = {
+        'dulceturi': [
+            {"name": "Valoare energetică", "value": "245 kcal / 1025 kJ"},
+            {"name": "Grăsimi", "value": "0.2g"},
+            {"name": "din care acizi grași saturați", "value": "0.1g", "indented": true},
+            {"name": "Glucide", "value": "60g"},
+            {"name": "din care zaharuri", "value": "58g", "indented": true},
+            {"name": "Fibre", "value": "1.2g"},
+            {"name": "Proteine", "value": "0.4g"},
+            {"name": "Sare", "value": "0.02g"},
+            {"name": "Vitamina C", "value": "25mg"}
+        ],
+        'conserve': [
+            {"name": "Valoare energetică", "value": "95 kcal / 398 kJ"},
+            {"name": "Grăsimi", "value": "7.5g"},
+            {"name": "din care acizi grași saturați", "value": "1.2g", "indented": true},
+            {"name": "Glucide", "value": "6.2g"},
+            {"name": "din care zaharuri", "value": "4.8g", "indented": true},
+            {"name": "Fibre", "value": "2.1g"},
+            {"name": "Proteine", "value": "1.8g"},
+            {"name": "Sare", "value": "1.1g"}
+        ],
+        'branza': [
+            {"name": "Valoare energetică", "value": "298 kcal / 1247 kJ"},
+            {"name": "Grăsimi", "value": "24g"},
+            {"name": "din care acizi grași saturați", "value": "15g", "indented": true},
+            {"name": "Glucide", "value": "0.7g"},
+            {"name": "din care zaharuri", "value": "0.7g", "indented": true},
+            {"name": "Proteine", "value": "19g"},
+            {"name": "Sare", "value": "1.8g"},
+            {"name": "Calciu", "value": "700mg"}
+        ],
+        'bauturi': [
+            {"name": "Valoare energetică", "value": "250 kcal / 1046 kJ"},
+            {"name": "Alcool", "value": "40-65%"},
+            {"name": "Glucide", "value": "0g"},
+            {"name": "Grăsimi", "value": "0g"},
+            {"name": "Proteine", "value": "0g"},
+            {"name": "Sare", "value": "0g"}
+        ],
+        'mezeluri': [
+            {"name": "Valoare energetică", "value": "380 kcal / 1590 kJ"},
+            {"name": "Grăsimi", "value": "32g"},
+            {"name": "din care acizi grași saturați", "value": "12g", "indented": true},
+            {"name": "Glucide", "value": "1.2g"},
+            {"name": "Proteine", "value": "22g"},
+            {"name": "Sare", "value": "2.5g"},
+            {"name": "Fier", "value": "2.1mg"}
+        ]
+    };
+    
+    return nutritionalData[categorie] || [
+        {"name": "Valoare energetică", "value": "Informații indisponibile"},
+        {"name": "Grăsimi", "value": "Informații indisponibile"},
+        {"name": "Glucide", "value": "Informații indisponibile"},
+        {"name": "Proteine", "value": "Informații indisponibile"}
+    ];
+}
+
+// Get related products from JSON data
+async function getRelatedProductsFromJSON(currentId, categorie) {
+    try {
+        const response = await fetch('products.json');
+        if (response.ok) {
+            const allProducts = await response.json();
+            return allProducts
+                .filter(p => p.categorie === categorie && p.id !== currentId)
+                .slice(0, 4);
+        }
+    } catch (error) {
+        console.warn('Could not load related products:', error);
+    }
+    return [];
+}
+
+// Hardcoded fallback product
+function getHardcodedProduct(id) {
+    return {
+        id: id,
+        nume: "Produs Tradițional Românesc",
+        descriere: "Produs tradițional românesc de calitate superioară",
+        descriere_lunga: "Acest produs tradițional românesc este preparat după rețete străvechi, transmise din generație în generație. Folosim doar ingrediente naturale și metode tradiționale de preparare.",
+        ingrediente: "Ingrediente naturale selectate, fără conservanți artificiali",
+        pret: "25.99",
+        imagine: "img/placeholder.png",
+        categorie: "traditionale",
+        regiune: "România",
+        cantitate: "500g",
+        stoc: 10,
+        producator: "Producător Local",
+        recomandat: 1,
+        restrictie_varsta: 0,
+        activ: 1,
+        tags: ["artizanal", "fara-aditivi"],
+        nutritionalInfo: [
+            {"name": "Valoare energetică", "value": "200 kcal / 837 kJ"},
+            {"name": "Grăsimi", "value": "5g"},
+            {"name": "Glucide", "value": "30g"},
+            {"name": "Proteine", "value": "8g"}
+        ],
+        related_products: []
+    };
+}
 
 // Render product details
 function renderProductDetails() {
@@ -179,7 +270,7 @@ function renderProductDetails() {
     document.getElementById('product-price').textContent = `${parseFloat(productData.pret).toFixed(2)} RON`;
     
     // Handle weight/quantity display
-    const weightText = productData.cantitate || productData.greutate || '';
+    const weightText = productData.cantitate || '';
     document.getElementById('product-weight').textContent = weightText ? `/ ${weightText}` : '';
     
     // Product descriptions
@@ -277,30 +368,6 @@ function renderInfoTable() {
             `;
             tableBody.appendChild(row);
         });
-    } else if (productData.valoare_energetica || productData.grasimi || productData.glucide || productData.proteine) {
-        // Use database nutritional data
-        tableTitle.textContent = 'Informații Nutriționale (per 100g)';
-        
-        const nutritionalData = [
-            { name: 'Valoare energetică', value: productData.valoare_energetica },
-            { name: 'Grăsimi', value: productData.grasimi },
-            { name: 'din care acizi grași saturați', value: productData.grasimi_saturate, indented: true },
-            { name: 'Glucide', value: productData.glucide },
-            { name: 'din care zaharuri', value: productData.zaharuri, indented: true },
-            { name: 'Fibre', value: productData.fibre },
-            { name: 'Proteine', value: productData.proteine },
-            { name: 'Sare', value: productData.sare }
-        ].filter(item => item.value && item.value !== '0g' && item.value !== '0');
-
-        nutritionalData.forEach(item => {
-            const row = document.createElement('tr');
-            const nameClass = item.indented ? 'ps-3' : '';
-            row.innerHTML = `
-                <td class="${nameClass}"><strong>${item.name}</strong></td>
-                <td>${item.value}</td>
-            `;
-            tableBody.appendChild(row);
-        });
     } else {
         // Show basic product information
         tableTitle.textContent = 'Informații despre Produs';
@@ -321,11 +388,6 @@ function renderInfoTable() {
         
         if (productData.producator) {
             productInfo.push({ nume: 'Producător', valoare: productData.producator });
-        }
-        
-        if (productData.data_adaugarii) {
-            const addedDate = new Date(productData.data_adaugarii).toLocaleDateString('ro-RO');
-            productInfo.push({ nume: 'Adăugat în catalog', valoare: addedDate });
         }
 
         // Add tags if available
@@ -356,12 +418,12 @@ function renderInfoTable() {
     }
 
     // Add ingredients section if available
-    if (productData.ingrediente_nutritionale || productData.ingrediente) {
+    if (productData.ingrediente) {
         const ingredientsRow = document.createElement('tr');
         ingredientsRow.innerHTML = `
             <td colspan="2" class="pt-4">
                 <h6 class="mb-2">Ingrediente:</h6>
-                <p class="mb-0 text-muted">${productData.ingrediente_nutritionale || productData.ingrediente}</p>
+                <p class="mb-0 text-muted">${productData.ingrediente}</p>
             </td>
         `;
         tableBody.appendChild(ingredientsRow);
@@ -369,13 +431,17 @@ function renderInfoTable() {
 }
 
 // Render related products
-function renderRelatedProducts() {
+async function renderRelatedProducts() {
     const container = document.getElementById('related-products');
+    container.innerHTML = '<div class="col-12 text-center"><div class="spinner-border text-primary" role="status"></div></div>';
+
+    // Get related products
+    const relatedProducts = await getRelatedProductsFromJSON(productData.id, productData.categorie);
+
     container.innerHTML = '';
 
-    // Check if we have related products from the API
-    if (productData.related_products && productData.related_products.length > 0) {
-        productData.related_products.forEach(product => {
+    if (relatedProducts && relatedProducts.length > 0) {
+        relatedProducts.forEach(product => {
             const productCard = createRelatedProductCard(product);
             container.appendChild(productCard);
         });
@@ -407,7 +473,7 @@ function createRelatedProductCard(product) {
                 <h5 class="card-title">
                     <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${product.nume}</a>
                 </h5>
-                <p class="card-text text-muted small">${(product.descriere || '').substring(0, 60)}...</p>
+                <p class="card-text text-muted small">${(product.descriere || product.descriere_scurta || '').substring(0, 60)}...</p>
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="price">${parseFloat(product.pret).toFixed(2)} RON</span>
@@ -434,7 +500,7 @@ function addToCartFromDetail() {
             productData.nume,
             productData.pret,
             productData.imagine,
-            productData.cantitate || productData.greutate || ''
+            productData.cantitate || ''
         );
     }
 }
@@ -461,28 +527,12 @@ function shareProduct() {
 
 // Show error message
 function showError(message) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
-    
-    // Try to load fallback product instead of showing error
-    console.log('Error occurred, attempting fallback...');
-    const fallbackProduct = fallbackProducts.find(p => p.id === parseInt(productId)) || fallbackProducts[0];
-    
-    if (fallbackProduct) {
-        productData = fallbackProduct;
-        renderProductDetails();
-        showNotification('⚠️ Produsul a fost încărcat în modul de demonstrație', 'warning');
-        return;
-    }
-    
-    // Only show error as last resort
     const container = document.querySelector('.container');
     container.innerHTML = `
         <div class="alert alert-danger text-center my-5">
             <i class="bi bi-exclamation-triangle-fill fs-1 d-block mb-3"></i>
             <h3>Eroare</h3>
             <p>${message}</p>
-            ${productId ? `<p class="small text-muted">ID produs: ${productId}</p>` : ''}
             <div class="mt-4">
                 <a href="products.html" class="btn btn-primary me-2">
                     <i class="bi bi-arrow-left"></i> Înapoi la Produse
