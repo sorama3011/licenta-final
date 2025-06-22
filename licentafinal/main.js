@@ -761,9 +761,5 @@ function proceedToCheckout() {
     }
 
     // Redirect to checkout page
-    window.location.href = 'checkout.php';rn;
-    }
-
-    // Redirect to checkout page
-    window.location.href = 'checkout.php';
+    window.location.href = 'demo-checkout.html';
 }

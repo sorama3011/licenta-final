@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Coșul de Cumpărături - Gusturi Românești</title>
     <meta name="description" content="Revizuiește și finalizează comanda ta de produse tradiționale românești.">
-    
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="assistant-bot.css">
-    
+
     <!-- Confetti JS for celebration effect -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
@@ -90,7 +90,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-lg-4">
                     <div class="card shadow-sm" id="cart-summary">
                         <div class="card-header bg-primary text-white">
@@ -110,9 +110,9 @@
                                 </div>
                                 <div id="voucherMessage" class="mt-2" style="display: none;"></div>
                             </div>
-                            
+
                             <hr>
-                            
+
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
                                 <span id="subtotal">0.00 RON</span>
@@ -133,7 +133,7 @@
                             <div class="alert alert-info mt-3" role="alert">
                                 <small><i class="bi bi-info-circle"></i> Transport gratuit pentru comenzi peste 150 RON</small>
                             </div>
-                            <button class="btn btn-primary btn-lg w-100 mt-3" type="button" onclick="window.location.href='checkout.html'">
+                            <button class="btn btn-primary btn-lg w-100 mt-3" type="button" onclick="window.location.href='demo-checkout.html'">
                                 <i class="bi bi-credit-card"></i> Finalizează Comanda
                             </button>
                         </div>
@@ -230,7 +230,7 @@
     <script src="main.js"></script>
     <script src="auth.js"></script>
     <script src="assistant-bot.js"></script>
-    
+
     <script>
         // Cart page specific variables
         let appliedVoucher = null;
@@ -240,7 +240,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadCartItems();
             updateShippingProgress();
-            
+
             // Reset celebration flag when visiting cart page
             if (localStorage.getItem('cartSubtotal') >= FREE_SHIPPING_THRESHOLD) {
                 localStorage.setItem('freeShippingCelebrated', 'true');
@@ -262,7 +262,7 @@
             const userEmail = userData.email || 'default';
             const vouchersKey = `vouchers_${userEmail}`;
             const vouchers = JSON.parse(localStorage.getItem(vouchersKey) || '[]');
-            
+
             const voucher = vouchers.find(v => v.code === voucherCode);
             if (voucher) {
                 voucher.used = true;
@@ -272,7 +272,7 @@
 
         async function applyVoucher() {
             const voucherCode = document.getElementById('voucherCode').value.trim().toUpperCase();
-            
+
             if (!voucherCode) {
                 showVoucherMessage('Te rugăm să introduci un cod voucher.', 'danger');
                 return;
@@ -301,12 +301,12 @@
                 if (result.success) {
                     appliedVoucher = result.voucher;
                     showVoucherMessage(result.message, 'success');
-                    
+
                     // Disable input and button
                     document.getElementById('voucherCode').disabled = true;
                     document.querySelector('button[onclick="applyVoucher()"]').disabled = true;
                     document.querySelector('button[onclick="applyVoucher()"]').innerHTML = 'Aplicat';
-                    
+
                     // Add remove button
                     const voucherMessage = document.getElementById('voucherMessage');
                     voucherMessage.innerHTML += `
@@ -314,7 +314,7 @@
                             <i class="bi bi-x"></i> Elimină voucher
                         </button>
                     `;
-                    
+
                     // Update cart total
                     updateCartTotal();
                 } else {
@@ -333,10 +333,10 @@
             document.getElementById('voucherCode').value = '';
             document.querySelector('button[onclick="applyVoucher()"]').disabled = false;
             document.querySelector('button[onclick="applyVoucher()"]').innerHTML = 'Aplică';
-            
+
             const messageDiv = document.getElementById('voucherMessage');
             messageDiv.style.display = 'none';
-            
+
             updateCartTotal();
         }
 
@@ -351,24 +351,24 @@
         function updateCartTotal() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             let discount = 0;
-            
+
             // Apply voucher discount if available
             if (appliedVoucher) {
                 discount = subtotal * (appliedVoucher.discount / 100);
             }
-            
+
             const discountedSubtotal = subtotal - discount;
             const shipping = discountedSubtotal > FREE_SHIPPING_THRESHOLD ? 0 : 15; // Free shipping over threshold after discount
             const total = discountedSubtotal + shipping;
-            
+
             document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} RON`;
             document.getElementById('shipping').textContent = shipping === 0 ? 'Gratuit' : `${shipping.toFixed(2)} RON`;
             document.getElementById('total').textContent = `${total.toFixed(2)} RON`;
-            
+
             // Show/hide discount row
             const discountRow = document.getElementById('discount-row');
             const discountElement = document.getElementById('discount');
-            
+
             if (appliedVoucher && discount > 0) {
                 discountRow.style.display = 'flex';
                 discountElement.textContent = `-${discount.toFixed(2)} RON`;
@@ -387,10 +387,10 @@
         function updateShippingProgress() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const container = document.getElementById('shipping-progress-container');
-            
+
             // Store subtotal in localStorage for progress tracking
             localStorage.setItem('cartSubtotal', subtotal.toString());
-            
+
             if (subtotal >= FREE_SHIPPING_THRESHOLD) {
                 // Free shipping achieved
                 container.innerHTML = `
@@ -404,7 +404,7 @@
                         </div>
                     </div>
                 `;
-                
+
                 // Check if we should celebrate (only if we just crossed the threshold)
                 if (localStorage.getItem('freeShippingCelebrated') !== 'true') {
                     celebrateFreeShipping();
@@ -414,7 +414,7 @@
                 // Calculate remaining amount
                 const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
                 const progressPercentage = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
-                
+
                 container.innerHTML = `
                     <div class="alert alert-info mb-0 d-flex align-items-center">
                         <i class="bi bi-truck me-2 fs-5"></i>
@@ -435,7 +435,7 @@
                         </div>
                     </div>
                 `;
-                
+
                 // Reset celebration flag if we're below threshold
                 localStorage.setItem('freeShippingCelebrated', 'false');
             }
@@ -450,7 +450,7 @@
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-                
+
                 // Show notification
                 showNotification('Felicitări! Ai obținut transport GRATUIT! 🚚', 'success');
             }
@@ -466,7 +466,7 @@
                     showNotification('Coșul este gol. Adaugă produse pentru a continua.', 'warning');
                     return;
                 }
-                
+
                 window.location.href = 'checkout.php';
             }
         }
