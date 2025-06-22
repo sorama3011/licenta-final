@@ -508,6 +508,11 @@ function addToCartFromDetail() {
     const quantityElement = document.getElementById('quantity');
     const quantity = quantityElement ? parseInt(quantityElement.value) : 1;
 
+    if (!productData) {
+        showNotification('Eroare la încărcarea datelor produsului.', 'danger');
+        return;
+    }
+
     // Check if user is logged in
     if (!isUserLoggedIn()) {
         showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
@@ -518,11 +523,36 @@ function addToCartFromDetail() {
         return;
     }
 
-    // Use the regular addToCart function
-    if (typeof addToCart === 'function') {
-        addToCart(productData.id, productData.nume, productData.pret, productData.imagine, productData.cantitate || '');
+    // Use the global addToCart function from main.js if available
+    if (typeof window.addToCart === 'function') {
+        for (let i = 0; i < quantity; i++) {
+            window.addToCart(productData.id, productData.nume, productData.pret, productData.imagine, productData.cantitate || '');
+        }
     } else {
+        // Fallback implementation
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItem = cart.find(item => item.id == productData.id);
+        
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({
+                id: parseInt(productData.id),
+                name: productData.nume,
+                price: parseFloat(productData.pret),
+                image: productData.imagine,
+                weight: productData.cantitate || '',
+                quantity: quantity
+            });
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
         showNotification(`${productData.nume} a fost adăugat în coș!`, 'success');
+        
+        // Update cart count if function exists
+        if (typeof window.updateCartCount === 'function') {
+            window.updateCartCount();
+        }
     }
 }
 
@@ -574,5 +604,12 @@ function showNotification(message, type = 'info') {
 
 // Helper function to check if user is logged in
 function isUserLoggedIn() {
-    return localStorage.getItem('user') !== null || localStorage.getItem('isLoggedIn') === 'true';
+    // Use the main.js implementation if available
+    if (typeof window.isUserLoggedIn === 'function') {
+        return window.isUserLoggedIn();
+    }
+    
+    // Fallback implementation
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    return userData.loggedIn === true;
 }

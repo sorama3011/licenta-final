@@ -91,9 +91,22 @@
                         <h1 id="product-name" class="h2 mb-3"></h1>
 
                         <!-- Price -->
-                        <div class="price-section mb-4">
-                            <span id="product-price" class="h3 text-primary fw-bold"></span>
-                            <span id="product-weight" class="text-muted ms-2"></span>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="price h4 mb-0" id="product-price">0.00 RON</span>
+                            <span class="text-muted ms-2" id="product-weight"></span>
+                        </div>
+
+                        <!-- Quantity and Add to Cart -->
+                        <div class="row align-items-center mb-4">
+                            <div class="col-md-4">
+                                <label for="quantity" class="form-label">Cantitate:</label>
+                                <input type="number" class="form-control" id="quantity" value="1" min="1" max="10">
+                            </div>
+                            <div class="col-md-8">
+                                <button class="btn btn-primary btn-lg w-100" onclick="addToCartFromDetail()">
+                                    <i class="bi bi-basket"></i> Adaugă în Coș
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Description -->
@@ -123,30 +136,10 @@
 
                         <!-- Quantity and Actions -->
                         <div class="product-actions">
-                            <div class="row g-3 align-items-center mb-4">
-                                <div class="col-auto">
-                                    <label for="quantity" class="form-label">Cantitate:</label>
-                                </div>
-                                <div class="col-auto">
-                                    <select class="form-select quantity-selector" id="quantity">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                    </select>
-                                </div>
-                            </div>
+                            
 
                             <div class="d-grid gap-2 d-md-flex">
-                                <button class="btn btn-primary btn-lg flex-fill" onclick="addToCartFromDetail()">
-                                    <i class="bi bi-basket"></i> Adaugă în Coș
-                                </button>
+                                
                                 <button class="btn btn-outline-secondary btn-lg" onclick="addToFavorites()">
                                     <i class="bi bi-heart"></i> Favorite
                                 </button>
@@ -256,3 +249,4 @@
     <script src="product-details.js"></script>
 </body>
 </html>
+```

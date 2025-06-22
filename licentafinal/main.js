@@ -243,8 +243,8 @@ function createProductCard(product) {
     return col;
 }
 
-// Add to cart function
-async function addToCart(id, name, price, image, weight) {
+// Add to cart function - make it globally accessible
+window.addToCart = async function addToCart(id, name, price, image, weight) {
     // Check if user is logged in
     if (!isUserLoggedIn()) {
         showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
@@ -300,8 +300,8 @@ async function addToCart(id, name, price, image, weight) {
     }
 }
 
-// Update cart count in navigation
-function updateCartCount() {
+// Update cart count in navigation - make it globally accessible
+window.updateCartCount = function updateCartCount() {
     const cartCount = document.getElementById('cart-count');
     if (cartCount) {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -765,8 +765,8 @@ function proceedToCheckout() {
     window.location.href = 'demo-checkout.html';
 }
 
-// Check if user is logged in
-function isUserLoggedIn() {
+// Check if user is logged in - make it globally accessible
+window.isUserLoggedIn = function isUserLoggedIn() {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     const loggedIn = userData.loggedIn === true;
     console.log('🔐 User logged in check:', loggedIn);
