@@ -333,23 +333,24 @@
         }
 
         try {
-            // Use localStorage only
+            // Load cart from localStorage
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             const existingItem = cart.find(item => item.id == id);
+            
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
                 cart.push({
                     id: parseInt(id),
                     name: name,
-                        price: parseFloat(price),
-                        image: image,
-                        weight: weight,
-                        quantity: 1
-                    });
-                }
+                    price: parseFloat(price),
+                    image: image,
+                    weight: weight,
+                    quantity: 1
+                });
+            }
 
-                localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('cart', JSON.stringify(cart));
             showNotification(`${name} a fost adăugat în coș!`, 'success');
 
             // Update cart count if function exists
