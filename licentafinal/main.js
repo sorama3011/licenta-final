@@ -1,5 +1,19 @@
 // Global variables
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let cart = [];
+
+// Initialize cart function
+function getCart() {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    } else {
+        cart = [];
+    }
+    return cart;
+}
+
+// Initialize cart on load
+getCart();
 
 // Featured products data
 const featuredProducts = [
@@ -244,9 +258,12 @@ function createProductCard(product) {
 }
 
 // Add to cart function - make it globally accessible
-window.addToCart = async function addToCart(id, name, price, image, weight) {
+window.addToCart = function addToCart(id, name, price, image, weight) {
+    console.log('🛒 Adding to cart:', { id, name, price, image, weight });
+    
     // Check if user is logged in
     if (!isUserLoggedIn()) {
+        console.log('❌ User not logged in');
         showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
         setTimeout(() => {
             localStorage.setItem('redirectAfterLogin', window.location.href);
@@ -256,29 +273,37 @@ window.addToCart = async function addToCart(id, name, price, image, weight) {
     }
 
     try {
-        // Update localStorage cart only
+        // Get fresh cart from localStorage
+        cart = getCart();
+        console.log('📦 Current cart before adding:', cart);
+        
         const existingItem = cart.find(item => item.id == id);
         if (existingItem) {
             existingItem.quantity += 1;
+            console.log('✅ Updated existing item quantity');
         } else {
-            cart.push({
+            const newItem = {
                 id: parseInt(id),
                 name: name,
                 price: parseFloat(price),
                 image: image,
                 weight: weight,
                 quantity: 1
-            });
+            };
+            cart.push(newItem);
+            console.log('✅ Added new item to cart:', newItem);
         }
 
         localStorage.setItem('cart', JSON.stringify(cart));
+        console.log('💾 Cart saved to localStorage');
+        
         updateCartCount();
         updateCartSubtotal();
         showAddToCartNotification(name);
         checkFreeShippingThreshold();
 
     } catch (error) {
-        console.error('Error adding to cart:', error);
+        console.error('❌ Error adding to cart:', error);
         showNotification('A apărut o eroare la adăugarea în coș. Încearcă din nou.', 'danger');
     }
 }
@@ -287,8 +312,11 @@ window.addToCart = async function addToCart(id, name, price, image, weight) {
 window.updateCartCount = function updateCartCount() {
     const cartCount = document.getElementById('cart-count');
     if (cartCount) {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        // Get fresh cart data
+        const currentCart = getCart();
+        const totalItems = currentCart.reduce((sum, item) => sum + item.quantity, 0);
         cartCount.textContent = totalItems;
+        console.log('🔢 Updated cart count:', totalItems);
 
         if (totalItems > 0) {
             cartCount.style.display = 'inline';
@@ -626,18 +654,21 @@ async function subscribeNewsletter(email) {
 
 // Initialize cart from localStorage only
 function initializeCart() {
-    if (!isUserLoggedIn()) {
-        return;
-    }
-
-    // Just make sure cart is loaded from localStorage
+    // Always initialize cart, regardless of login status
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-        cart = JSON.parse(savedCart);
+        try {
+            cart = JSON.parse(savedCart);
+        } catch (error) {
+            console.error('Error parsing cart from localStorage:', error);
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
     } else {
         cart = [];
         localStorage.setItem('cart', JSON.stringify(cart));
     }
+    console.log('🏪 Cart initialized:', cart);
 }
 
 // Generic notification function
