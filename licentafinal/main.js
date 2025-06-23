@@ -708,3 +708,23 @@ window.isUserLoggedIn = function isUserLoggedIn() {
     console.log('🔐 User logged in check:', loggedIn);
     return loggedIn;
 }
+
+// Make sure showNotification is globally available
+window.showNotification = function showNotification(message, type = 'info') {
+    console.log('📢 Notification:', message, type);
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-custom position-fixed`;
+    notification.style.cssText = 'top: 100px; right: 20px; z-index: 1050; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 4000);
+}

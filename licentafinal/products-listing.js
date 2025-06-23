@@ -470,6 +470,7 @@ function showNotification(message, type = 'info') {
     }
 
     // If not defined, create our own implementation
+    console.log('📢 Local notification:', message, type);
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-custom position-fixed`;
     notification.style.cssText = 'top: 100px; right: 20px; z-index: 1050; min-width: 300px;';
@@ -485,4 +486,16 @@ function showNotification(message, type = 'info') {
             notification.remove();
         }
     }, 4000);
+}
+
+// Make sure isUserLoggedIn is available
+function isUserLoggedIn() {
+    if (typeof window.isUserLoggedIn === 'function') {
+        return window.isUserLoggedIn();
+    }
+    
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const loggedIn = userData.loggedIn === true;
+    console.log('🔐 Local user logged in check:', loggedIn);
+    return loggedIn;
 }

@@ -318,12 +318,31 @@
     <script src="main.js"></script>
     <script src="assistant-bot.js"></script>
     <script src="products-listing.js"></script>
+    
+    <script>
+    // Debug logging
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Products page loaded');
+        console.log('📊 User logged in:', isUserLoggedIn());
+        console.log('🛒 Current cart:', localStorage.getItem('cart'));
+        console.log('👤 User data:', localStorage.getItem('userData'));
+        
+        // Test cart functionality
+        setTimeout(() => {
+            const addToCartButtons = document.querySelectorAll('[onclick*="addToCart"]');
+            console.log('🔘 Found', addToCartButtons.length, 'add to cart buttons');
+        }, 2000);
+    });
+    </script>
 
     <script>
     // Ensure addToCart function is available globally for product cards
-    window.addToCart = async function(id, name, price, image, weight) {
+    window.addToCart = function(id, name, price, image, weight) {
+        console.log('🛒 Adding to cart:', { id, name, price, image, weight });
+        
         // Check if user is logged in
         if (!isUserLoggedIn()) {
+            console.log('❌ User not logged in');
             showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
             setTimeout(() => {
                 localStorage.setItem('redirectAfterLogin', window.location.href);
@@ -334,31 +353,41 @@
 
         try {
             // Load cart from localStorage
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            console.log('📦 Current cart:', cart);
+            
             const existingItem = cart.find(item => item.id == id);
             
             if (existingItem) {
                 existingItem.quantity += 1;
+                console.log('✅ Updated existing item quantity');
             } else {
-                cart.push({
+                const newItem = {
                     id: parseInt(id),
                     name: name,
                     price: parseFloat(price),
                     image: image,
                     weight: weight,
                     quantity: 1
-                });
+                };
+                cart.push(newItem);
+                console.log('✅ Added new item to cart:', newItem);
             }
 
             localStorage.setItem('cart', JSON.stringify(cart));
+            console.log('💾 Cart saved to localStorage');
+            
             showNotification(`${name} a fost adăugat în coș!`, 'success');
 
             // Update cart count if function exists
             if (typeof updateCartCount === 'function') {
                 updateCartCount();
+                console.log('🔄 Cart count updated');
+            } else {
+                console.log('⚠️ updateCartCount function not available');
             }
         } catch (error) {
-            console.error('Error adding to cart:', error);
+            console.error('❌ Error adding to cart:', error);
             showNotification('A apărut o eroare la adăugarea în coș. Încearcă din nou.', 'danger');
         }
     };
