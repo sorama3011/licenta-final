@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             `;
         }
 
-        // Load products data
-        await loadProducts();
+        // Load products data from JSON only
+        await loadProductsFromJSON();
 
         console.log('Products after loading:', allProducts.length);
 
@@ -74,92 +74,33 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// Load products from JSON (demo version)
-async function loadProducts() {
+// Load products from JSON file only
+async function loadProductsFromJSON() {
     try {
-        console.log('Loading products from JSON (demo mode)...');
+        console.log('Loading products from products.json...');
         const response = await fetch('products.json');
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to load products.json: ${response.status}`);
         }
 
         const jsonData = await response.json();
-        console.log('Raw JSON data:', jsonData);
+        console.log('JSON data loaded:', jsonData);
 
-        if (jsonData && Array.isArray(jsonData) && jsonData.length > 0) {
-            allProducts = jsonData;
-            filteredProducts = [...allProducts];
-            console.log('✅ Products loaded successfully from JSON:', allProducts.length);
-            console.log('📋 Demo mode: Using local product catalog');
-            console.log('First product:', allProducts[0]);
-            return;
-        } else {
-            throw new Error('Invalid JSON data structure');
+        if (!Array.isArray(jsonData) || jsonData.length === 0) {
+            throw new Error('Invalid or empty JSON data');
         }
-    } catch (error) {
-        console.error('❌ Error loading from products.json:', error);
 
-        // Create fallback products if JSON fails
-        allProducts = [
-            {
-                "id": 1,
-                "nume": "Dulceață de Căpșuni de Argeș",
-                "pret": 18.99,
-                "cantitate": "350g",
-                "regiune": "Muntenia",
-                "categorie": "dulceturi",
-                "imagine": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Dulceata+Capsuni+Arges",
-                "descriere_scurta": "Dulceață tradițională din căpșuni proaspete",
-                "descriere": "Dulceață tradițională din căpșuni proaspete cultivate în dealurile pitorești ale Argeșului.",
-                "recomandat": 1,
-                "tags": ["artizanal", "fara-aditivi"],
-                "stoc": 25,
-                "activ": 1
-            },
-            {
-                "id": 2,
-                "nume": "Zacuscă de Buzău",
-                "pret": 15.50,
-                "cantitate": "450g",
-                "regiune": "Muntenia",
-                "categorie": "conserve",
-                "imagine": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Zacusca+Buzau",
-                "descriere_scurta": "Zacuscă tradițională din vinete și ardei copți",
-                "descriere": "Zacuscă tradițională preparată din vinete și ardei copți pe foc de lemne.",
-                "recomandat": 1,
-                "tags": ["produs-de-post", "artizanal", "fara-aditivi"],
-                "stoc": 30,
-                "activ": 1
-            },
-            {
-                "id": 3,
-                "nume": "Brânză de Burduf",
-                "pret": 32.00,
-                "cantitate": "500g",
-                "regiune": "Maramureș",
-                "categorie": "branza",
-                "imagine": "https://via.placeholder.com/600x400/8B0000/FFFFFF?text=Branza+Burduf+Maramures",
-                "descriere_scurta": "Brânză tradițională de oaie maturată în burduf",
-                "descriere": "Brânză tradițională de oaie maturată în burduf de brad, preparată după rețete străvechi.",
-                "recomandat": 1,
-                "tags": ["artizanal", "ambalat-manual"],
-                "stoc": 15,
-                "activ": 1
-            }
-        ];
-
+        allProducts = jsonData.filter(product => product.activ === 1); // Only active products
         filteredProducts = [...allProducts];
-        console.log('⚠️ Using fallback products:', allProducts.length);
-    }
-}
 
-// Check if products are from database or JSON
-function isUsingDatabaseProducts() {
-    if (allProducts.length === 0) return false;
-    // We're now prioritizing JSON, so we're mainly using JSON products
-    // JSON products have 'nume' field (they're already in Romanian format)
-    return false; // Always return false since we're using JSON demo mode
+        console.log('✅ Products loaded successfully from JSON:', allProducts.length);
+        console.log('First product:', allProducts[0]);
+
+    } catch (error) {
+        console.error('❌ Error loading products from JSON:', error);
+        throw error;
+    }
 }
 
 function applyCategoryFromURL(category) {
@@ -270,14 +211,14 @@ function applyFiltersAndSort() {
     // Apply category filters
     if (currentFilters.categories.length > 0) {
         filteredProducts = filteredProducts.filter(product => 
-            currentFilters.categories.includes(product.categorie || product.category)
+            currentFilters.categories.includes(product.categorie)
         );
     }
 
     // Apply region filters
     if (currentFilters.regions.length > 0) {
         filteredProducts = filteredProducts.filter(product => 
-            currentFilters.regions.includes(product.regiune || product.region)
+            currentFilters.regions.includes(product.regiune)
         );
     }
 
@@ -299,29 +240,17 @@ function applyFiltersAndSort() {
 function sortProducts() {
     switch (currentSort) {
         case 'price-asc':
-            filteredProducts.sort((a, b) => {
-                const priceA = parseFloat(a.pret || a.price);
-                const priceB = parseFloat(b.pret || b.price);
-                return priceA - priceB;
-            });
+            filteredProducts.sort((a, b) => parseFloat(a.pret) - parseFloat(b.pret));
             break;
         case 'price-desc':
-            filteredProducts.sort((a, b) => {
-                const priceA = parseFloat(a.pret || a.price);
-                const priceB = parseFloat(b.pret || b.price);
-                return priceB - priceA;
-            });
+            filteredProducts.sort((a, b) => parseFloat(b.pret) - parseFloat(a.pret));
             break;
         case 'recommended':
         default:
             filteredProducts.sort((a, b) => {
-                const recommendedA = a.recomandat || a.recommended;
-                const recommendedB = b.recomandat || b.recommended;
-                if (recommendedA && !recommendedB) return -1;
-                if (!recommendedA && recommendedB) return 1;
-                const priceA = parseFloat(a.pret || a.price);
-                const priceB = parseFloat(b.pret || b.price);
-                return priceA - priceB; // Secondary sort by price
+                if (a.recomandat && !b.recomandat) return -1;
+                if (!a.recomandat && b.recomandat) return 1;
+                return parseFloat(a.pret) - parseFloat(b.pret); // Secondary sort by price
             });
             break;
     }
@@ -354,51 +283,15 @@ function renderProducts() {
 
     // Create product cards
     filteredProducts.forEach(product => {
-        // Check if product is in favorites
-        const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-        const isFavorited = favorites.some(fav => fav.id == product.id);
-
-        const productCard = document.createElement('div');
-        productCard.className = 'col-md-6 col-lg-4 mb-4';
-
-        productCard.innerHTML = `
-            <div class="card">
-                <img src="${product.imagine || product.image}" class="card-img-top" alt="${product.nume || product.name}">
-                <div class="card-body">
-                    <h5 class="card-title">${product.nume || product.name}</h5>
-                    <p class="card-text">${product.descriere_scurta || product.short_description}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>${product.pret || product.price} RON</span>
-                        
-                    </div>
-					<div class="d-grid gap-2">
-                        <button class="btn btn-add-to-cart" onclick="addToCart(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate || ''}')">
-                            <i class="bi bi-basket"></i> Adaugă în Coș
-                        </button>
-                        <button class="btn ${isFavorited ? 'btn-danger' : 'btn-outline-danger'} btn-sm" 
-                                onclick="toggleFavorite(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate || ''}', '${(product.descriere_scurta || '').replace(/'/g, "\\'")}', '${product.cantitate || ''}')">
-                            <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}"></i> ${isFavorited ? 'Elimină' : 'Favorite'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-
+        const productCard = createProductCard(product);
         container.appendChild(productCard);
     });
 }
 
 function createProductCard(product) {
-    // Handle both database (Romanian) and JSON (English) field names
-    const productName = product.nume || product.name;
-    const productImage = product.imagine || product.image;
-    const productRegion = product.regiune || product.region;
-    const productDescription = product.descriere || product.description;
-    const productPrice = parseFloat(product.pret || product.price);
-    const productWeight = product.cantitate || product.weight;
-    const productCategory = product.categorie || product.category;
-
-    // Products are loaded from JSON demo data - this is intentional
+    // Check if product is in favorites
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const isFavorited = favorites.some(fav => fav.id == product.id);
 
     const tagBadges = (product.tags || []).map(tag => {
         const tagLabels = {
@@ -412,42 +305,38 @@ function createProductCard(product) {
         return `<span class="badge ${tagInfo.class} me-1 mb-1">${tagInfo.text}</span>`;
     }).join('');
 
-    const recommendedBadge = product.recomandat || product.recommended ? 
+    const recommendedBadge = product.recomandat ? 
         '<span class="badge bg-danger position-absolute top-0 end-0 m-2">Recomandat</span>' : '';
 
     const col = document.createElement('div');
     col.className = 'col-md-6 col-lg-4';
 
-     // Check if product is in favorites
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    const isFavorited = favorites.some(fav => fav.id == product.id);
-
     col.innerHTML = `
         <div class="card product-card h-100 shadow-sm position-relative">
             ${recommendedBadge}
             <a href="product.html?id=${product.id}" class="text-decoration-none">
-                <img src="${productImage}" class="card-img-top" alt="${productName}" style="height: 200px; object-fit: cover;">
+                <img src="${product.imagine}" class="card-img-top" alt="${product.nume}" style="height: 200px; object-fit: cover;">
             </a>
             <div class="card-body d-flex flex-column">
-                <span class="badge region-badge mb-2 align-self-start">Produs local din ${productRegion}</span>
+                <span class="badge region-badge mb-2 align-self-start">Produs local din ${product.regiune}</span>
                 <div class="mb-2">
                     ${tagBadges}
                 </div>
                 <h5 class="card-title">
-                    <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${productName}</a>
+                    <a href="product.html?id=${product.id}" class="text-decoration-none text-dark">${product.nume}</a>
                 </h5>
-                <p class="card-text text-muted small">${productDescription.substring(0, 100)}...</p>
+                <p class="card-text text-muted small">${product.descriere.substring(0, 100)}...</p>
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="price">${productPrice.toFixed(2)} RON</span>
-                        <span class="text-muted small">${productWeight}</span>
+                        <span class="price">${parseFloat(product.pret).toFixed(2)} RON</span>
+                        <span class="text-muted small">${product.cantitate}</span>
                     </div>
                     <div class="d-grid gap-2">
-                        <button class="btn btn-add-to-cart" onclick="addToCart(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}')" aria-label="Adaugă ${productName} în coș">
+                        <button class="btn btn-add-to-cart" onclick="addToCart(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate}')" aria-label="Adaugă ${product.nume} în coș">
                             <i class="bi bi-basket"></i> Adaugă în Coș
                         </button>
                         <button class="btn ${isFavorited ? 'btn-danger' : 'btn-outline-danger'} btn-sm" 
-                                onclick="toggleFavorite(${product.id}, '${productName}', ${productPrice}, '${productImage}', '${productWeight}', '${(productDescription || 'Produs tradițional').replace(/'/g, "\\'")}', '${productWeight}')" aria-label="Adaugă ${productName} la favorite">
+                                onclick="toggleFavorite(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate}', '${product.descriere_scurta.replace(/'/g, "\\'")}', '${product.cantitate}')" aria-label="Adaugă ${product.nume} la favorite">
                             <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}"></i> ${isFavorited ? 'Elimină' : 'Favorite'}
                         </button>
                     </div>
