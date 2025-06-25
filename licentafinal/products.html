@@ -323,9 +323,14 @@
     // Debug logging
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🚀 Products page loaded');
-        console.log('📊 User logged in:', isUserLoggedIn());
+        console.log('📊 User logged in:', window.isUserLoggedIn ? window.isUserLoggedIn() : false);
         console.log('🛒 Current cart:', localStorage.getItem('cart'));
         console.log('👤 User data:', localStorage.getItem('userData'));
+        
+        // Ensure cart is initialized
+        if (!localStorage.getItem('cart')) {
+            localStorage.setItem('cart', JSON.stringify([]));
+        }
         
         // Test cart functionality
         setTimeout(() => {
@@ -333,54 +338,117 @@
             console.log('🔘 Found', addToCartButtons.length, 'add to cart buttons');
         }, 2000);
     });
-    </script>
 
-    <script>
-    // Debug logging for products page
-    console.log('🚀 Products page scripts loaded');
-    
-    // The addToCart function is already defined in main.js
-    // Just ensure it's available when the page loads
-
-    window.toggleFavorite = async function(id, name, price, image, weight, descriere_scurta, cantitate) {
-            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-            const existingItem = favorites.find(item => item.id == id);
-
-            if (existingItem) {
-                favorites = favorites.filter(item => item.id != id);
-                showNotification(`${name} a fost eliminat din favorite!`, 'info');
+    // Make addToCart function globally accessible for products page
+    window.addToCart = function addToCart(id, name, price, image, weight) {
+        console.log('🛒 Adding to cart from products page:', { id, name, price, image, weight });
+        
+        // Check if user is logged in
+        if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
+            console.log('❌ User not logged in');
+            if (window.showNotification) {
+                window.showNotification('Pentru a adăuga produse în coș, trebuie să te autentifici.', 'warning');
             } else {
-                favorites.push({
+                alert('Pentru a adăuga produse în coș, trebuie să te autentifici.');
+            }
+            setTimeout(() => {
+                localStorage.setItem('redirectAfterLogin', window.location.href);
+                window.location.href = 'login.html';
+            }, 2000);
+            return;
+        }
+
+        try {
+            // Get current cart from localStorage
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            console.log('📦 Current cart before adding:', cart);
+            
+            const existingItem = cart.find(item => item.id == id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+                console.log('✅ Updated existing item quantity');
+            } else {
+                const newItem = {
                     id: parseInt(id),
-                    nume: name,
+                    name: name,
                     price: parseFloat(price),
-                    pret: parseFloat(price),
-                    imagine: image,
-                    cantitate: weight,
-                    descriere_scurta: descriere_scurta || 'Produs tradițional românesc'
-                });
-                showNotification(`${name} a fost adăugat la favorite!`, 'success');
+                    image: image,
+                    weight: weight,
+                    quantity: 1
+                };
+                cart.push(newItem);
+                console.log('✅ Added new item to cart:', newItem);
             }
 
-            localStorage.setItem('favorites', JSON.stringify(favorites));
+            localStorage.setItem('cart', JSON.stringify(cart));
+            console.log('💾 Cart saved to localStorage');
             
-            // Update heart button if it exists
-            const heartButton = document.querySelector(`[onclick*="toggleFavorite(${id}"]`);
-            if (heartButton) {
-                const heartIcon = heartButton.querySelector('i');
-                if (heartIcon) {
-                    if (existingItem) {
-                        heartIcon.className = 'bi bi-heart';
-                        heartButton.classList.remove('btn-danger');
-                        heartButton.classList.add('btn-outline-danger');
-                    } else {
-                        heartIcon.className = 'bi bi-heart-fill';
-                        heartButton.classList.remove('btn-outline-danger');
-                        heartButton.classList.add('btn-danger');
-                    }
+            // Update cart count if function exists
+            if (window.updateCartCount) {
+                window.updateCartCount();
+            }
+            
+            // Show notification
+            if (window.showNotification) {
+                window.showNotification(`${name} a fost adăugat în coș!`, 'success');
+            } else {
+                alert(`${name} a fost adăugat în coș!`);
+            }
+
+        } catch (error) {
+            console.error('❌ Error adding to cart:', error);
+            if (window.showNotification) {
+                window.showNotification('A apărut o eroare la adăugarea în coș. Încearcă din nou.', 'danger');
+            } else {
+                alert('A apărut o eroare la adăugarea în coș. Încearcă din nou.');
+            }
+        }
+    };
+
+    // Make toggleFavorite function globally accessible
+    window.toggleFavorite = function toggleFavorite(id, name, price, image, weight, descriere_scurta, cantitate) {
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        const existingItem = favorites.find(item => item.id == id);
+
+        if (existingItem) {
+            favorites = favorites.filter(item => item.id != id);
+            if (window.showNotification) {
+                window.showNotification(`${name} a fost eliminat din favorite!`, 'info');
+            }
+        } else {
+            favorites.push({
+                id: parseInt(id),
+                nume: name,
+                price: parseFloat(price),
+                pret: parseFloat(price),
+                imagine: image,
+                cantitate: weight,
+                descriere_scurta: descriere_scurta || 'Produs tradițional românesc'
+            });
+            if (window.showNotification) {
+                window.showNotification(`${name} a fost adăugat la favorite!`, 'success');
+            }
+        }
+
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        
+        // Update heart button if it exists
+        const heartButton = document.querySelector(`[onclick*="toggleFavorite(${id}"]`);
+        if (heartButton) {
+            const heartIcon = heartButton.querySelector('i');
+            if (heartIcon) {
+                if (existingItem) {
+                    heartIcon.className = 'bi bi-heart';
+                    heartButton.classList.remove('btn-danger');
+                    heartButton.classList.add('btn-outline-danger');
+                } else {
+                    heartIcon.className = 'bi bi-heart-fill';
+                    heartButton.classList.remove('btn-outline-danger');
+                    heartButton.classList.add('btn-danger');
                 }
             }
-        };
+        }
+    };
     </script>
 </body>
 </html>

@@ -332,7 +332,7 @@ function createProductCard(product) {
                         <span class="text-muted small">${product.cantitate}</span>
                     </div>
                     <div class="d-grid gap-2">
-                        <button class="btn btn-add-to-cart" onclick="addToCart(${product.id}, '${product.nume}', ${product.pret}, '${product.imagine}', '${product.cantitate}')" aria-label="Adaugă ${product.nume} în coș">
+                        <button class="btn btn-add-to-cart" onclick="window.addToCart(${product.id}, '${product.nume.replace(/'/g, "\\'")}', ${product.pret}, '${product.imagine}', '${product.cantitate}')" aria-label="Adaugă ${product.nume} în coș">
                             <i class="bi bi-basket"></i> Adaugă în Coș
                         </button>
                         <button class="btn ${isFavorited ? 'btn-danger' : 'btn-outline-danger'} btn-sm" 
